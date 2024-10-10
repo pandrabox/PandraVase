@@ -140,8 +140,8 @@ namespace com.github.pandrabox.pandravase.runtime
             ReCreate,
             GetOrCreate
         }
-        public static GameObject GetOrCGetOrateObject(GameObject paGetOrnt, string name, Action<GameObject> initialAction = null) => CreateObjectBase(paGetOrnt, name, CreateType.GetOrCreate, initialAction);
-        public static GameObject GetOrCGetOrateObject(Transform paGetOrnt, string name, Action<GameObject> initialAction = null) => CreateObjectBase(paGetOrnt, name, CreateType.GetOrCreate, initialAction);
+        public static GameObject GetOrCreateObject(GameObject parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.GetOrCreate, initialAction);
+        public static GameObject GetOrCreateObject(Transform parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.GetOrCreate, initialAction);
         public static GameObject ReCreateObject(GameObject parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.ReCreate, initialAction);
         public static GameObject ReCreateObject(Transform parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.ReCreate, initialAction);
         public static GameObject CreateObject(GameObject parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.Normal, initialAction);
