@@ -69,14 +69,12 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="clipName">クリップ名</param>
         /// <returns>Builder</returns>
-        public AnimationClipBuilder Add(string clipName)
+        public AnimationClipBuilder Clip(string clipName)
         {
-            if (AnimationClips.ContainsKey(clipName))
+            if (!AnimationClips.ContainsKey(clipName))
             {
-                DebugPrint($@"作成しようとしたクリップ{clipName}は定義済みのため失敗しました", false);
-                return null;
+                AnimationClips[clipName] = new AnimationClipBuilder(clipName);
             }
-            AnimationClips[clipName] = new AnimationClipBuilder(clipName);
             return AnimationClips[clipName];
         }
         
