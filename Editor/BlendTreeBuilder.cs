@@ -124,7 +124,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             parent.AddChild(child);
             var c = parent.children;
-            c[^1].directBlendParameter = parameterName;
+            c[c.Length-1].directBlendParameter = parameterName;
             parent.children = c;
         }
 
