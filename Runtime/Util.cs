@@ -134,14 +134,20 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <param name="name">生成オブジェクト名</param>
         /// <param name="initialAction">生成時処理</param>
         /// <returns>生成したオブジェクト</returns>
-        public enum CreateType
+        private enum CreateType
         {
             Normal,
             ReCreate,
             GetOrCreate
         }
-        public static GameObject CreateObject(GameObject parent, string name, CreateType createType, Action<GameObject> initialAction = null) => CreateObject(parent?.transform, name, createType, initialAction);
-        public static GameObject CreateObject(Transform parent, string name, CreateType createType, Action<GameObject> initialAction = null)
+        public static GameObject GetOrCGetOrateObject(GameObject paGetOrnt, string name, Action<GameObject> initialAction = null) => CreateObjectBase(paGetOrnt, name, CreateType.GetOrCreate, initialAction);
+        public static GameObject GetOrCGetOrateObject(Transform paGetOrnt, string name, Action<GameObject> initialAction = null) => CreateObjectBase(paGetOrnt, name, CreateType.GetOrCreate, initialAction);
+        public static GameObject ReCreateObject(GameObject parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.ReCreate, initialAction);
+        public static GameObject ReCreateObject(Transform parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.ReCreate, initialAction);
+        public static GameObject CreateObject(GameObject parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.Normal, initialAction);
+        public static GameObject CreateObject(Transform parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.Normal, initialAction);
+        private static GameObject CreateObjectBase(GameObject parent, string name, CreateType createType, Action<GameObject> initialAction = null) => CreateObjectBase(parent?.transform, name, createType, initialAction);
+        private static GameObject CreateObjectBase(Transform parent, string name, CreateType createType, Action<GameObject> initialAction = null)
         {
             if (createType == CreateType.ReCreate) RemoveChildObject(parent.transform, name);
             if (createType == CreateType.GetOrCreate)
