@@ -181,7 +181,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// ParameterName(内部呼び出し用)
         private string GetParameterName(string parameterName)
         {
-            var tmpap = new AvatarProject(null, _suffix);
+            var tmpap = new PandraProject(null, _suffix);
             return tmpap.GetParameterName(parameterName);
         }
     }

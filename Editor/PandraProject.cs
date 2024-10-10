@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace com.github.pandrabox.pandravase.editor
 {
-    public class AvatarProject
+    public class PandraProject
     {
         const string ONEPARAM = "__ModularAvatarInternal/One";
         public VRCAvatarDescriptor Descriptor;
@@ -46,7 +46,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="descriptor">Descriptor</param>
         /// <param name="suffix">変数名・レイヤ名等の前置詞</param>
         /// <param name="workFolder">Anim等を読み込む際使用する基本フォルダ</param>
-        public AvatarProject(VRCAvatarDescriptor descriptor, string suffix = "", string workFolder="")
+        public PandraProject(VRCAvatarDescriptor descriptor, string suffix = "", string workFolder="")
         {
             Descriptor = descriptor;
             Suffix = SanitizeStr(suffix);

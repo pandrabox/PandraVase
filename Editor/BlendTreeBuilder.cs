@@ -38,7 +38,7 @@ using static com.github.pandrabox.pandravase.runtime.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
-    public class BlendTreeBuilder : AvatarProject
+    public class BlendTreeBuilder : PandraProject
     {
         public List<BlendTree> BuildingTrees;
         public BlendTree RootTree;
