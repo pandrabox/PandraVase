@@ -103,8 +103,8 @@ namespace com.github.pandrabox.pandravase.editor
         public void CreateToggleAnim(Transform target, Transform relativeRoot) => CreateToggleAnim(GetRelativePath(relativeRoot, target));
         public void CreateToggleAnim(string relativePath)
         {
-            Add(ToggleOnName(relativePath)).Bind(relativePath, typeof(GameObject), "m_IsActive").Const2F(1);
-            Add(ToggleOffName(relativePath)).Bind(relativePath, typeof(GameObject), "m_IsActive").Const2F(0);
+            Clip(ToggleOnName(relativePath)).Bind(relativePath, typeof(GameObject), "m_IsActive").Const2F(1);
+            Clip(ToggleOffName(relativePath)).Bind(relativePath, typeof(GameObject), "m_IsActive").Const2F(0);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="args">偶引数にAAP名、奇引数に定義値を交互入力</param>
         public void CreateAAP(params object[] args)
         {
-            var ab = Add(AAPName(args));
+            var ab = Clip(AAPName(args));
             for (int i = 0; i < args.Length; i += 2)
             {
                 ab.Bind("", typeof(Animator), $@"{args[i]}").Const2F((float)args[i + 1]);
