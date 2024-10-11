@@ -38,7 +38,6 @@ using nadena.dev.modular_avatar.core;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
-    [AddComponentMenu("Pan/Pan Merge BlendTree")]
     public class PanMergeBlendTree : AvatarTagComponent
     {
         public UnityEngine.Object BlendTree;

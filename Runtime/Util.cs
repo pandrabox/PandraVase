@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static com.github.pandrabox.pandravase.runtime.Global;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 using System.IO;
@@ -14,6 +13,19 @@ namespace com.github.pandrabox.pandravase.runtime
 {
     public static class Util
     {
+        /////////////////////////Global/////////////////////////
+        public static bool PDEBUGMODE = false;
+        public const float FPS = 60;
+        public const string ONEPARAM = "__ModularAvatarInternal/One";
+        public static string RootDir_VPM = "Packages/";
+        public static string RootDir_Asset = "Assets/Pan/";
+        public static string VPMDomainNameSuffix = "com.github.pandrabox.";
+        #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        public const string DIRSEPARATOR = "\\";
+        #else
+        public const string DIRSEPARATOR = "/";
+        #endif
+
         /////////////////////////DEBUG/////////////////////////
         /// <summary>
         /// DebugModeを設定する
@@ -25,72 +37,16 @@ namespace com.github.pandrabox.pandravase.runtime
             PDEBUGMODE = mode;
         }
 
-        /// <summary>
-        /// DebugMessageを表示する
-        /// </summary>
-        /// <param name="message">表示するMessage</param>
-        /// <param name="debugOnly">DebugModeでのみ表示</param>
-        /// <param name="level">ログレベル</param>
-        /// <param name="callerMethodName">システムが使用</param>
-        public static void DebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, [CallerMemberName] string callerMethodName = "")
+        public static void LowLevelDebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
         {
             if (debugOnly && !PDEBUGMODE) return;
+            var msg = $@"[PandraBox.{projectName}.{callerMethodName}:{callerLineNumber}]:{message}";
 
-            var msg = $@"[PandraBox.{callerMethodName}]:{message}";
-
-            if (level == LogType.Log)
-            {
-                Debug.Log(msg);
-            }
-            else if(level == LogType.Error)
-            {
-                Debug.LogError(msg);
-            }
-            else
-            {
-                Debug.LogWarning(msg);
-            }
+            if (level == LogType.Log) Debug.Log(msg);
+            else if (level == LogType.Error) Debug.LogError(msg);
+            else Debug.LogWarning(msg);
         }
 
-        /// <summary>
-        /// Debug用アセットの出力フォルダ
-        /// </summary>
-        private const string DEBUGOUTPFOLDER = "Assets/Pan/Debug/";
-        public static string DebugOutpFolder
-        {
-            get
-            {
-                if (PDEBUGMODE)
-                {
-                    if (!Directory.Exists(DEBUGOUTPFOLDER)) Directory.CreateDirectory(DEBUGOUTPFOLDER);
-                    return DEBUGOUTPFOLDER;
-                }
-                else
-                {
-                    DebugPrint("この機能はDEBUG専用ですが、非DEBUGMODEで実行されました。開発者に連絡して下さい。", false, LogType.Error);
-                    return null;
-                }
-            }
-        }
-
-        public static string DebugOutp(UnityEngine.Object asset, string path="")
-        {
-            if (!PDEBUGMODE) return null;
-            if (path == "") path = DebugOutpFolder;
-            AssetDatabase.CreateAsset(asset, path);
-            string assetPath = AssetDatabase.GetAssetPath(asset);
-            // ファイルが存在するか確認
-            if (File.Exists(assetPath))
-            {
-                DebugPrint($@"成功：ファイルを生成しました：{assetPath}");
-                return assetPath;
-            }
-            else
-            {
-                DebugPrint($@"失敗：ファイルは生成できませんでした：{assetPath}");
-                return null;
-            }
-        }
 
         /////////////////////////上方向 Component探索/////////////////////////
         /// <summary>
@@ -113,8 +69,13 @@ namespace com.github.pandrabox.pandravase.runtime
                 if (component != null) return component;
                 parent = parent.parent;
             }
+            LowLevelDebugPrint($@"Componentの探索に失敗しました");
             return null;
         }
+        public static GameObject GetAvatarRootGameObject(GameObject tgt) => GetAvatarDescriptor(tgt).gameObject;
+        public static GameObject GetAvatarRootGameObject(Transform tgt) => GetAvatarDescriptor(tgt).gameObject;
+        public static Transform GetAvatarRootTransform(GameObject tgt) => GetAvatarDescriptor(tgt).transform;
+        public static Transform GetAvatarRootTransform(Transform tgt) => GetAvatarDescriptor(tgt).transform;
         public static VRCAvatarDescriptor GetAvatarDescriptor(GameObject current) => GetAvatarDescriptor(current?.transform);
         public static VRCAvatarDescriptor GetAvatarDescriptor(Transform current)
         {
@@ -125,6 +86,200 @@ namespace com.github.pandrabox.pandravase.runtime
         {
             return GetAvatarDescriptor(current) != null;
         }
+
+
+        /////////////////////////Pathの解決/////////////////////////
+        /// <summary>
+        /// アセットを作成する
+        /// </summary>
+        /// <param name="asset">作成するアセット</param>
+        /// <param name="path">パス</param>
+        /// <returns></returns>
+        public static string OutpAsset(UnityEngine.Object asset, string path = "", bool debugOnly = false)
+        {
+            if (debugOnly && !PDEBUGMODE) return null;
+            if (path == "") path = "Assets";
+            var UnityDirPath = CreateDir(path);
+            if (UnityDirPath == null)
+            {
+                LowLevelDebugPrint("ディレクトリ[{path}]の生成に失敗したためアセットの生成に失敗しました。");
+                return null;
+            }
+
+            var assetPath = AssetSavePath(asset, path);
+            var absAssetPath = GetAbsolutePath(assetPath);
+
+            if (path.Contains("Packages"))
+            {
+                using(var tmpDir = new TemporaryAssetFolder())
+                {
+                    var tmpAssetPath = GetUnityPath(AssetSavePath(asset, tmpDir.FolderPath));
+                    AssetDatabase.CreateAsset(asset, tmpAssetPath);
+                    var absTmpAssetPath = GetAbsolutePath(tmpAssetPath);
+                    try
+                    {
+                        File.Move(absTmpAssetPath, absAssetPath);
+                    }
+                    catch 
+                    {
+                        LowLevelDebugPrint($@"データ保存に保存しました：{absAssetPath}", false, LogType.Error);
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+                AssetDatabase.CreateAsset(asset, assetPath);
+            }
+
+            if (File.Exists(absAssetPath)) return assetPath;
+            LowLevelDebugPrint($@"アセット{assetPath}の生成に失敗しました");
+            return null;
+        }
+
+        /// <summary>
+        /// アセットを保存する適切なパスを返す（パスタイプは保証しない）
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string AssetSavePath(UnityEngine.Object asset, string path)
+        {
+            if (path.HasExtension()) return path;
+            string fileName = SanitizeStr(asset.name);
+            var extensionMap = new Dictionary<Type, string>() {
+                { typeof(AnimationClip), ".anim" },
+                { typeof(Texture2D), ".png" },
+                { typeof(Material), ".mat" },
+            };
+            string extension = extensionMap.TryGetValue(asset.GetType(), out string e) ? e : ".asset";
+            return Path.Combine(path, fileName + extension);
+        }
+
+        /// <summary>
+        /// ディレクトリを作成する
+        /// </summary>
+        /// <param name="path">ディレクトリパス(絶対またはAssets/,Packages/から始まる相対)</param>
+        /// <returns>成功すればUnityディレクトリパス、失敗したらnull</returns>
+        public static string CreateDir(string path)
+        {
+            var absPath = Path.GetDirectoryName(GetAbsolutePath(path));
+            Directory.CreateDirectory(absPath);
+            if (Directory.Exists(absPath)) return GetUnityPath(absPath);
+            LowLevelDebugPrint($@"ディレクトリ[{absPath}]の作成に失敗しました。");
+            return null;
+        }
+
+        /// <summary>
+        /// PathTypesの判定
+        /// </summary>
+        public enum PathTypes { Error, UnityAsset, AbsoluteAsset, UnityDir, AbsoluteDir};
+        public static PathTypes PathType(this string path)
+        {
+            if (path.IsUnityPath()) return path.HasExtension() ? PathTypes.UnityAsset : PathTypes.UnityDir;
+            if (path.IsAbsolutePath()) return path.HasExtension() ? PathTypes.AbsoluteAsset : PathTypes.AbsoluteDir;
+            LowLevelDebugPrint($@"無効なパス[{path}]を判定しました。");
+            return PathTypes.Error;
+        }
+
+        /// <summary>
+        /// UnityPathかどうか判定する
+        /// </summary>
+        public static bool IsUnityPath(this string path)
+        {
+            var tmp = DirSeparatorNormalize(path);
+            return tmp.StartsWith("Assets/") || tmp.StartsWith("Packages/") || tmp == "Assets" || tmp == "Packages";
+        }
+
+        /// <summary>
+        /// AbsolutePathかどうか判定する
+        /// </summary>
+        public static bool IsAbsolutePath(this string path)
+        {
+            var tmp = DirSeparatorLocalize(path);
+            return tmp.StartsWith(AbsoluteAssetsPath) || tmp.StartsWith(AbsolutePackagesPath);
+        }
+
+        /// <summary>
+        /// pathが拡張子を持つかどうかの判定
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>持つならtrue</returns>
+        public static bool HasExtension(this string path)
+        {
+            if (string.IsNullOrEmpty(path)) return false;
+            var tmp = DirSeparatorNormalize(path);
+            int lastSeparatorIndex = tmp.LastIndexOf('/');
+            if (lastSeparatorIndex == -1 || lastSeparatorIndex == tmp.Length - 1) return false;
+            return tmp.IndexOf('.', lastSeparatorIndex + 1) >= 0;
+        }
+
+        /// <summary>
+        /// DirSeparatorを"/"にする
+        /// </summary>
+        public static string DirSeparatorNormalize(string path) => (path ?? "").Replace(DIRSEPARATOR, "/");
+
+        /// <summary>
+        /// "/"をDirSeparatorにする
+        /// </summary>
+        public static string DirSeparatorLocalize(string path) => (path ?? "").Replace("/", DIRSEPARATOR);
+
+        /// <summary>
+        /// パスのAbsolute(例：c:/test/Assets/aaa)とUnity(例：Assets/aaa)の変換
+        /// </summary>
+        public static string AbsoluteAssetsPath => DirSeparatorLocalize(Application.dataPath);
+        public static string AbsolutePackagesPath => DirSeparatorLocalize(Path.Combine(new DirectoryInfo(AbsoluteAssetsPath).Parent.FullName, "Packages"));
+        public static string GetAbsolutePath(string path)
+        {
+            var tmp = DirSeparatorLocalize(path);
+            if (IsAbsolutePath(tmp)) return tmp;
+            if (ReplaceSubstring(ref tmp, "Assets", AbsoluteAssetsPath)) return tmp;
+            if (ReplaceSubstring(ref tmp, "Packages", AbsolutePackagesPath)) return tmp;
+            LowLevelDebugPrint($@"無効なパス[{path}]の変換を試みました");
+            return null;
+        }
+        public static string GetUnityPath(string path)
+        {
+            var tmp = DirSeparatorLocalize(path);
+            if (IsUnityPath(tmp)) return DirSeparatorNormalize(tmp);
+            if (ReplaceSubstring(ref tmp, AbsoluteAssetsPath, "Assets")) return DirSeparatorNormalize(tmp);
+            if (ReplaceSubstring(ref tmp, AbsolutePackagesPath, "Packages")) return DirSeparatorNormalize(tmp);
+            LowLevelDebugPrint($@"無効なパス[{path}]の変換を試みました");
+            return null;
+        }
+
+        /// <summary>
+        /// A(参照渡し)がBから始まっていればCに書き換える
+        /// </summary>
+        /// <param name="strA">文字列</param>
+        /// <param name="strB">文字列</param>
+        /// <param name="strC">文字列</param>
+        /// <returns>書き換えが実行されたかどうか</returns>
+        public static bool ReplaceSubstring(ref string strA, string strB, string strC)
+        {
+            if (strA.StartsWith(strB))
+            {
+                strA = strC + strA.Substring(strB.Length);
+                return true;
+            }
+            return false;
+        }
+
+
+        public static void DeleteFolder(string path)
+        {
+            if(!path.Contains("Packages") && path.Contains("Assets"))
+            {
+                var tgt = GetUnityPath(path);
+                FileUtil.DeleteFileOrDirectory(tgt);
+            }
+            else
+            {
+                var tgt = GetAbsolutePath(path);
+                if (Directory.Exists(tgt)) Directory.Delete(tgt, true);
+            }
+        }
+
 
         /////////////////////////CreateObject/////////////////////////
         /// <summary>
@@ -138,7 +293,8 @@ namespace com.github.pandrabox.pandravase.runtime
         {
             Normal,
             ReCreate,
-            GetOrCreate
+            GetOrCreate, //あれば取得なければ作成。Componentについても同様。
+            AddOrCreate //あれば取得なければ作成。Componentは既存があっても追加する
         }
         public static GameObject GetOrCreateObject(GameObject parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.GetOrCreate, initialAction);
         public static GameObject GetOrCreateObject(Transform parent, string name, Action<GameObject> initialAction = null) => CreateObjectBase(parent, name, CreateType.GetOrCreate, initialAction);
@@ -150,7 +306,7 @@ namespace com.github.pandrabox.pandravase.runtime
         private static GameObject CreateObjectBase(Transform parent, string name, CreateType createType, Action<GameObject> initialAction = null)
         {
             if (createType == CreateType.ReCreate) RemoveChildObject(parent.transform, name);
-            if (createType == CreateType.GetOrCreate)
+            if (createType == CreateType.GetOrCreate || createType == CreateType.AddOrCreate)
             {
                 GameObject tmp = parent.transform?.Find(name)?.gameObject;
                 if (tmp != null) return tmp;
@@ -160,7 +316,39 @@ namespace com.github.pandrabox.pandravase.runtime
             res.transform.SetParent(parent.transform);
             initialAction?.Invoke(res);
             return res;
-        }        
+        }
+
+        /////////////////////////CreateComponentObject/////////////////////////
+        /// <summary>
+        /// コンポーネント付きのオブジェクトの生成
+        /// </summary>
+        /// <typeparam name="T">アタッチするコンポーネント</typeparam>
+        /// <param name="parent">親</param>
+        /// <param name="initialAction">生成時処理</param>
+        /// <returns>アタッチしたコンポーネント</returns>
+        public static T AddOrCreateComponentObject<T>(GameObject parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.AddOrCreate, initialAction);
+        public static T AddOrCreateComponentObject<T>(Transform parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.AddOrCreate, initialAction);
+        public static T GetOrCreateComponentObject<T>(GameObject parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.GetOrCreate, initialAction);
+        public static T GetOrCreateComponentObject<T>(Transform parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.GetOrCreate, initialAction);
+        public static T ReCreateComponentObject<T>(GameObject parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.ReCreate, initialAction);
+        public static T ReCreateComponentObject<T>(Transform parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.ReCreate, initialAction);
+        public static T CreateComponentObject<T>(GameObject parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.Normal, initialAction);
+        public static T CreateComponentObject<T>(Transform parent, string name, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent, name, CreateType.Normal, initialAction);
+        private static T CreateComponentObjectBase<T>(GameObject parent, string name, CreateType createType, Action<T> initialAction = null) where T : Component => CreateComponentObjectBase<T>(parent?.transform, name, createType, initialAction);
+        private static T CreateComponentObjectBase<T>(Transform parent, string name, CreateType createType, Action<T> initialAction = null) where T : Component
+        {
+            GameObject obj = CreateObjectBase(parent, name, createType);
+            if (createType == CreateType.GetOrCreate) 
+            {
+                T cmp = obj.GetComponent<T>();
+                if (cmp != null) return cmp;
+            } 
+            T component = obj.AddComponent<T>();
+            initialAction?.Invoke(component);
+            return component;
+        }
+
+
         /// <summary>
         /// オブジェクトの削除
         /// </summary>
@@ -333,6 +521,28 @@ namespace com.github.pandrabox.pandravase.runtime
         }
 
 
+        // Inspector用のタイトルデザイン
+        public static void Title(string t)
+        {
+            GUILayout.BeginHorizontal();
+            var lineRect = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+            int leftBorderSize = 5;
+            var leftRect = new Rect(lineRect.x, lineRect.y, leftBorderSize, lineRect.height);
+            var rightRect = new Rect(lineRect.x + leftBorderSize, lineRect.y, lineRect.width - leftBorderSize, lineRect.height);
+            Color leftColor = new Color32(0xF4, 0xAD, 0x39, 0xFF);
+            Color rightColor = new Color32(0x39, 0xA7, 0xF4, 0xFF);
+            EditorGUI.DrawRect(leftRect, leftColor);
+            EditorGUI.DrawRect(rightRect, rightColor);
+            var textStyle = new GUIStyle(EditorStyles.label)
+            {
+                alignment = TextAnchor.MiddleLeft,
+                padding = new RectOffset(5, 0, 0, 0),
+                fontStyle = FontStyle.Bold,
+                normal = { textColor = Color.black },
+            };
+            GUI.Label(rightRect, t, textStyle);
+            GUILayout.EndHorizontal();
+        }
     }
 }
 #endif

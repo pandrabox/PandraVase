@@ -1,0 +1,120 @@
+﻿
+#if UNITY_EDITOR
+using System;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using static com.github.pandrabox.pandravase.runtime.Util;
+using com.github.pandrabox.pandravase.runtime;
+using static com.github.pandrabox.pandravase.runtime.PandraProject;
+
+namespace com.github.pandrabox.unlimitedcolor.runtime
+{
+    public abstract class PandraEditor : Editor
+    {
+        private bool _inAvatarOnly;
+        private bool? _customEnableCondition;
+        private string _customDisableMsg;
+        private string _logoPath;
+        private PandraProject _prj;
+        private string _projectName;
+        private ProjectTypes _projectType;
+        public PandraEditor(bool inAvatarOnly, string projectName=null, ProjectTypes projectType=0, bool? customEnableCondition = null, string customDisableMsg = null)
+        {
+            _inAvatarOnly = inAvatarOnly;
+            _customEnableCondition = customEnableCondition;
+            _customDisableMsg = customDisableMsg;
+            _projectName= projectName;
+            _projectType= projectType;
+        }
+
+        private bool Enable
+        {
+            get {
+                if (_customEnableCondition != null) return _customEnableCondition ?? false;
+                return !_inAvatarOnly || IsInAvatar(((Component)target).gameObject);
+            }
+        }
+        private void DrawDisableMsg()
+        {
+            if (_customDisableMsg == null)
+            {
+                EditorGUILayout.HelpBox("この機能はAvatarの下に定義されている場合のみ有効です。", MessageType.Error);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox(_customDisableMsg, MessageType.Error);
+            }
+        }
+
+        public void OnEnable()
+        {
+            if (!Enable) return;
+
+            if (_logoPath == null && _projectName != null)
+            {
+                var prj = new PandraProject(_projectName, _projectType);
+                _logoPath = $@"{prj.ImgFolder}InspectorLogo.png";
+            }
+
+            DefineSerial();
+            OnInnerEnable();
+        }
+
+        /// <summary>
+        /// SerializedPropertyを定義
+        /// </summary>
+        protected abstract void DefineSerial();
+
+        /// <summary>
+        /// 初期化処理を定義(任意)
+        /// </summary>
+        protected virtual void OnInnerEnable() { }
+
+
+        /// <summary>
+        /// ロゴを描いてから普通のInspector処理
+        /// </summary>
+        public sealed override void OnInspectorGUI()
+        {
+            DrawLogo();
+            if (!Enable)
+            {
+                DrawDisableMsg();
+                return;
+            }
+            OnInnerInspectorGUI();
+        }
+        /// <summary>
+        /// 普通のInspector処理
+        /// </summary>
+        public abstract void OnInnerInspectorGUI();
+
+        /// <summary>
+        /// ロゴ描画
+        /// </summary>
+        private Texture2D _inspectorLogo;
+        protected void DrawLogo()
+        {
+            if(_inspectorLogo==null && _logoPath != null)
+            {
+                _inspectorLogo = AssetDatabase.LoadAssetAtPath<Texture2D>(_logoPath);
+                if(_inspectorLogo == null)
+                {
+                    LowLevelDebugPrint($@"ロゴ{_logoPath}の取得に失敗しました", false);
+                }
+                _logoPath = null;
+            }
+            if (_inspectorLogo != null)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(_inspectorLogo);
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.Space(4);
+            }
+        }
+    }
+}
+#endif

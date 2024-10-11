@@ -6,7 +6,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
-using static com.github.pandrabox.pandravase.runtime.Global;
 using static com.github.pandrabox.pandravase.runtime.Util;
 
 /* Sample *
@@ -29,13 +28,13 @@ namespace com.github.pandrabox.pandravase.editor
             AnimationClip aapAnim = abForAAP.AAP("Param1", 1, "Inverce1", 0); // これが本来の書き方ですが、多くの場合はBlendTreeBuilderからAddAAPで呼び出すでしょう。
 
             //一般的なサンプル 一定値のAnimationを定義、2Fの場合
-            ab.Add("Const2FSample").Bind("Armature/Hips/Collider", typeof(Transform), "m_LocalPosition.z").Const2F(3);
+            ab.Clip("Const2FSample").Bind("Armature/Hips/Collider", typeof(Transform), "m_LocalPosition.z").Const2F(3);
 
             //一般的なサンプル 直線変動のAnimationを定義
-            ab.Add("LinerSmaple").Bind("Armature/Hips/Collider", typeof(Transform), "m_LocalPosition.y").Liner(0, 0, 10 / FPS, 1);
+            ab.Clip("LinerSmaple").Bind("Armature/Hips/Collider", typeof(Transform), "m_LocalPosition.y").Liner(0, 0, 10 / FPS, 1);
 
             //一般的なサンプル スムーズなAnimationを定義
-            ab.Add("SmoothSample").Bind("Armature/Hips/Collider", typeof(Transform), "m_LocalPosition.x").Smooth(0, 0, 1, 1, 2, 2, 3, 2, 4, 0);
+            ab.Clip("SmoothSample").Bind("Armature/Hips/Collider", typeof(Transform), "m_LocalPosition.x").Smooth(0, 0, 1, 1, 2, 2, 3, 2, 4, 0);
 
             //一般的なサンプル Animationの読み取り
             AnimationClip Const2FAnim = ab.Outp("Const2FSample");
@@ -51,17 +50,20 @@ namespace com.github.pandrabox.pandravase.editor
     /// </summary>
     public class AnimationClipsBuilder
     {
-        private string _suffix;
-        public Dictionary<string, AnimationClipBuilder> AnimationClips;
+        public Dictionary<string, AnimationClipBuilder> AnimationClipBuilders;
+        public PandraProject Prj;
 
         /// <summary>
         /// 複数のAnimationClipを生成・ロード・保存するクラス
         /// </summary>
         /// <param name="suffix">AAPの生成をする場合、suffix</param>
-        public AnimationClipsBuilder(string suffix = "")
+        public AnimationClipsBuilder(PandraProject prj) => Init(prj);
+        public AnimationClipsBuilder(string suffix) => Init(new PandraProject(suffix));
+        public AnimationClipsBuilder() => Init(new PandraProject());
+        private void Init(PandraProject prj)
         {
-            AnimationClips = new Dictionary<string, AnimationClipBuilder>();
-            _suffix = suffix;
+            Prj = prj;
+            AnimationClipBuilders = new Dictionary<string, AnimationClipBuilder>();
         }
 
         /// <summary>
@@ -71,11 +73,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>Builder</returns>
         public AnimationClipBuilder Clip(string clipName)
         {
-            if (!AnimationClips.ContainsKey(clipName))
+            if (!AnimationClipBuilders.ContainsKey(clipName))
             {
-                AnimationClips[clipName] = new AnimationClipBuilder(clipName);
+                AnimationClipBuilders[clipName] = new AnimationClipBuilder(clipName);
             }
-            return AnimationClips[clipName];
+            return AnimationClipBuilders[clipName];
         }
         
         /// <summary>
@@ -85,11 +87,19 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>クリップ</returns>
         public AnimationClip Outp(string clipName)
         {
-            var clip = AnimationClips[clipName].Outp();
-            DebugOutp(clip);
-            return clip;
+            return AnimationClipBuilders[clipName].Outp();
         }
 
+        /// <summary>
+        /// すべての定義済みAnimationClipを保存する
+        /// </summary>
+        public void DebugSave()
+        {
+            foreach(var pair in AnimationClipBuilders)
+            {
+                Prj.DebugOutp(pair.Value.Outp());
+            }
+        }
 
         /////////////////////////ObjectOnOff関連の既定関数/////////////////////////
         /// <summary>
@@ -128,7 +138,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 CreateToggleAnim(relativePath);
                 clip = Outp(name);
-                DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。Debugアセットの保存は失敗します。");
+                Prj.DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。DebugSave対象外です。");
             }
             return clip;
         }
@@ -160,7 +170,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 CreateAAP(args);
                 clip = Outp(name);
-                DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。Debugアセットの保存は失敗します。");
+                Prj.DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。DebugSave対象外です。");
             }
             return clip;
         }
@@ -171,18 +181,11 @@ namespace com.github.pandrabox.pandravase.editor
             string name = "";
             for (int i = 0; i < args.Length; i += 2)
             {
-                string paramName = GetParameterName((string)args[i]);
+                string paramName = Prj.GetParameterName((string)args[i]);
                 float val = Convert.ToSingle(args[i + 1]);
                 name = $@"{name}{paramName}{val}";
             }
             return name;
-        }
-
-        /// ParameterName(内部呼び出し用)
-        private string GetParameterName(string parameterName)
-        {
-            var tmpap = new PandraProject(null, _suffix);
-            return tmpap.GetParameterName(parameterName);
         }
     }
 }

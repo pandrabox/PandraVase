@@ -42,9 +42,8 @@ using System.Collections.Generic;
 using nadena.dev.ndmf.util;
 using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.editor;
-using static com.github.pandrabox.pandravase.runtime.Global;
-using static com.github.pandrabox.pandravase.runtime.Util;
 using com.github.pandrabox.pandravase.runtime;
+using static com.github.pandrabox.pandravase.runtime.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -83,18 +82,14 @@ namespace com.github.pandrabox.pandravase.editor
             _blendTreeLayerName = $@"PanMBT/{_rootBlendTree.name}";
             _target = component;
             _controller = new AnimatorController();
+            _controller.name = _rootBlendTree.name;
             SetBlendTreeToController();
             SetParametersToController();
             ApplyMergeAnimator();
             if(PDEBUGMODE)
             {
-                var path = $@"{DebugOutpFolder}PanMBT";
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                    AssetDatabase.Refresh();
-                }
-                AssetDatabase.CreateAsset(_controller, $@"{DebugOutpFolder}{_blendTreeLayerName}.asset");
+                PandraProject vasePrj = new PandraProject(_mergeHost, "PandraVase", ProjectTypes.VPM);
+                vasePrj.DebugOutp(_controller);
             }
         }
 
