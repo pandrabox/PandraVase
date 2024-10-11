@@ -519,30 +519,6 @@ namespace com.github.pandrabox.pandravase.runtime
                 AssetDatabase.Refresh();
             }
         }
-
-
-        // Inspector用のタイトルデザイン
-        public static void Title(string t)
-        {
-            GUILayout.BeginHorizontal();
-            var lineRect = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
-            int leftBorderSize = 5;
-            var leftRect = new Rect(lineRect.x, lineRect.y, leftBorderSize, lineRect.height);
-            var rightRect = new Rect(lineRect.x + leftBorderSize, lineRect.y, lineRect.width - leftBorderSize, lineRect.height);
-            Color leftColor = new Color32(0xF4, 0xAD, 0x39, 0xFF);
-            Color rightColor = new Color32(0x39, 0xA7, 0xF4, 0xFF);
-            EditorGUI.DrawRect(leftRect, leftColor);
-            EditorGUI.DrawRect(rightRect, rightColor);
-            var textStyle = new GUIStyle(EditorStyles.label)
-            {
-                alignment = TextAnchor.MiddleLeft,
-                padding = new RectOffset(5, 0, 0, 0),
-                fontStyle = FontStyle.Bold,
-                normal = { textColor = Color.black },
-            };
-            GUI.Label(rightRect, t, textStyle);
-            GUILayout.EndHorizontal();
-        }
     }
 }
 #endif
