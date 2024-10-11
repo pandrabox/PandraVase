@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 using System;
@@ -36,3 +37,4 @@ namespace com.github.pandrabox.pandravase.runtime
         }
     }
 }
+#endif
