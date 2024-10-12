@@ -45,26 +45,16 @@ using com.github.pandrabox.pandravase.editor;
 using com.github.pandrabox.pandravase.runtime;
 using static com.github.pandrabox.pandravase.runtime.Util;
 
-[assembly: ExportsPlugin(typeof(PanMergeBlendTreePlugin))]
-
 namespace com.github.pandrabox.pandravase.editor
 {
-
-    public class PanMergeBlendTreePlugin : Plugin<PanMergeBlendTreePlugin>
+    internal class PanMergeBlendTreePass : Pass<PanMergeBlendTreePass>
     {
-        public override string DisplayName => "PanMergeBlendTree";
-        public override string QualifiedName => "com.github.pandrabox.pandravase.mergeblendtree";
-        protected override void Configure()
+        protected override void Execute(BuildContext ctx)
         {
-            InPhase(BuildPhase.Transforming)
-                .BeforePlugin("nadena.dev.modular-avatar")
-                .Run("PanMergeBlendTree", ctx => 
-                {
-                    foreach (var component in ctx.AvatarRootTransform.GetComponentsInChildren<PanMergeBlendTree>(true))
-                    {
-                        new PanMergeBlendTreeMain(component);
-                    }
-                });
+            foreach (var component in ctx.AvatarRootTransform.GetComponentsInChildren<PanMergeBlendTree>(true))
+            {
+                new PanMergeBlendTreeMain(component);
+            }
         }
     }
 
