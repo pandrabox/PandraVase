@@ -45,21 +45,26 @@ using com.github.pandrabox.pandravase.editor;
 using com.github.pandrabox.pandravase.runtime;
 using static com.github.pandrabox.pandravase.runtime.Util;
 
+[assembly: ExportsPlugin(typeof(PanMergeBlendTreePlugin))]
+
 namespace com.github.pandrabox.pandravase.editor
 {
-    /// <summary>
-    /// すべてのPanMergeBlendTree RuntimeをMergeAnimatorに変換する
-    /// </summary>
-    public class PanMergeBlendTreePlugin
+
+    public class PanMergeBlendTreePlugin : Plugin<PanMergeBlendTreePlugin>
     {
-        private readonly GameObject _avatarRootObject;
-        public PanMergeBlendTreePlugin(GameObject avatarRootObject)
+        public override string DisplayName => "PanMergeBlendTree";
+        public override string QualifiedName => "com.github.pandrabox.pandravase.mergeblendtree";
+        protected override void Configure()
         {
-            _avatarRootObject = avatarRootObject;
-            foreach (var component in _avatarRootObject.GetComponentsInChildren<PanMergeBlendTree>(true))
-            {
-                new PanMergeBlendTreeMain(component);
-            }
+            InPhase(BuildPhase.Transforming)
+                .BeforePlugin("nadena.dev.modular-avatar")
+                .Run("PanMergeBlendTree", ctx => 
+                {
+                    foreach (var component in ctx.AvatarRootTransform.GetComponentsInChildren<PanMergeBlendTree>(true))
+                    {
+                        new PanMergeBlendTreeMain(component);
+                    }
+                });
         }
     }
 
