@@ -1,5 +1,4 @@
 ﻿using com.github.pandrabox.pandravase.runtime;
-using nadena.dev.modular_avatar.core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

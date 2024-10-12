@@ -20,11 +20,11 @@ namespace com.github.pandrabox.pandravase.runtime
         public static string RootDir_VPM = "Packages/";
         public static string RootDir_Asset = "Assets/Pan/";
         public static string VPMDomainNameSuffix = "com.github.pandrabox.";
-        #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         public const string DIRSEPARATOR = "\\";
-        #else
+#else
         public const string DIRSEPARATOR = "/";
-        #endif
+#endif
 
         /////////////////////////DEBUG/////////////////////////
         /// <summary>
@@ -111,7 +111,7 @@ namespace com.github.pandrabox.pandravase.runtime
 
             if (path.Contains("Packages"))
             {
-                using(var tmpDir = new TemporaryAssetFolder())
+                using (var tmpDir = new TemporaryAssetFolder())
                 {
                     var tmpAssetPath = GetUnityPath(AssetSavePath(asset, tmpDir.FolderPath));
                     AssetDatabase.CreateAsset(asset, tmpAssetPath);
@@ -120,7 +120,7 @@ namespace com.github.pandrabox.pandravase.runtime
                     {
                         File.Move(absTmpAssetPath, absAssetPath);
                     }
-                    catch 
+                    catch
                     {
                         LowLevelDebugPrint($@"データ保存に保存しました：{absAssetPath}", false, LogType.Error);
                         throw;
@@ -173,7 +173,7 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <summary>
         /// PathTypesの判定
         /// </summary>
-        public enum PathTypes { Error, UnityAsset, AbsoluteAsset, UnityDir, AbsoluteDir};
+        public enum PathTypes { Error, UnityAsset, AbsoluteAsset, UnityDir, AbsoluteDir };
         public static PathTypes PathType(this string path)
         {
             if (path.IsUnityPath()) return path.HasExtension() ? PathTypes.UnityAsset : PathTypes.UnityDir;
@@ -265,10 +265,13 @@ namespace com.github.pandrabox.pandravase.runtime
             return false;
         }
 
-
+        /// <summary>
+        /// フォルダを削除
+        /// </summary>
+        /// <param name="path"></param>
         public static void DeleteFolder(string path)
         {
-            if(!path.Contains("Packages") && path.Contains("Assets"))
+            if (!path.Contains("Packages") && path.Contains("Assets"))
             {
                 var tgt = GetUnityPath(path);
                 FileUtil.DeleteFileOrDirectory(tgt);
@@ -338,11 +341,11 @@ namespace com.github.pandrabox.pandravase.runtime
         private static T CreateComponentObjectBase<T>(Transform parent, string name, CreateType createType, Action<T> initialAction = null) where T : Component
         {
             GameObject obj = CreateObjectBase(parent, name, createType);
-            if (createType == CreateType.GetOrCreate) 
+            if (createType == CreateType.GetOrCreate)
             {
                 T cmp = obj.GetComponent<T>();
                 if (cmp != null) return cmp;
-            } 
+            }
             T component = obj.AddComponent<T>();
             initialAction?.Invoke(component);
             return component;
@@ -354,7 +357,7 @@ namespace com.github.pandrabox.pandravase.runtime
         /// </summary>
         /// <param name="target"></param>
         static public void RemoveObject(Transform target) => RemoveObject(target?.gameObject);
-        static public void RemoveObject(GameObject target) 
+        static public void RemoveObject(GameObject target)
         {
             if (target != null)
             {
@@ -431,7 +434,7 @@ namespace com.github.pandrabox.pandravase.runtime
             Transform current = child;
             while (current != parent)
             {
-                path = current.name + (path == "" ? "" : "/" ) + path;
+                path = current.name + (path == "" ? "" : "/") + path;
                 current = current.parent;
             }
             return path;

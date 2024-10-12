@@ -1,11 +1,10 @@
-﻿
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static com.github.pandrabox.pandravase.runtime.Util;
 using com.github.pandrabox.pandravase.runtime;
+using static com.github.pandrabox.pandravase.runtime.Util;
 using static com.github.pandrabox.pandravase.runtime.PandraProject;
 
 namespace com.github.pandrabox.unlimitedcolor.runtime
@@ -16,21 +15,22 @@ namespace com.github.pandrabox.unlimitedcolor.runtime
         private bool? _customEnableCondition;
         private string _customDisableMsg;
         private string _logoPath;
-        private PandraProject _prj;
         private string _projectName;
         private ProjectTypes _projectType;
-        public PandraEditor(bool inAvatarOnly, string projectName=null, ProjectTypes projectType=0, bool? customEnableCondition = null, string customDisableMsg = null)
+
+        public PandraEditor(bool inAvatarOnly, string projectName = null, ProjectTypes projectType = 0, bool? customEnableCondition = null, string customDisableMsg = null)
         {
             _inAvatarOnly = inAvatarOnly;
             _customEnableCondition = customEnableCondition;
             _customDisableMsg = customDisableMsg;
-            _projectName= projectName;
-            _projectType= projectType;
+            _projectName = projectName;
+            _projectType = projectType;
         }
 
         private bool Enable
         {
-            get {
+            get
+            {
                 if (_customEnableCondition != null) return _customEnableCondition ?? false;
                 return !_inAvatarOnly || IsInAvatar(((Component)target).gameObject);
             }
@@ -71,7 +71,6 @@ namespace com.github.pandrabox.unlimitedcolor.runtime
         /// </summary>
         protected virtual void OnInnerEnable() { }
 
-
         /// <summary>
         /// ロゴを描いてから普通のInspector処理
         /// </summary>
@@ -85,6 +84,7 @@ namespace com.github.pandrabox.unlimitedcolor.runtime
             }
             OnInnerInspectorGUI();
         }
+
         /// <summary>
         /// 普通のInspector処理
         /// </summary>
@@ -96,10 +96,10 @@ namespace com.github.pandrabox.unlimitedcolor.runtime
         private Texture2D _inspectorLogo;
         protected void DrawLogo()
         {
-            if(_inspectorLogo==null && _logoPath != null)
+            if (_inspectorLogo == null && _logoPath != null)
             {
                 _inspectorLogo = AssetDatabase.LoadAssetAtPath<Texture2D>(_logoPath);
-                if(_inspectorLogo == null)
+                if (_inspectorLogo == null)
                 {
                     LowLevelDebugPrint($@"ロゴ{_logoPath}の取得に失敗しました", false);
                 }
@@ -116,10 +116,10 @@ namespace com.github.pandrabox.unlimitedcolor.runtime
             }
         }
 
-
-
-
-        // Inspector用のタイトルデザイン
+        /// <summary>
+        /// Inspector用のタイトルデザイン
+        /// </summary>
+        /// <param name="t"></param>
         protected static void Title(string t)
         {
             GUILayout.BeginHorizontal();

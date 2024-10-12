@@ -1,14 +1,7 @@
-﻿
-using System;
-using com.github.pandrabox.pandravase.editor;
-using nadena.dev.modular_avatar.animation;
-using nadena.dev.modular_avatar.core.ArmatureAwase;
-using nadena.dev.modular_avatar.core.editor.plugin;
-using nadena.dev.modular_avatar.editor.ErrorReporting;
+﻿using com.github.pandrabox.pandravase.editor;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.fluent;
 using Packages.com.github.pandrabox.pandravase.Editor;
-using UnityEngine;
 
 [assembly: ExportsPlugin(typeof(PanPluginDefinition))]
 

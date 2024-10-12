@@ -1,5 +1,4 @@
 ﻿using com.github.pandrabox.pandravase.runtime;
-using nadena.dev.modular_avatar.core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,7 +78,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             return AnimationClipBuilders[clipName];
         }
-        
+
         /// <summary>
         /// Output AnimationClip
         /// </summary>
@@ -95,7 +94,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public void DebugSave()
         {
-            foreach(var pair in AnimationClipBuilders)
+            foreach (var pair in AnimationClipBuilders)
             {
                 Prj.DebugOutp(pair.Value.Outp());
             }

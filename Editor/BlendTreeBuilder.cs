@@ -125,7 +125,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             parent.AddChild(child);
             var c = parent.children;
-            c[c.Length-1].directBlendParameter = parameterName;
+            c[c.Length - 1].directBlendParameter = parameterName;
             parent.children = c;
         }
 
@@ -183,9 +183,11 @@ namespace com.github.pandrabox.pandravase.editor
         public Motion ChildMotionClip;
         public BlendTreeType? ChildTreeType;
         private bool _childWait;
-        public bool ChildWait {
+        public bool ChildWait
+        {
             get => _childWait;
-            set {
+            set
+            {
                 // Prj.DebugPrint($"ChildWaitを設定しました：{value}",true ,LogType.Log);
                 _childWait = value;
             }
@@ -324,5 +326,4 @@ namespace com.github.pandrabox.pandravase.editor
             });
         }
     }
-
 }

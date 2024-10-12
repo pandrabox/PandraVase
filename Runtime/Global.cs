@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace com.github.pandrabox.pandravase.runtime
 {

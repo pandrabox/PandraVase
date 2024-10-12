@@ -1,15 +1,9 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.Animations;
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Text;
 using static com.github.pandrabox.pandravase.runtime.Util;
-using System.Runtime.CompilerServices;
-using VRC.SDK3.Avatars.Components;
-using System.Linq;
 
 namespace com.github.pandrabox.pandravase.runtime
 {

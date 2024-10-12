@@ -32,7 +32,6 @@
 
 using UnityEditor;
 using nadena.dev.modular_avatar.core;
-using nadena.dev.modular_avatar.core.editor;
 using UnityEngine;
 using UnityEditor.Animations;
 using System;
@@ -41,7 +40,6 @@ using System.Collections;
 using System.Collections.Generic;
 using nadena.dev.ndmf.util;
 using nadena.dev.ndmf;
-using com.github.pandrabox.pandravase.editor;
 using com.github.pandrabox.pandravase.runtime;
 using static com.github.pandrabox.pandravase.runtime.Util;
 
@@ -81,7 +79,7 @@ namespace com.github.pandrabox.pandravase.editor
             SetBlendTreeToController();
             SetParametersToController();
             ApplyMergeAnimator();
-            if(PDEBUGMODE)
+            if (PDEBUGMODE)
             {
                 PandraProject vasePrj = new PandraProject(_mergeHost, "PandraVase", ProjectTypes.VPM);
                 vasePrj.DebugOutp(_controller);
@@ -185,7 +183,6 @@ namespace com.github.pandrabox.pandravase.editor
             merger.relativePathRoot = _target.RelativePathRoot;
             merger.layerPriority = _target.LayerPriority;
         }
-
     }
 }
 
