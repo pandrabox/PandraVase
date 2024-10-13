@@ -36,6 +36,8 @@ namespace com.github.pandrabox.pandravase.runtime
         public string TmpFolder => $@"Assets/Temp/";
         public string Suffix => $@"Pan/{ProjectName}/";
         public string PrjRootObjName => $@"{ProjectName}_PrjRootObj";
+        public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
+        public int PlayableIndex (VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
         public GameObject PrjRootObj => runtime.Util.GetOrCreateObject(RootTransform, PrjRootObjName);
 
         /// <summary>

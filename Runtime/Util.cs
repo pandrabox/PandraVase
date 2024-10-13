@@ -8,6 +8,7 @@ using System.IO;
 using VRC.SDK3.Avatars.Components;
 using System.Linq;
 using UnityEditor;
+using nadena.dev.ndmf;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
@@ -46,6 +47,11 @@ namespace com.github.pandrabox.pandravase.runtime
             else if (level == LogType.Error) Debug.LogError(msg);
             else Debug.LogWarning(msg);
         }
+
+        /// <summary>
+        /// シーンの最初に存在するアバターのDescriptor
+        /// </summary>
+        public static VRCAvatarDescriptor TopAvatar => GameObject.FindObjectOfType<VRCAvatarDescriptor>();
 
 
         /////////////////////////上方向 Component探索/////////////////////////
@@ -521,6 +527,15 @@ namespace com.github.pandrabox.pandravase.runtime
                 Directory.CreateDirectory(path);
                 AssetDatabase.Refresh();
             }
+        }
+
+
+        public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
+        public static PandraProject VaseProject(GameObject child) => VaseProject(GetAvatarDescriptor(child));
+        public static PandraProject VaseProject(Transform child) => VaseProject(GetAvatarDescriptor(child));
+        public static PandraProject VaseProject(VRCAvatarDescriptor desc)
+        {
+            return new PandraProject(desc, "PandraVase", ProjectTypes.VPM);
         }
     }
 }
