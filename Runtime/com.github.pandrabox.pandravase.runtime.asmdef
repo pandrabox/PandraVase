@@ -21,7 +21,7 @@
         "VRC.SDK3.Dynamics.PhysBone.dll",
         "System.Collections.Immutable.dll"
     ],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
