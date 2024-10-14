@@ -58,7 +58,7 @@ namespace com.github.pandrabox.pandravase.runtime
             ProjectType = projectType;
             if (ProjectType == ProjectTypes.Asset)
             {
-                ProjectFolder = $@"{RootDir_Asset}Pan/{projectName}/";
+                ProjectFolder = $@"{RootDir_Asset}{projectName}/"; //memo:PanはRootDirに含まれています
             }
             else
             {
