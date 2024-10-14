@@ -30,7 +30,7 @@
         "VRC.SDK3.Dynamics.PhysBone.Editor.dll",
         "VRCCore-Editor.dll"
     ],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
