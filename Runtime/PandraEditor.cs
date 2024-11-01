@@ -7,7 +7,7 @@ using com.github.pandrabox.pandravase.runtime;
 using static com.github.pandrabox.pandravase.runtime.Util;
 using static com.github.pandrabox.pandravase.runtime.PandraProject;
 
-namespace com.github.pandrabox.unlimitedcolor.runtime
+namespace com.github.pandrabox.pandravase.runtime
 {
     public abstract class PandraEditor : Editor
     {
