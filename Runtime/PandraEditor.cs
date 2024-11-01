@@ -51,7 +51,7 @@ namespace com.github.pandrabox.pandravase.runtime
         {
             if (!Enable) return;
 
-            if (_logoPath == null && _projectName != null)
+            if (!string.IsNullOrEmpty(_logoPath)  && !string.IsNullOrEmpty(_projectName))
             {
                 var prj = new PandraProject(_projectName, _projectType);
                 _logoPath = $@"{prj.ImgFolder}InspectorLogo.png";
@@ -82,7 +82,9 @@ namespace com.github.pandrabox.pandravase.runtime
                 DrawDisableMsg();
                 return;
             }
+            serializedObject.Update();
             OnInnerInspectorGUI();
+            serializedObject.ApplyModifiedProperties();
         }
 
         /// <summary>
@@ -96,7 +98,7 @@ namespace com.github.pandrabox.pandravase.runtime
         private Texture2D _inspectorLogo;
         protected void DrawLogo()
         {
-            if (_inspectorLogo == null && _logoPath != null)
+            if (_inspectorLogo == null && !string.IsNullOrEmpty(_logoPath))
             {
                 _inspectorLogo = AssetDatabase.LoadAssetAtPath<Texture2D>(_logoPath);
                 if (_inspectorLogo == null)
