@@ -31,6 +31,7 @@ namespace com.github.pandrabox.pandravase.runtime
         public string EditorFolder => $@"{ProjectFolder}Editor/";
         public string RuntimeFolder => $@"{ProjectFolder}Runtime/";
         public string DebugFolder => $@"{ProjectFolder}Debug/";
+        public string WorkFolder => $@"{ProjectFolder}Work/";
         public string VaseFolder => "Packages/com.github.pandrabox.pandravase/";
         public string VaseDebugFolder => $@"{VaseFolder}Debug/";
         public string TmpFolder => $@"Assets/Temp/";
