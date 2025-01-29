@@ -10,6 +10,7 @@ using static com.github.pandrabox.pandravase.runtime.Util;
 using System.Runtime.CompilerServices;
 using VRC.SDK3.Avatars.Components;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
@@ -40,6 +41,11 @@ namespace com.github.pandrabox.pandravase.runtime
         public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
         public int PlayableIndex (VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
         public GameObject PrjRootObj => runtime.Util.GetOrCreateObject(RootTransform, PrjRootObjName);
+        public bool IsVPM => ProjectType == ProjectTypes.VPM;
+        public string PackageJsonPath => IsVPM ? $@"{ProjectFolder}package.json" : null;
+        public string VPMVersion => IsVPM ? GetVPMVer() : null;
+
+
 
         /// <summary>
         /// 1つのAvatarを編集するためのProjectを統括するクラス。Project共通で使うsuffix,ProjectNameなどの管理を提供する
@@ -110,6 +116,36 @@ namespace com.github.pandrabox.pandravase.runtime
         public Motion LoadMotion(string motionPath)
         {
             return AssetDatabase.LoadAssetAtPath<Motion>(NormalizedMotionPath(motionPath));
+        }
+
+
+        /// <summary>
+        /// VPMのバージョンを取得する
+        /// </summary>
+        /// <returns></returns>
+        public string GetVPMVer()
+        {
+            string packageJsonPath = Path.Combine(ProjectFolder, "package.json");
+            if (!File.Exists(packageJsonPath))
+            {
+                DebugPrint($@"{packageJsonPath}が見つかりませんでした");
+                return null;
+            }
+            string jsonContent = File.ReadAllText(packageJsonPath);
+            if (jsonContent == null)
+            {
+                DebugPrint("package.jsonの読み込みに失敗しました");
+                return null;
+            }
+            string versionPattern = @"""version"":\s*""([0-9]+\.[0-9]+\.[0-9]+)""";
+            Match match = Regex.Match(jsonContent, versionPattern);
+            if (match.Success)
+            {
+                string version = match.Groups[1].Value;
+                return version;
+            }
+            DebugPrint("バージョンの正規表現がマッチしませんでした");
+            return null;
         }
 
 
