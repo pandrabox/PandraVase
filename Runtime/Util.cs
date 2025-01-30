@@ -322,7 +322,7 @@ namespace com.github.pandrabox.pandravase.runtime
             }
 
             GameObject res = new GameObject(name);
-            res.transform.SetParent(parent.transform);
+            if(parent != null) res.transform.SetParent(parent.transform);
             initialAction?.Invoke(res);
             return res;
         }
