@@ -83,7 +83,7 @@ namespace com.github.pandrabox.pandravase.editor
         public void Apply()
         {
             Prj.DebugOutp(RootTree);
-            PanMergeBlendTree PanMBT = TargetObject.AddComponent<PanMergeBlendTree>();
+            PVPanMergeBlendTree PanMBT = TargetObject.AddComponent<PVPanMergeBlendTree>();
             PanMBT.BlendTree = RootTree;
             if (IsAbsolute) PanMBT.PathMode = MergeAnimatorPathMode.Absolute;
             else if (RelativeRoot != null) PanMBT.RelativePathRoot.Set(RelativeRoot);

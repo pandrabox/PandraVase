@@ -1,4 +1,5 @@
 ﻿using com.github.pandrabox.pandravase.editor;
+using com.github.pandrabox.pandravase.runtime;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.fluent;
 
@@ -15,8 +16,11 @@ namespace com.github.pandrabox.pandravase.editor
         {
             Sequence seq;
             seq = InPhase(BuildPhase.Transforming).BeforePlugin("nadena.dev.modular-avatar");
-            seq.Run(PanMergeBlendTreePass.Instance);
-            seq.Run(ReplacePlayablePass.Instance);
+            seq.Run(PVPlayableRemoverPass.Instance);
+            seq.Run(PVUniquefyObjectPass.Instance);
+            seq.Run(PVPanMergeBlendTreePass.Instance);
+            seq.Run(PVReplacePlayablePass.Instance);
+            seq.Run(PVActiveOverridePass.Instance);
         }
     }
 }
