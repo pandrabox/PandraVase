@@ -40,7 +40,8 @@ namespace com.github.pandrabox.pandravase.editor
     {
         public PVActiveOverrideMain(VRCAvatarDescriptor desc)
         {
-            PVActiveOverride[] targets = (PVActiveOverride[])desc.transform.GetComponentsInChildren(typeof(PVActiveOverride));
+            PVActiveOverride[] targets = desc.transform.GetComponentsInChildren<PVActiveOverride>();
+
             foreach (PVActiveOverride target in targets)
             {
                 target.gameObject.SetActive(target.active);

@@ -40,10 +40,10 @@ namespace com.github.pandrabox.pandravase.editor
     {
         public PVPlayableRemoverMain(VRCAvatarDescriptor desc)
         {
-            PVPlayableRemover[] removers = (PVPlayableRemover[])desc.transform.GetComponentsInChildren(typeof(PVPlayableRemover));
+            PVPlayableRemover[] removers = desc.transform.GetComponentsInChildren<PVPlayableRemover>();
             for (int j = 0; j <= 4; j++)
             {
-                AnimatorController animatorController = (AnimatorController)desc.baseAnimationLayers[j].animatorController;
+                AnimatorController animatorController = desc.baseAnimationLayers[j].animatorController as AnimatorController;
                 if (removers == null || animatorController == null) continue;
                 var layers = animatorController.layers;
                 if (layers == null) continue;
