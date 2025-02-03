@@ -15,12 +15,16 @@ namespace com.github.pandrabox.pandravase.editor
         protected override void Configure()
         {
             Sequence seq;
+            seq = InPhase(BuildPhase.Resolving).BeforePlugin("nadena.dev.modular-avatar");
+            seq = InPhase(BuildPhase.Generating).BeforePlugin("nadena.dev.modular-avatar");
             seq = InPhase(BuildPhase.Transforming).BeforePlugin("nadena.dev.modular-avatar");
+            seq.Run(PVMergeMASubMenuPass.Instance);
             seq.Run(PVPlayableRemoverPass.Instance);
             seq.Run(PVUniquefyObjectPass.Instance);
             seq.Run(PVPanMergeBlendTreePass.Instance);
             seq.Run(PVReplacePlayablePass.Instance);
             seq.Run(PVActiveOverridePass.Instance);
+            seq = InPhase(BuildPhase.Optimizing).BeforePlugin("nadena.dev.modular-avatar");
         }
     }
 }

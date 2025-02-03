@@ -21,7 +21,7 @@ namespace com.github.pandrabox.pandravase.editor
 #if PANDRADBG
     public class MergeMASubMenuDebug
     {
-        [MenuItem("PanDbg/MergeMASubMenu")]
+        [MenuItem("PanDbg/PVMergeMASubMenu")]
         public static void MergeMASubMenu_Debug()
         {
             SetDebugMode(true);
@@ -43,10 +43,15 @@ namespace com.github.pandrabox.pandravase.editor
         public MergeMASubMenuMain(VRCAvatarDescriptor desc)
         {
             //対象を取得し、GameObject名を変更
-            PVMergeMASubMenu[] targets= (PVMergeMASubMenu[])desc.transform.GetComponentsInChildren(typeof(PVMergeMASubMenu));
+            PVMergeMASubMenu[] targets= desc.transform.GetComponentsInChildren<PVMergeMASubMenu>();
             foreach (PVMergeMASubMenu target in targets)
             {
-                if(target.OverrideName!=null) target.gameObject.name = target.OverrideName;
+                if (target.OverrideName != null && target.OverrideName.Length>0)
+                {
+                    var c = target?.gameObject?.GetComponent<ModularAvatarMenuItem>()?.Control;
+                    if(c!=null) c.name = target.OverrideName;
+                    target.gameObject.name = target.OverrideName;
+                }
             }
             //SubMenuItemを取得
             List<ModularAvatarMenuItem> subMenuItems = 
@@ -78,13 +83,20 @@ namespace com.github.pandrabox.pandravase.editor
                 if (pair.Value.Count > 1)
                 {
                     List<GameObject> objects = pair.Value;
-                    Transform parent = objects[0].transform.parent; 
+                    Transform parent = objects[0].transform; 
                     for (int i = 1; i < objects.Count; i++)
                     {
                         Transform[] children = objects[i].transform.GetComponentsInChildren<Transform>();
                         foreach (Transform child in children)
                         {
                             if (child.parent != objects[i].transform) continue; //孫以下は飛ばす
+                            if (PrefabUtility.IsPartOfPrefabInstance(child.gameObject))
+                            {
+                                //プレハブのルートを見つける
+                                GameObject prefabRoot = PrefabUtility.GetOutermostPrefabInstanceRoot(child.gameObject);
+                                //アンパック
+                                PrefabUtility.UnpackPrefabInstance(prefabRoot, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                            }
                             child.SetParent(parent, false);  //親の設定
                         }
                         GameObject.DestroyImmediate(objects[i]); // 空になったものを消す
