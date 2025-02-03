@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using nadena.dev.ndmf.util;
 using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.runtime.Util;
+using static com.github.pandrabox.pandravase.editor.Util;
 using System.Linq;
 using VRC.SDK3.Avatars.Components;
 

@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;
-using static com.github.pandrabox.pandravase.runtime.Util;
+using static com.github.pandrabox.pandravase.editor.Util;
 
-namespace com.github.pandrabox.pandravase.runtime
+namespace com.github.pandrabox.pandravase.editor
 {
     /// <summary>
     /// Asset直下に一時フォルダを作る。usingで呼び出し、終了時に自動で削除する。

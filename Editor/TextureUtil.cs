@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
-using static com.github.pandrabox.pandravase.runtime.Util;
+using static com.github.pandrabox.pandravase.editor.Util;
 
-namespace com.github.pandrabox.pandravase.runtime
+namespace com.github.pandrabox.pandravase.editor
 {
     public static class TextureUtil
     {
@@ -35,6 +35,7 @@ namespace com.github.pandrabox.pandravase.runtime
                 Color[] pixels = textures[i].GetPixels();
                 tileTexture.SetPixels(x, y, unitSize, unitSize, pixels);
             }
+            tileTexture.wrapMode = TextureWrapMode.Clamp;
             tileTexture.Apply();
             return tileTexture;
         }
@@ -91,7 +92,7 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <param name="width">出力幅</param>
         /// <param name="height">出力高さ（省略時、縦横比を維持）</param>
         /// <returns></returns>
-        private static Texture2D ResizeTexture(Texture2D texture, int width, int height = -1)
+        public static Texture2D ResizeTexture(Texture2D texture, int width, int height = -1)
         {
             if (height == -1) height = (int)(texture.height * (float)width / texture.width);
             RenderTexture rt = RenderTexture.GetTemporary(width, height);

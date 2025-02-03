@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.runtime.Util;
-using static com.github.pandrabox.pandravase.runtime.PandraProject;
+using static com.github.pandrabox.pandravase.editor.Util;
+using static com.github.pandrabox.pandravase.editor.PandraProject;
 
-namespace com.github.pandrabox.pandravase.runtime
+namespace com.github.pandrabox.pandravase.editor
 {
     public abstract class PandraEditor : Editor
     {

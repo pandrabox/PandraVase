@@ -6,13 +6,13 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
-using static com.github.pandrabox.pandravase.runtime.Util;
+using static com.github.pandrabox.pandravase.editor.Util;
 using System.Runtime.CompilerServices;
 using VRC.SDK3.Avatars.Components;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace com.github.pandrabox.pandravase.runtime
+namespace com.github.pandrabox.pandravase.editor
 {
     public enum ProjectTypes { VPM, Asset };
     public class PandraProject
@@ -40,7 +40,7 @@ namespace com.github.pandrabox.pandravase.runtime
         public string PrjRootObjName => $@"{ProjectName}_PrjRootObj";
         public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
         public int PlayableIndex (VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
-        public GameObject PrjRootObj => runtime.Util.GetOrCreateObject(RootTransform, PrjRootObjName);
+        public GameObject PrjRootObj => Util.GetOrCreateObject(RootTransform, PrjRootObjName);
         public bool IsVPM => ProjectType == ProjectTypes.VPM;
         public string PackageJsonPath => IsVPM ? $@"{ProjectFolder}package.json" : null;
         public string VPMVersion => IsVPM ? GetVPMVer() : null;
@@ -183,9 +183,9 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <param name="name">生成オブジェクト名</param>
         /// <param name="initialAction">生成時処理</param>
         /// <returns>生成したオブジェクト</returns>
-        public GameObject GetOrCreateObject(string name, Action<GameObject> initialAction = null) => runtime.Util.GetOrCreateObject(PrjRootObj, name, initialAction);
-        public GameObject ReCreateObject(string name, Action<GameObject> initialAction = null) => runtime.Util.ReCreateObject(PrjRootObj, name, initialAction);
-        public GameObject CreateObject(string name, Action<GameObject> initialAction = null) => runtime.Util.CreateObject(PrjRootObj, name, initialAction);
+        public GameObject GetOrCreateObject(string name, Action<GameObject> initialAction = null) => Util.GetOrCreateObject(PrjRootObj, name, initialAction);
+        public GameObject ReCreateObject(string name, Action<GameObject> initialAction = null) => Util.ReCreateObject(PrjRootObj, name, initialAction);
+        public GameObject CreateObject(string name, Action<GameObject> initialAction = null) => Util.CreateObject(PrjRootObj, name, initialAction);
 
         /////////////////////////CreateComponentObject/////////////////////////
         /// <summary>
@@ -194,10 +194,10 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <param name="name">生成オブジェクト名</param>
         /// <param name="initialAction">生成時処理</param>
         /// <returns>生成したオブジェクト</returns>
-        public T AddOrCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => runtime.Util.AddOrCreateComponentObject<T>(PrjRootObj, name, initialAction);
-        public T GetOrCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => runtime.Util.GetOrCreateComponentObject<T>(PrjRootObj, name, initialAction);
-        public T ReCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => runtime.Util.ReCreateComponentObject<T>(PrjRootObj, name, initialAction);
-        public T CreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => runtime.Util.CreateComponentObject<T>(PrjRootObj, name, initialAction);
+        public T AddOrCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.AddOrCreateComponentObject<T>(PrjRootObj, name, initialAction);
+        public T GetOrCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.GetOrCreateComponentObject<T>(PrjRootObj, name, initialAction);
+        public T ReCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.ReCreateComponentObject<T>(PrjRootObj, name, initialAction);
+        public T CreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.CreateComponentObject<T>(PrjRootObj, name, initialAction);
     }
 }
 #endif

@@ -6,9 +6,9 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
-using static com.github.pandrabox.pandravase.runtime.Util;
+using static com.github.pandrabox.pandravase.editor.Util;
 
-namespace com.github.pandrabox.pandravase.runtime
+namespace com.github.pandrabox.pandravase.editor
 {
     public class PanCapture : IDisposable
     {

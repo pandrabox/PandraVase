@@ -10,7 +10,7 @@ using System.Linq;
 using UnityEditor;
 using nadena.dev.ndmf;
 
-namespace com.github.pandrabox.pandravase.runtime
+namespace com.github.pandrabox.pandravase.editor
 {
     public static class Util
     {
