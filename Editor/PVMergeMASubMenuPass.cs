@@ -84,7 +84,7 @@ namespace com.github.pandrabox.pandravase.editor
                 {
                     List<GameObject> objects = pair.Value;
                     Transform parent = objects[0].transform; 
-                    for (int i = 1; i < objects.Count; i++)
+                    for (int i = objects.Count-1; i > 0; i--)
                     {
                         Transform[] children = objects[i].transform.GetComponentsInChildren<Transform>();
                         foreach (Transform child in children)
