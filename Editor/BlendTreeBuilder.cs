@@ -65,10 +65,10 @@ namespace com.github.pandrabox.pandravase.editor
             TargetObject = prj.CreateObject($@"PMB_{Name}");
             BuildingTrees = new List<BlendTree>() { null, new BlendTree() };
             RootTree = BuildingTrees[1];
-            AssetDatabase.CreateAsset(RootTree, $@"{TmpFolder}{thisTreeName}.asset");
             RootTree.name = Name;
             RootTree.blendType = BlendTreeType.Direct;
-            
+            OutpAsset(RootTree);
+
             CurrentNum = 1;
             Prj = prj;
         }

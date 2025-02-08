@@ -302,24 +302,12 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (_buildPath != null)
             {
-                AssetDatabase.SaveAssets(); // AnimatorController の変更を保存
-                AssetDatabase.Refresh();    // アセットデータベースをリフレッシュ
-                LowLevelDebugPrint($@"Rebuild to {_buildPath}"); // リビルドしたことを通知
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
             }
             else
             {
-                if (buildPath != null)
-                {
-                    _buildPath = buildPath;
-                }
-                else
-                {
-                    _buildPath = $@"Assets/Pan/Temp/{_animatorName}_{Guid.NewGuid()}.controller";
-                }
-                var dirPath = _buildPath.Substring(0, _buildPath.LastIndexOf("/") + 1);
-                CreateDir(dirPath);
-                AssetDatabase.CreateAsset(_ac, _buildPath);
-                LowLevelDebugPrint($@"Build to {_buildPath}");
+                OutpAsset(_ac, _buildPath);
             }
             return _ac;
         }

@@ -107,7 +107,7 @@ namespace com.github.pandrabox.pandravase.editor
         public static string OutpAsset(UnityEngine.Object asset, string path = "", bool debugOnly = false)
         {
             if (debugOnly && !PDEBUGMODE) return null;
-            if (path == "") path = TmpFolder;
+            if (path == "" || path==null) path = TmpFolder;
             var UnityDirPath = CreateDir(path);
             if (UnityDirPath == null)
             {
@@ -117,30 +117,6 @@ namespace com.github.pandrabox.pandravase.editor
 
             var assetPath = AssetSavePath(asset, path);
             AssetDatabase.CreateAsset(asset, assetPath);
-            //var absAssetPath = GetAbsolutePath(assetPath);
-
-            //if (path.Contains("Packages"))
-            //{
-            //    using (var tmpDir = new TemporaryAssetFolder())
-            //    {
-            //        var tmpAssetPath = GetUnityPath(AssetSavePath(asset, tmpDir.FolderPath));
-            //        AssetDatabase.CreateAsset(asset, tmpAssetPath);
-            //        var absTmpAssetPath = GetAbsolutePath(tmpAssetPath);
-            //        try
-            //        {
-            //            File.Move(absTmpAssetPath, absAssetPath);
-            //        }
-            //        catch
-            //        {
-            //            LowLevelDebugPrint($@"データ保存に保存しました：{absAssetPath}", false, LogType.Error);
-            //            throw;
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    AssetDatabase.CreateAsset(asset, assetPath);
-            //}
 
             return assetPath;
         }
@@ -161,7 +137,8 @@ namespace com.github.pandrabox.pandravase.editor
                 { typeof(Material), ".mat" },
             };
             string extension = extensionMap.TryGetValue(asset.GetType(), out string e) ? e : ".asset";
-            return Path.Combine(path, fileName + extension);
+            string guid = path==TmpFolder ? "_" + Guid.NewGuid().ToString() : "";
+            return Path.Combine(path, fileName + guid + extension);
         }
 
         /// <summary>

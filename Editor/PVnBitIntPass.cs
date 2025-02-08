@@ -54,7 +54,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         private void CreateDecoder()
         {
-            BlendTreeBuilder bb = new BlendTreeBuilder(_prj, false, "Decoder", noSuffix : true);
+            BlendTreeBuilder bb = new BlendTreeBuilder(_prj, false, "Decoder");
             bb.RootDBT(() =>
             {
                 foreach (var tgtp in _nBitInts) // 各コンポーネントのループ

@@ -182,7 +182,6 @@ namespace com.github.pandrabox.pandravase.editor
         public string DebugOutp(UnityEngine.Object asset, string path = "")
         {
             if (!PDEBUGMODE) return null;
-            if (path == "") path = TmpFolder;
             return OutpAsset(asset, path, true);
         }
 
