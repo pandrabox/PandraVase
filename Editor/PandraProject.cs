@@ -35,7 +35,7 @@ namespace com.github.pandrabox.pandravase.editor
         public string WorkFolder => $@"{ProjectFolder}Work/";
         public string VaseFolder => "Packages/com.github.pandrabox.pandravase/";
         public string VaseDebugFolder => $@"{VaseFolder}Debug/";
-        public string Suffix => $@"Pan/{ProjectName}/";
+        public string Suffix => EnableSuffix ? $@"Pan/{ProjectName}/" : "";
         public string PrjRootObjName => $@"{ProjectName}_PrjRootObj";
         public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
         public int PlayableIndex (VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
@@ -43,6 +43,7 @@ namespace com.github.pandrabox.pandravase.editor
         public bool IsVPM => ProjectType == ProjectTypes.VPM;
         public string PackageJsonPath => IsVPM ? $@"{ProjectFolder}package.json" : null;
         public string VPMVersion => IsVPM ? GetVPMVer() : null;
+        public bool EnableSuffix = false;
 
 
 
@@ -70,6 +71,15 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 ProjectFolder = $@"{RootDir_VPM}{VPMDomainNameSuffix}{ProjectName.ToLower()}/";
             }
+        }
+
+        /// <summary>
+        /// EnableSuffixを切り替える
+        /// </summary>
+        public PandraProject SetSuffixMode(bool mode)
+        {
+            EnableSuffix = mode;
+            return this;
         }
 
         /// <summary>
@@ -172,7 +182,7 @@ namespace com.github.pandrabox.pandravase.editor
         public string DebugOutp(UnityEngine.Object asset, string path = "")
         {
             if (!PDEBUGMODE) return null;
-            if (path == "") path = DebugFolder;
+            if (path == "") path = TmpFolder;
             return OutpAsset(asset, path, true);
         }
 
