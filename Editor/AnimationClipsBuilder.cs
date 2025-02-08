@@ -19,6 +19,7 @@ namespace com.github.pandrabox.pandravase.editor
             //On,Offのサンプル
             ab.CreateToggleAnim("Armature/Hips/Acc"); // これは省略することもできます
             AnimationClip onAnim = ab.OnAnim("Armature/Hips/Acc"); //上を省略すると、ここで生成して返します。生成順の問題でDebugOutpは失敗します　（DebugモードではOutp時にファイル出力します）
+            //////------もはや事前宣言は不要になりました(20250209)---------///////////
             AnimationClip offAnim = ab.OffAnim("Armature/Hips/Acc");
 
             //AAPのサンプル
@@ -141,7 +142,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 CreateToggleAnim(relativePath);
                 clip = Outp(name);
-                Prj.DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。DebugSave対象外です。");
+                //Prj.DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。DebugSave対象外です。"); 埋め込むようにしたので大丈夫
             }
             return clip;
         }
@@ -180,7 +181,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 CreateAAP(args);
                 clip = Outp(name);
-                Prj.DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。DebugSave対象外です。");
+                //Prj.DebugPrint($@"ToggleAnim({name})を未定義で呼び出したためインスタント生成しました。DebugSave対象外です。");埋め込むようにしたので大丈夫
             }
             return clip;
         }
