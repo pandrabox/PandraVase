@@ -36,13 +36,7 @@ namespace com.github.pandrabox.pandravase.editor
             // ターゲットの取得
             PVReplacePlayable[] components = _prj.RootObject.GetComponentsInChildren<PVReplacePlayable>(true);
 
-            //なければ終了
-            if (components.Length == 0)
-            {
-                _prj.DebugPrint("NothingToDo");
-                return;
-            }
-            _prj.DebugPrint("SomethingToDo");
+            if (components.Length == 0) return;
 
             //重複してたら警告
             var duplicateLayerTypes = components.GroupBy(c => c.LayerType).Where(g => g.Count() > 1).Select(g => g.Key);
