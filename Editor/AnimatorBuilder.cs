@@ -39,6 +39,7 @@ namespace com.github.pandrabox.pandravase.editor
             _ac = new AnimatorController();
             _clipsBuilder = new AnimationClipsBuilder();
             _ac.name = animatorName;
+            Build();
             AddAnimatorParameter("Pan/One", 1);
             AddAnimatorParameter("__ModularAvatarInternal/One", 1);
             AddAnimatorParameter("Pan/Dummy");
@@ -180,10 +181,17 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public AnimatorBuilder AddState(string name, Motion motion = null, bool nullMotion=false)
         {
-            if (motion == null && !nullMotion) motion = DummyClip;
             _currentState = _currentStateMachine.AddState(name, NextStatePos());
             _currentState.writeDefaultValues = true;
-            if (motion != null) _currentState.motion = motion;
+            SetMotion(nullMotion ? null : motion ?? DummyClip);
+            return this;
+        }
+
+        public AnimatorBuilder SetMotion(Motion motion)
+        {
+            if (motion == null) return this;
+            _currentState.motion = motion;
+            AddObjectToAssetSafe(motion, _ac);
             return this;
         }
 
@@ -307,7 +315,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             else
             {
-                OutpAsset(_ac, _buildPath);
+                _buildPath = OutpAsset(_ac, _buildPath);
             }
             return _ac;
         }
