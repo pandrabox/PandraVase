@@ -53,12 +53,10 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// BlendTreeをビルドする
         /// </summary>
-        /// <param name="attachObject">ビルドしたBlendTreeをアタッチするGameObject</param>
-        /// <param name="isAbsolute">パスモード</param>
-        /// <param name="relativeRoot">Relative時のルートパス</param>
-        /// <param name="suffix">パラメータ・レイヤ名などに使う接頭語</param>
-        /// <param name="thisTreeName">ビルドするBlendTreeにつける名称</param>
-        /// <param name="workFolder">プロジェクトのルートフォルダ</param>
+        /// <param name="prj">PandraProject</param>
+        /// <param name="isAbsolute">絶対かどうか</param>
+        /// <param name="thisTreeName">名称</param>
+        /// <param name="relativeRoot">相対ルート</param>
         public BlendTreeBuilder(PandraProject prj, bool isAbsolute, string thisTreeName, GameObject relativeRoot = null)
         {
             IsAbsolute = isAbsolute;
@@ -67,8 +65,10 @@ namespace com.github.pandrabox.pandravase.editor
             TargetObject = prj.CreateObject($@"PMB_{Name}");
             BuildingTrees = new List<BlendTree>() { null, new BlendTree() };
             RootTree = BuildingTrees[1];
+            AssetDatabase.CreateAsset(RootTree, $@"{TmpFolder}{thisTreeName}.asset");
             RootTree.name = Name;
             RootTree.blendType = BlendTreeType.Direct;
+            
             CurrentNum = 1;
             Prj = prj;
         }
@@ -82,7 +82,9 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public void Apply()
         {
-            Prj.DebugOutp(RootTree);
+            //Prj.DebugOutp(RootTree);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
             PVPanMergeBlendTree PanMBT = TargetObject.AddComponent<PVPanMergeBlendTree>();
             PanMBT.BlendTree = RootTree;
             if (IsAbsolute) PanMBT.PathMode = MergeAnimatorPathMode.Absolute;
@@ -226,7 +228,7 @@ namespace com.github.pandrabox.pandravase.editor
         public void AddD(Action act = null) => ChildSet(BlendTreeType.Direct, null, null, null, act);
         public void Add1D(string ThresholdName, Action act) => ChildSet(BlendTreeType.Simple1D, ThresholdName, null, null, act);
         public void Add2D(string ThresholdName, string ThresholdNameY, Action act) => ChildSet(BlendTreeType.SimpleDirectional2D, ThresholdName, ThresholdNameY, null, act);
-        public void AddAAP(params object[] args) => AddMotion(new AnimationClipsBuilder(Prj.Suffix).AAP(args));
+        public void AddAAP(params object[] args) => AddMotion(new AnimationClipsBuilder(Prj).AAP(args));
         public void AddMotion(string motionPath) => AddMotion(Prj.LoadMotion(motionPath));
         public void AddMotion(Motion motionClip) => ChildSet(null, null, null, motionClip, null);
         public void ChildSet(BlendTreeType? treeType, string thresholdName, string thresholdNameY, Motion motionClip, Action act)
@@ -293,6 +295,7 @@ namespace com.github.pandrabox.pandravase.editor
             CurrentTree.blendType = ChildTreeType ?? 0;
             if (ChildTreeType != BlendTreeType.Direct) CurrentTree.blendParameter = ChildThresholdName;
             if (ChildTreeType == BlendTreeType.SimpleDirectional2D) CurrentTree.blendParameterY = ChildThresholdNameY;
+            //AddObjectToAssetSafe(CurrentTree, RootTree);
         }
 
         /// <summary>
@@ -303,6 +306,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (CurrentType == BlendTreeType.Simple1D) CurrentTree.AddChild(ChildMotionClip, ParentThreshold);
             if (CurrentType == BlendTreeType.SimpleDirectional2D) CurrentTree.AddChild(ChildMotionClip, new Vector2(ParentThreshold, ParentThresholdY));
             if (CurrentType == BlendTreeType.Direct) AddDirectChild(CurrentTree, ChildMotionClip, ParentDirectParameterName);
+            AddObjectToAssetSafe(ChildMotionClip, RootTree);
         }
 
         /// <summary>
