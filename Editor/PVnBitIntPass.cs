@@ -88,6 +88,7 @@ namespace com.github.pandrabox.pandravase.editor
                 foreach(var tgt in tgtp.nBitInts) // コンポーネントに複数定義されているnBitIntのループ
                 {
                     if (tgt == null || tgt.TxName == null || tgt.TxName.Length == 0 || tgt.RxName == null || tgt.RxName.Length == 0 || tgt.Bit == 0) continue;
+                    ab.AddAnimatorParameter(tgt.RxName); //Encode処理ではいらないのだが、Decode側に追加機能がないので確認用に定義
                     ab.AddSubStateMachine(tgt.TxName);
                     for (var i = 0; i < 1 << tgt.Bit; i++) // 1つのnBitIntをFlashEncodeする1Stateのループ
                     {
