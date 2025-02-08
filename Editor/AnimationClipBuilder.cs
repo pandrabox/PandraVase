@@ -17,7 +17,7 @@ namespace com.github.pandrabox.pandravase.editor
     {
         private AnimationClip _clip;
         private EditorCurveBinding _curveBinding;
-
+        
         /// <summary>
         /// 単体のAnimationClipを生成する。基本的にはAnimationClipsBuilderから呼び出してください
         /// </summary>
@@ -55,6 +55,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>this</returns>
         public AnimationClipBuilder Liner(float time1, float val1, float time2, float val2)
         {
+            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
             AnimationCurve curve = AnimationCurve.Linear(time1, val1, time2, val2);
             AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
             return this;
@@ -67,6 +68,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>this</returns>
         public AnimationClipBuilder Smooth(params float[] keyPairs)
         {
+            if(_curveBinding==null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
             var keys = new List<Keyframe>();
             for (int i = 0; i < keyPairs.Length - 1; i += 2)
             {
@@ -85,6 +87,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>this</returns>
         public AnimationClipBuilder Const2F(float val)
         {
+            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
             AnimationCurve curve = AnimationCurve.Constant(0, 1 / FPS, val);
             AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
             return this;

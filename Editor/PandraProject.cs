@@ -35,7 +35,6 @@ namespace com.github.pandrabox.pandravase.editor
         public string WorkFolder => $@"{ProjectFolder}Work/";
         public string VaseFolder => "Packages/com.github.pandrabox.pandravase/";
         public string VaseDebugFolder => $@"{VaseFolder}Debug/";
-        public string TmpFolder => $@"Assets/Temp/";
         public string Suffix => $@"Pan/{ProjectName}/";
         public string PrjRootObjName => $@"{ProjectName}_PrjRootObj";
         public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
@@ -94,6 +93,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (ContainsFirstString(parameterName, new string[] { "ONEf", "PBTB_CONST_1", ONEPARAM })) res = ONEPARAM;
             else if (ContainsFirstString(parameterName, new string[] { "GestureRight", "GestureLeft", "GestureRightWeight", "GestureLeftWeight", "IsLocal", "InStation", "Seated", "VRMode" })) res = parameterName;
             else if (parameterName.StartsWith("Env/")) res = parameterName;
+            else if (parameterName.StartsWith("Pan/")) res = parameterName;
             else if (ContainsFirstString(parameterName, new string[] { "Time", "ExLoaded", "IsMMD", "IsNotMMD", "IsLocal", "FrameTime" })) res = $@"Env/{parameterName}";
             else if (parameterName.Length > 0 && parameterName[0] == '$') res = parameterName.Substring(1);
             else res = $@"{Suffix}{parameterName}";

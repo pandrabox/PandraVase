@@ -86,6 +86,10 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>クリップ</returns>
         public AnimationClip Outp(string clipName)
         {
+            if (!AnimationClipBuilders.ContainsKey(clipName))
+            {
+                return null;
+            }
             return AnimationClipBuilders[clipName].Outp();
         }
 
@@ -152,7 +156,14 @@ namespace com.github.pandrabox.pandravase.editor
             var ab = Clip(AAPName(args));
             for (int i = 0; i < args.Length; i += 2)
             {
-                ab.Bind("", typeof(Animator), $@"{args[i]}").Const2F((float)args[i + 1]);
+                if (args[i + 1] is IConvertible)
+                {
+                    ab.Bind("", typeof(Animator), $@"{args[i]}").Const2F(Convert.ToSingle(args[i + 1]));
+                }
+                else
+                {
+                    throw new InvalidCastException($"The value for {args[i]} cannot be converted to float.");
+                }
             }
         }
 

@@ -21,6 +21,7 @@ namespace com.github.pandrabox.pandravase.editor
         public static string RootDir_VPM = "Packages/";
         public static string RootDir_Asset = "Assets/Pan/";
         public static string VPMDomainNameSuffix = "com.github.pandrabox.";
+        public static string TmpFolder = $@"{RootDir_Asset}Temp/";
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         public const string DIRSEPARATOR = "\\";
 #else
@@ -36,6 +37,8 @@ namespace com.github.pandrabox.pandravase.editor
         public static void SetDebugMode(bool mode)
         {
             PDEBUGMODE = mode;
+            DeleteFolder(TmpFolder);
+            AssetDatabase.Refresh();
         }
 
         public static void LowLevelDebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
