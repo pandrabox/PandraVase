@@ -107,7 +107,7 @@ namespace com.github.pandrabox.pandravase.editor
         public static string OutpAsset(UnityEngine.Object asset, string path = "", bool debugOnly = false)
         {
             if (debugOnly && !PDEBUGMODE) return null;
-            if (path == "") path = "Assets";
+            if (path == "") path = TmpFolder;
             var UnityDirPath = CreateDir(path);
             if (UnityDirPath == null)
             {
@@ -116,34 +116,33 @@ namespace com.github.pandrabox.pandravase.editor
             }
 
             var assetPath = AssetSavePath(asset, path);
-            var absAssetPath = GetAbsolutePath(assetPath);
+            AssetDatabase.CreateAsset(asset, assetPath);
+            //var absAssetPath = GetAbsolutePath(assetPath);
 
-            if (path.Contains("Packages"))
-            {
-                using (var tmpDir = new TemporaryAssetFolder())
-                {
-                    var tmpAssetPath = GetUnityPath(AssetSavePath(asset, tmpDir.FolderPath));
-                    AssetDatabase.CreateAsset(asset, tmpAssetPath);
-                    var absTmpAssetPath = GetAbsolutePath(tmpAssetPath);
-                    try
-                    {
-                        File.Move(absTmpAssetPath, absAssetPath);
-                    }
-                    catch
-                    {
-                        LowLevelDebugPrint($@"データ保存に保存しました：{absAssetPath}", false, LogType.Error);
-                        throw;
-                    }
-                }
-            }
-            else
-            {
-                AssetDatabase.CreateAsset(asset, assetPath);
-            }
+            //if (path.Contains("Packages"))
+            //{
+            //    using (var tmpDir = new TemporaryAssetFolder())
+            //    {
+            //        var tmpAssetPath = GetUnityPath(AssetSavePath(asset, tmpDir.FolderPath));
+            //        AssetDatabase.CreateAsset(asset, tmpAssetPath);
+            //        var absTmpAssetPath = GetAbsolutePath(tmpAssetPath);
+            //        try
+            //        {
+            //            File.Move(absTmpAssetPath, absAssetPath);
+            //        }
+            //        catch
+            //        {
+            //            LowLevelDebugPrint($@"データ保存に保存しました：{absAssetPath}", false, LogType.Error);
+            //            throw;
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    AssetDatabase.CreateAsset(asset, assetPath);
+            //}
 
-            if (File.Exists(absAssetPath)) return assetPath;
-            LowLevelDebugPrint($@"アセット{assetPath}の生成に失敗しました");
-            return null;
+            return assetPath;
         }
 
         /// <summary>
@@ -532,6 +531,57 @@ namespace com.github.pandrabox.pandravase.editor
             }
         }
 
+        /// <summary>
+        /// 安全なAddObjectToAsset
+        /// </summary>
+        /// <param name="objToAdd"></param>
+        /// <param name="targetAsset"></param>
+        public static void AddObjectToAssetSafe(UnityEngine.Object objToAdd, UnityEngine.Object targetAsset)
+        {
+            // ターゲットアセットがnullの場合、エラー
+            if (targetAsset == null)
+            {
+                Debug.LogError("Target asset is null.");
+                return;
+            }
+
+            // 追加するオブジェクトがnullの場合、エラー
+            if (objToAdd == null)
+            {
+                Debug.LogError("Object to add is null.");
+                return;
+            }
+
+            // ターゲットアセットの子オブジェクトをすべて取得
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            var path = AssetDatabase.GetAssetPath(targetAsset);
+            UnityEngine.Object[] existingObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(path);
+
+            // 既存のオブジェクトの中に同じものが存在するか確認
+            bool alreadyExists = false;
+            foreach (UnityEngine.Object existingObj in existingObjects)
+            {
+                if (existingObj == objToAdd) // オブジェクトの参照が一致するかどうかを比較
+                {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            // 同じオブジェクトが存在しない場合のみ追加
+            if (!alreadyExists)
+            {
+                AssetDatabase.AddObjectToAsset(objToAdd, targetAsset);
+                AssetDatabase.SaveAssets(); // 変更を保存
+                AssetDatabase.Refresh();    // アセットデータベースを更新
+                Debug.Log("Object added to asset.");
+            }
+            else
+            {
+                Debug.Log("Object already exists in asset.");
+            }
+        }
 
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
         public static PandraProject VaseProject(GameObject child) => VaseProject(GetAvatarDescriptor(child));
