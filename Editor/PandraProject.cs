@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using VRC.SDK3.Avatars.Components;
 using System.Linq;
 using System.Text.RegularExpressions;
+using nadena.dev.modular_avatar.core;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -36,6 +37,7 @@ namespace com.github.pandrabox.pandravase.editor
         public string VaseFolder => "Packages/com.github.pandrabox.pandravase/";
         public string VaseDebugFolder => $@"{VaseFolder}Debug/";
         public string Suffix => EnableSuffix ? $@"Pan/{ProjectName}/" : "";
+        public string TmpFolder => Util.TmpFolder;
         public string PrjRootObjName => $@"{ProjectName}_PrjRootObj";
         public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
         public int PlayableIndex (VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
@@ -44,6 +46,14 @@ namespace com.github.pandrabox.pandravase.editor
         public string PackageJsonPath => IsVPM ? $@"{ProjectFolder}package.json" : null;
         public string VPMVersion => IsVPM ? GetVPMVer() : null;
         public bool EnableSuffix = false;
+        public Animator Animator => RootObject?.GetComponent<Animator>();
+        public Transform HumanoidTransform(HumanBodyBones b) => Animator?.GetBoneTransform(b);
+        public GameObject HumanoidGameObject(HumanBodyBones b) => HumanoidTransform(b)?.gameObject;
+        public AvatarObjectReference HumanoidObjectReference(HumanBodyBones b) => GetObjectReference(HumanoidGameObject(b));
+        public Transform ArmatureTransform => HumanoidTransform(HumanBodyBones.Hips).parent;
+        public GameObject ArmatureGameObject => ArmatureTransform.gameObject;
+        public AvatarObjectReference ArmatureObjectReference => GetObjectReference(ArmatureGameObject);
+
 
 
 
