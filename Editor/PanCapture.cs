@@ -189,26 +189,6 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
         /// <summary>
-        /// GameObjectのBoundsを取得
-        /// </summary>
-        /// <param name="target">対象</param>
-        /// <returns></returns>
-        private Bounds GetObjectBounds(GameObject target)
-        {
-            Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
-            if (renderers.Length == 0)
-            {
-                return new Bounds(target.transform.position, Vector3.zero);
-            }
-            Bounds bounds = new Bounds(renderers[0].bounds.center, renderers[0].bounds.size);
-            foreach (Renderer renderer in renderers)
-            {
-                bounds.Encapsulate(renderer.bounds);
-            }
-            return bounds;
-        }
-
-        /// <summary>
         /// Boundsのセンターを維持し、最大の辺に合わせた立方体にする
         /// </summary>
         /// <param name="bounds"></param>

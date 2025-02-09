@@ -9,6 +9,7 @@ using VRC.SDK3.Avatars.Components;
 using System.Linq;
 using UnityEditor;
 using nadena.dev.ndmf;
+using nadena.dev.modular_avatar.core;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -56,6 +57,10 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public static VRCAvatarDescriptor TopAvatar => GameObject.FindObjectOfType<VRCAvatarDescriptor>();
 
+        /// <summary>
+        /// 全アバターのDescriptor
+        /// </summary>
+        public static VRCAvatarDescriptor[] AllAvatar => GameObject.FindObjectsOfType<VRCAvatarDescriptor>();
 
         /////////////////////////上方向 Component探索/////////////////////////
         /// <summary>
@@ -558,6 +563,38 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 Debug.Log("Object already exists in asset.");
             }
+        }
+
+
+        /// <summary>
+        /// GameObjectのBoundsを取得
+        /// </summary>
+        /// <param name="target">対象</param>
+        /// <returns></returns>
+        public static Bounds GetObjectBounds(GameObject target)
+        {
+            Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0)
+            {
+                return new Bounds(target.transform.position, Vector3.zero);
+            }
+            Bounds bounds = new Bounds(renderers[0].bounds.center, renderers[0].bounds.size);
+            foreach (Renderer renderer in renderers)
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+            return bounds;
+        }
+
+        /// <summary>
+        /// TransformをAvatarObjectReferenceに変換
+        /// </summary>
+        public static AvatarObjectReference GetObjectReference(Transform t) => GetObjectReference(t.gameObject);
+        public static AvatarObjectReference GetObjectReference(GameObject go)
+        {
+            var r = new AvatarObjectReference(); 
+            r.Set(go); 
+            return r;
         }
 
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
