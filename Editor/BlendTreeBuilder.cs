@@ -57,12 +57,13 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="isAbsolute">絶対かどうか</param>
         /// <param name="thisTreeName">名称</param>
         /// <param name="relativeRoot">相対ルート</param>
-        public BlendTreeBuilder(PandraProject prj, bool isAbsolute, string thisTreeName, GameObject relativeRoot = null)
+        /// <param name="targetObj">アタッチ先</param>
+        public BlendTreeBuilder(PandraProject prj, bool isAbsolute, string thisTreeName, GameObject relativeRoot = null, GameObject targetObj=null)
         {
             IsAbsolute = isAbsolute;
             RelativeRoot = relativeRoot;
             Name = SanitizeStr(thisTreeName);
-            TargetObject = prj.CreateObject($@"PMB_{Name}");
+            TargetObject = targetObj ?? prj.CreateObject($@"PMB_{Name}");
             BuildingTrees = new List<BlendTree>() { null, new BlendTree() };
             RootTree = BuildingTrees[1];
             RootTree.name = Name;

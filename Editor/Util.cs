@@ -534,6 +534,13 @@ namespace com.github.pandrabox.pandravase.editor
                 return;
             }
 
+            // すでにアセットの一部である場合、処理を中断
+            if (AssetDatabase.Contains(objToAdd))
+            {
+                Debug.Log("Object is already part of an asset.");
+                return;
+            }
+
             // ターゲットアセットの子オブジェクトをすべて取得
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
