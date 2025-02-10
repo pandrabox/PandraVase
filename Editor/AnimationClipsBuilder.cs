@@ -52,6 +52,8 @@ namespace com.github.pandrabox.pandravase.editor
     {
         public Dictionary<string, AnimationClipBuilder> AnimationClipBuilders;
         public PandraProject Prj;
+        private string _currentCripName;
+        public AnimationClipBuilder CurrentClip => AnimationClipBuilders[_currentCripName];
 
         /// <summary>
         /// 複数のAnimationClipを生成・ロード・保存するクラス
@@ -77,6 +79,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 AnimationClipBuilders[clipName] = new AnimationClipBuilder(clipName);
             }
+            _currentCripName = clipName;
             return AnimationClipBuilders[clipName];
         }
 
