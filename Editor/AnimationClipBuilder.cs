@@ -114,5 +114,51 @@ namespace com.github.pandrabox.pandravase.editor
             AnimationUtility.SetAnimationClipSettings(_clip, settings);
             return this;
         }
+
+        /// <summary>
+        /// n番目のキーの接線をFlatに設定
+        /// </summary>
+        public AnimationClipBuilder SetFlat(int keyIndex)
+        {
+            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。 事前に「Bind」してください。");
+            AnimationCurve curve = AnimationUtility.GetEditorCurve(_clip, _curveBinding);
+            if (curve == null || keyIndex < 0 || keyIndex >= curve.length) return this;
+
+            Keyframe key = curve.keys[keyIndex];
+            key.inTangent = 0f;
+            key.outTangent = 0f;
+            curve.MoveKey(keyIndex, key);
+
+            AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
+            return this;
+        }
+
+        /// <summary>
+        /// 全てのキーをフラット
+        /// </summary>
+        public AnimationClipBuilder SetAllFlat()
+        {
+            AnimationCurve curve = AnimationUtility.GetEditorCurve(_clip, _curveBinding);
+            for (int i = 0; i < curve.length; i++)
+            {
+                SetFlat(i);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// n番目のキーの接線をAutoに設定
+        /// </summary>
+        public AnimationClipBuilder SetAuto(int keyIndex)
+        {
+            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。 事前に「Bind」してください。");
+            AnimationCurve curve = AnimationUtility.GetEditorCurve(_clip, _curveBinding);
+            if (curve == null || keyIndex < 0 || keyIndex >= curve.length) return this;
+
+            curve.SmoothTangents(keyIndex, 0);
+
+            AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
+            return this;
+        }
     }
 }
