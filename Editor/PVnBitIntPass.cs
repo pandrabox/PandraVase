@@ -81,6 +81,9 @@ namespace com.github.pandrabox.pandravase.editor
         {
             AnimatorBuilder ab= new AnimatorBuilder("Encoder");
             ab.AddLayer("PVnBitInt/Encode").AddState("Local").TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, 0.5f, "IsLocal");
+            //ab.AddLayer("PVnBitInt/Encode").AddState("LocalClear").TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, 0.5f, "IsLocal");
+            //AnimatorState localClear = ab.CurrentState;
+            //ab.AddState("Local").TransToCurrent(localClear).MoveInstant();
             AnimatorState localRoot = ab.CurrentState;
             foreach (var tgtp in _nBitInts) // 各コンポーネントのループ
             {
@@ -98,7 +101,7 @@ namespace com.github.pandrabox.pandravase.editor
                         {
                             ab.TransToCurrent(localRoot);
                             ab.AddCondition(AnimatorConditionMode.Greater, i - .5f, tgt.TxName);
-                            ab.AddCondition(AnimatorConditionMode.Less, i + .5f, tgt.TxName);
+                            ab.AddCondition(AnimatorConditionMode.Less, i + .50001f, tgt.TxName);
                             var bit = (i >> j) & 1;
                             if (bit == 0) {
                                 ab.AddCondition(AnimatorConditionMode.Greater, .5f, $@"{tgt.TxName}/b{j}");
@@ -111,8 +114,12 @@ namespace com.github.pandrabox.pandravase.editor
                             }
                         }
                     }
-                    for (int j = 0; j < tgt.Bit; j++) //各bitのパラメータ定義
+                    for (int j = 0; j < tgt.Bit; j++) //各bitの処理
                     {
+                        ////初回0クリア
+                        //ab.ChangeCurrentState(localClear);
+                        //ab.SetParameterDriver($@"{tgt.TxName}/b{j}", 0);
+                        //パラメータ定義
                         var MAP = _prj.GetOrCreateComponentObject<ModularAvatarParameters>("EncorderParam", (x) => {
                             if (x.parameters == null) x.parameters = new List<ParameterConfig>();
                         });

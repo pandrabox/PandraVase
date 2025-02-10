@@ -196,6 +196,17 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
         /// <summary>
+        /// カレントステートを変更
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public AnimatorBuilder ChangeCurrentState(AnimatorState state)
+        {
+            _currentState = state;
+            return this;
+        }
+
+        /// <summary>
         /// アニメータパラメータを追加する。基本的にはAddConditionから自動追加される
         /// </summary>
         public AnimatorBuilder AddAnimatorParameter(string name, float defaultFloat = 0, AnimatorControllerParameterType type = AnimatorControllerParameterType.Float)
