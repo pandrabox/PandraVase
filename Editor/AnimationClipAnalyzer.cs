@@ -34,7 +34,7 @@ namespace com.github.pandrabox.pandravase.editor
                 foreach (EditorCurveBinding binding in curveBindings)
                 {
                     var type = binding.type.ToString().Replace("UnityEngine.", "").Replace("Animations.", "");
-                    sb.AppendLine($@"   .Bind(""{binding.path}"", ""{type}"", ""{binding.propertyName}"")");
+                    sb.AppendLine($@"   .Bind(""{binding.path}"", typeof({type}), ""{binding.propertyName}"")");
                     //AnimationCurve curve = AnimationUtility.GetEditorCurve(tgt, binding);
                     //for (var i = 0; i < curve.keys.Length; i++)
                     //{
