@@ -224,8 +224,9 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// レイヤを追加する
         /// </summary>
-        public AnimatorBuilder AddLayer(string name)
+        public AnimatorBuilder AddLayer(string name = null)
         {
+            if (name == null) name = _animatorName;
             var newStateMachine = new AnimatorStateMachine();
             SetCurrentStateMachine(newStateMachine);
             var layer = new AnimatorControllerLayer
@@ -334,22 +335,21 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// ビルドしアバターにアタッチ
         /// </summary>
-        public ModularAvatarMergeAnimator BuildAndAttach(PandraProject prj) => BuildAndAttach(prj.PrjRootObj);
+        public ModularAvatarMergeAnimator BuildAndAttach(PandraProject prj, bool fixWD=false) => BuildAndAttach(prj.PrjRootObj, fixWD);
 
         /// <summary>
         /// ビルドしアバターにアタッチ
         /// </summary>
-        public ModularAvatarMergeAnimator BuildAndAttach(GameObject tgt) => BuildAndAttach(tgt.transform);
+        public ModularAvatarMergeAnimator BuildAndAttach(Transform tgt, bool fixWD = false) => BuildAndAttach(tgt.transform, fixWD);
 
         /// <summary>
         /// ビルドしアバターにアタッチ
         /// </summary>
-        public ModularAvatarMergeAnimator BuildAndAttach(Transform tgt)
+        public ModularAvatarMergeAnimator BuildAndAttach(GameObject tgt, bool fixWD = false)
         {
-            return ReCreateComponentObject<ModularAvatarMergeAnimator>(tgt, _animatorName, (x) =>
-            {
-                x.animator = Build();
-            });
+            ModularAvatarMergeAnimator x = tgt.AddComponent<ModularAvatarMergeAnimator>();
+            x.animator = Build();
+            return x;
         }
 
         /// <summary>
