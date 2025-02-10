@@ -101,5 +101,18 @@ namespace com.github.pandrabox.pandravase.editor
         {
             return _clip;
         }
+
+        /// <summary>
+        /// ループを設定
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public AnimationClipBuilder SetLoop(bool key)
+        {
+            AnimationClipSettings settings = AnimationUtility.GetAnimationClipSettings(_clip);
+            settings.loopTime = key;
+            AnimationUtility.SetAnimationClipSettings(_clip, settings);
+            return this;
+        }
     }
 }
