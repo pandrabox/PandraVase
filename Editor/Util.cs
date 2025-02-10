@@ -13,6 +13,14 @@ using nadena.dev.modular_avatar.core;
 
 namespace com.github.pandrabox.pandravase.editor
 {
+    public enum Axis
+    {
+        X = 0,
+        Y = 1,
+        Z = 2,
+        W = 3,
+    }
+
     public static class Util
     {
         /////////////////////////Global/////////////////////////
