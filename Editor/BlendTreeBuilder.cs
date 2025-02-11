@@ -211,7 +211,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (ChildWait) Prj.DebugPrint("ChildWaitが設定されています。P命令を使ったらすぐにC命令をつかうべきです。", false);
             ParentTreeType = treeType;
-            ParentDirectParameterName = Prj.GetParameterName(directParameterName);
+            ParentDirectParameterName = GetParameterName(directParameterName);
             ParentThreshold = threshold;
             ParentThresholdY = thresholdY;
             ChildWait = true;
@@ -238,12 +238,13 @@ namespace com.github.pandrabox.pandravase.editor
             if (!ChildWait) Prj.DebugPrint($"ChildWaitが設定されていません。これが明確な意図に基づかない場合、P命令抜けの可能性が高いです。 \n {treeType},{thresholdName},{thresholdNameY},{motionClip}", false);
             ChildWait = false;
             ChildTreeType = treeType;
-            ChildThresholdName = Prj.GetParameterName(thresholdName);
-            ChildThresholdNameY = Prj.GetParameterName(thresholdNameY);
+            ChildThresholdName = GetParameterName(thresholdName);
+            ChildThresholdNameY = GetParameterName(thresholdNameY);
             ChildMotionClip = motionClip;
             ChildAct = act;
             MakeChild();
         }
+
 
         /// <summary>
         /// P命令、C命令でセットされた条件を元にBlendTreeの子を生成する
@@ -329,6 +330,18 @@ namespace com.github.pandrabox.pandravase.editor
                 Param(FromAAPMin).AddAAP(ToAAPName, ToAAPMin);
                 Param(FromAAPMax).AddAAP(ToAAPName, ToAAPMax);
             });
+        }
+
+        /// <summary>
+        /// パラメータ名を演算する
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private string GetParameterName(string name)
+        {
+            if (name != null && (name == Util.ONEPARAM || name.ToLower() == "pan/one" || name == "1")) return Util.ONEPARAM;
+            var p = Prj.GetParameterName(name);
+            return p;
         }
     }
 }
