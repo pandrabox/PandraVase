@@ -632,6 +632,20 @@ namespace com.github.pandrabox.pandravase.editor
         public static Vector3 CalcEulerRotationY(GameObject target, float angle) => CalcEulerRotation(target, new Vector3(0, angle, 0));
         public static Vector3 CalcEulerRotationZ(GameObject target, float angle) => CalcEulerRotation(target, new Vector3(0, 0, angle));
 
+        /// <summary>
+        /// Transformの直接の子を返す
+        /// </summary>
+        /// <returns></returns>
+        public static List<Transform> GetDirectChildren(GameObject parent) => GetDirectChildren(parent.transform);
+        public static List<Transform> GetDirectChildren(Transform parent)
+        {
+            List<Transform> children = new List<Transform>();
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                children.Add(parent.GetChild(i));
+            }
+            return children;
+        }
 
 
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
