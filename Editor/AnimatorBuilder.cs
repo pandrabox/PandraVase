@@ -24,6 +24,8 @@ namespace com.github.pandrabox.pandravase.editor
         private AnimatorStateMachine _currentStateMachine;
         private AnimatorState _currentState;
         private AnimatorStateTransition _currentTransition;
+        private AnimatorState _currentTransitionFrom,_currentTransitionTo;
+        private TransitionInfo _currentTransitionInfo;
         private Dictionary<AnimatorStateMachine, int> _stateCounts = new Dictionary<AnimatorStateMachine, int>();
         public AnimatorState CurrentState => _currentState;
         public AnimatorControllerLayer CurrentLayer => _currentLayer;
@@ -98,6 +100,9 @@ namespace com.github.pandrabox.pandravase.editor
             _currentTransition.hasFixedDuration = transitionInfo.FixedDuration;
             _currentTransition.duration = transitionInfo.TransitionDuration;
             _currentTransition.offset = transitionInfo.TransitionOffset;
+            _currentTransitionFrom = from;
+            _currentTransitionTo = to;
+            _currentTransitionInfo = transitionInfo;
             return this;
         }
 
@@ -109,8 +114,10 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// CurrentTransitionに遷移条件を定義　Andなら複数呼ぶ。Orなら新しくTransitionを定義する
         /// ここで条件に使ったパラメータは自動でアニメータパラメータとして定義される
+        /// roundTripがONだと逆方向のTransitionを自動で定義する(CurrentStateは維持、CurrentTransitionは移動)
+        ///     modeは自動で反転する。floatはless<->greaterのため丁度のとき問題があるかもしれない(作成時ユースケースがない為一旦放置)
         /// </summary>
-        public AnimatorBuilder AddCondition(AnimatorConditionMode mode, float threshold, string param)
+        public AnimatorBuilder AddCondition(AnimatorConditionMode mode, float threshold, string param, bool roundTrip=false)
         {
             var type = GetParameterTypes(mode);
             var parameter = _ac.parameters.FirstOrDefault(p => p.name == param);
@@ -126,6 +133,34 @@ namespace com.github.pandrabox.pandravase.editor
                 }
             }
             _currentTransition.AddCondition(mode, threshold, param);
+            if (roundTrip)
+            {
+                SetTransition(_currentTransitionTo, _currentTransitionFrom, _currentTransitionInfo);
+                if (mode == AnimatorConditionMode.If)
+                {
+                    AddCondition(AnimatorConditionMode.IfNot, threshold, param);
+                }
+                if (mode == AnimatorConditionMode.IfNot)
+                {
+                    AddCondition(AnimatorConditionMode.If, threshold, param);
+                }
+                if (mode == AnimatorConditionMode.Greater)
+                {
+                    AddCondition(AnimatorConditionMode.Less, threshold, param);
+                }
+                if (mode == AnimatorConditionMode.Less)
+                {
+                    AddCondition(AnimatorConditionMode.Greater, threshold, param);
+                }
+                if (mode == AnimatorConditionMode.Equals)
+                {
+                    AddCondition(AnimatorConditionMode.NotEqual, threshold, param);
+                }
+                if (mode == AnimatorConditionMode.NotEqual)
+                {
+                    AddCondition(AnimatorConditionMode.Equals, threshold, param);
+                }
+            }
             return this;
         }
 
