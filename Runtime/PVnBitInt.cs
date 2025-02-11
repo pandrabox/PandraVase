@@ -7,6 +7,35 @@ using VRC.SDKBase;
 using UnityEditor;
 using System.Collections.Generic;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// ****基本的にnBitSyncを使って下さい。こちらは後で消します****
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace com.github.pandrabox.pandravase.runtime
 {
     [DisallowMultipleComponent]

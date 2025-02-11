@@ -1,6 +1,36 @@
 ﻿/// floatをnBitで他のfloatに仮想同期する
 /// 注意：範囲外の値が入ると前の値のままになる
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// ****基本的にnBitSyncを使って下さい。こちらは後で消します****
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 using UnityEditor;
 using nadena.dev.modular_avatar.core;
 using UnityEngine;
