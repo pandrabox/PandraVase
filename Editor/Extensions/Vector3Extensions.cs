@@ -27,6 +27,11 @@ namespace com.github.pandrabox.pandravase.editor
             }
         }
 
+        public static Vector3 HadamardProduct(this Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+        }
+
         public static Vector3 SetAxis(this Vector3 vector, Axis axis, float value)
         {
             switch (axis)
