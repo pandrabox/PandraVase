@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿//#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -657,4 +657,4 @@ namespace com.github.pandrabox.pandravase.editor
         }
     }
 }
-#endif
+//#endif
