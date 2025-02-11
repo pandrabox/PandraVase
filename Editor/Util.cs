@@ -612,6 +612,28 @@ namespace com.github.pandrabox.pandravase.editor
             return r;
         }
 
+
+
+        /// <summary>
+        /// targetをrotationAngleで回転させた角度(Quaternion)を返す
+        /// </summary>
+        public static Quaternion CalcQuaternionRotation(GameObject target, Vector3 rotationAngle)
+        {
+            Quaternion currentRotation = target.transform.localRotation;
+            Quaternion deltaRotation = Quaternion.Euler(rotationAngle);
+            Quaternion newRotation = currentRotation * deltaRotation;
+            return newRotation;
+        }
+        public static Quaternion CalcQuaternionRotationX(GameObject target, float angle) => CalcQuaternionRotation(target, new Vector3(angle, 0, 0));
+        public static Quaternion CalcQuaternionRotationY(GameObject target, float angle) => CalcQuaternionRotation(target, new Vector3(0, angle, 0));
+        public static Quaternion CalcQuaternionRotationZ(GameObject target, float angle) => CalcQuaternionRotation(target, new Vector3(0, 0, angle));
+        public static Vector3 CalcEulerRotation(GameObject target, Vector3 rotationAngle) => CalcQuaternionRotation(target, rotationAngle).eulerAngles;
+        public static Vector3 CalcEulerRotationX(GameObject target, float angle) => CalcEulerRotation(target, new Vector3(angle, 0, 0));
+        public static Vector3 CalcEulerRotationY(GameObject target, float angle) => CalcEulerRotation(target, new Vector3(0, angle, 0));
+        public static Vector3 CalcEulerRotationZ(GameObject target, float angle) => CalcEulerRotation(target, new Vector3(0, 0, angle));
+
+
+
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
         public static PandraProject VaseProject(GameObject child) => VaseProject(GetAvatarDescriptor(child));
         public static PandraProject VaseProject(Transform child) => VaseProject(GetAvatarDescriptor(child));
