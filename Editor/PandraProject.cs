@@ -68,7 +68,7 @@ namespace com.github.pandrabox.pandravase.editor
         public PandraProject(Transform somethingAvatarParts, string projectName, ProjectTypes projectType) => Init(GetAvatarDescriptor(somethingAvatarParts), projectName, projectType);
         public PandraProject(GameObject somethingAvatarParts, string projectName, ProjectTypes projectType) => Init(GetAvatarDescriptor(somethingAvatarParts), projectName, projectType);
         public PandraProject(VRCAvatarDescriptor descriptor, string projectName, ProjectTypes projectType) => Init(descriptor, projectName, projectType);
-        private void Init(VRCAvatarDescriptor descriptor, string projectName, ProjectTypes projectType)
+        protected void Init(VRCAvatarDescriptor descriptor, string projectName, ProjectTypes projectType)
         {
             _descriptor = descriptor;
             ProjectName = projectName;
