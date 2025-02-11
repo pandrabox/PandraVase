@@ -93,7 +93,7 @@ namespace com.github.pandrabox.pandravase.editor
                     x.gameObject.AddComponent<ModularAvatarMenuInstaller>();
                     if (_parameterDef)
                     {
-                        _param = x.gameObject.AddComponent<ModularAvatarParameters>();
+                        _param = _prj.CreateComponentObject<ModularAvatarParameters>("MenuBuilderParam"); //既存ObjだとMergeで削除されるので作成
                         _param.parameters = new List<ParameterConfig>();
                     }
                 }
@@ -138,6 +138,7 @@ namespace com.github.pandrabox.pandravase.editor
             p.syncType = parameterSyncType;
             p.localOnly = localOnly;
             _param.parameters.Add(p);
+            _prj.DebugPrint($@"MenuBuildeはパラメータ{parameterName}({parameterSyncType},{defaultVal},{localOnly})を定義しました");
             return this;
         }
 
@@ -154,6 +155,8 @@ namespace com.github.pandrabox.pandravase.editor
             Transform parent = IsRoot ? _prj.PrjRootObj.transform : CurrentFolder;
             _currentMenu = CreateComponentObject<ModularAvatarMenuItem>(parent, menuName, (z) => x(z));
             _currentMenu.name = menuName;
+
+            _prj.DebugPrint($@"MenuBuildeはメニュー{menuName}を生成しました");
             return this;
         }
 
