@@ -12,6 +12,7 @@ using VRC.SDK3.Avatars.Components;
 using System.Linq;
 using System.Text.RegularExpressions;
 using nadena.dev.modular_avatar.core;
+using com.github.pandrabox.pandravase.runtime;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -169,6 +170,20 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
 
+        /// <summary>
+        /// nBitSyncを作成する
+        /// </summary>
+        /// <param name="txName">Sync Parameter Name</param>
+        /// <param name="Bit">Sync Bit</param>
+        /// <param name="syncMode">Mode</param>
+        /// <param name="hostDecode">Hostででコードするかどうか</param>
+        /// <param name="min">Mode=Custom時の最小</param>
+        /// <param name="max">Mode=Custom時の最大</param>
+        public void VirtualSync(string txName, int Bit, PVnBitSync.nBitSyncMode syncMode, bool hostDecode = false, float min = 0.0f, float max = 1.0f)
+        {
+            var s = CreateComponentObject<PVnBitSync>($@"VirtualSync{txName}");
+            s.Set(txName, Bit, syncMode, hostDecode, min, max);
+        }
 
         /////////////////////////DEBUG/////////////////////////
         /// <summary>

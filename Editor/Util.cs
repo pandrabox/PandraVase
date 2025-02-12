@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEditor;
 using nadena.dev.ndmf;
 using nadena.dev.modular_avatar.core;
+using com.github.pandrabox.pandravase.runtime;
 
 namespace com.github.pandrabox.pandravase.editor
 {

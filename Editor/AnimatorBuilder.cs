@@ -41,10 +41,10 @@ namespace com.github.pandrabox.pandravase.editor
             _ac = new AnimatorController();
             _clipsBuilder = new AnimationClipsBuilder();
             _ac.name = animatorName;
-            Build();
             AddAnimatorParameter("Pan/One", 1);
             AddAnimatorParameter("__ModularAvatarInternal/One", 1);
             AddAnimatorParameter("Pan/Dummy");
+            Build(); //実体がないとAddAssetできないので一度ビルド
         }
 
         /// <summary>
@@ -370,17 +370,9 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// ビルドしアバターにアタッチ
         /// </summary>
-        public ModularAvatarMergeAnimator BuildAndAttach(PandraProject prj, bool fixWD=false) => BuildAndAttach(prj.PrjRootObj, fixWD);
-
-        /// <summary>
-        /// ビルドしアバターにアタッチ
-        /// </summary>
-        public ModularAvatarMergeAnimator BuildAndAttach(Transform tgt, bool fixWD = false) => BuildAndAttach(tgt.transform, fixWD);
-
-        /// <summary>
-        /// ビルドしアバターにアタッチ
-        /// </summary>
-        public ModularAvatarMergeAnimator BuildAndAttach(GameObject tgt, bool fixWD = false)
+        public ModularAvatarMergeAnimator Attach(PandraProject prj, bool fixWD = false) => Attach(prj.CreateObject($@"Anim{_animatorName}"), fixWD);
+        public ModularAvatarMergeAnimator Attach(Transform tgt, bool fixWD = false) => Attach(tgt.transform, fixWD);
+        public ModularAvatarMergeAnimator Attach(GameObject tgt, bool fixWD = false)
         {
             ModularAvatarMergeAnimator x = tgt.AddComponent<ModularAvatarMergeAnimator>();
             x.animator = Build();

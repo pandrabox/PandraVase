@@ -40,15 +40,19 @@ namespace com.github.pandrabox.pandravase.editor
     public class BlendTreeBuilder
     {
         public List<BlendTree> BuildingTrees;
-        public BlendTree RootTree;
+        public BlendTree RootTree => BuildingTrees[1];
         public int CurrentNum = 0;
         public string NextName;
-        public bool IsAbsolute;
         public bool IsMMDSafe;
-        public GameObject RelativeRoot;
         public string Name;
-        public GameObject TargetObject;
-        public PandraProject Prj;
+        public int MaxNum => BuildingTrees.Count - 1;
+        public BlendTree GetTree(int n) => BuildingTrees[n];
+        public BlendTree CurrentTree => BuildingTrees[CurrentNum];
+        public BlendTreeType? CurrentType => CurrentTree?.blendType;
+        private string _suffix;
+        private string _buildedPath;
+        private string _thisTreeName;
+        private PandraProject _prj;
 
         /// <summary>
         /// BlendTreeをビルドする
@@ -58,38 +62,66 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="thisTreeName">名称</param>
         /// <param name="relativeRoot">相対ルート</param>
         /// <param name="targetObj">アタッチ先</param>
-        public BlendTreeBuilder(PandraProject prj, bool isAbsolute, string thisTreeName, GameObject relativeRoot = null, GameObject targetObj=null)
+        public BlendTreeBuilder(string thisTreeName, PandraProject prj)
         {
-            IsAbsolute = isAbsolute;
-            RelativeRoot = relativeRoot;
+            _prj = prj;
+            Init(thisTreeName, prj.Suffix);
+        }
+        public BlendTreeBuilder(string thisTreeName, string suffix = null) => Init(thisTreeName, suffix);
+        private void Init(string thisTreeName, string suffix = null)
+        {
+            _thisTreeName = thisTreeName;
+            _suffix = suffix;
             Name = SanitizeStr(thisTreeName);
-            TargetObject = targetObj ?? prj.CreateObject($@"PMB_{Name}");
             BuildingTrees = new List<BlendTree>() { null, new BlendTree() };
-            RootTree = BuildingTrees[1];
             RootTree.name = Name;
             RootTree.blendType = BlendTreeType.Direct;
-            OutpAsset(RootTree);
-
+            Build();
             CurrentNum = 1;
-            Prj = prj;
         }
-        public int MaxNum => BuildingTrees.Count - 1;
-        public BlendTree GetTree(int n) => BuildingTrees[n];
-        public BlendTree CurrentTree => BuildingTrees[CurrentNum];
-        public BlendTreeType? CurrentType => CurrentTree?.blendType;
 
         /// <summary>
-        /// BlendTree作成を完了し、TargetObjectにアタッチする
+        /// BlendTreeをファイルにビルドする。パスを指定しない場合一時フォルダに出力する
         /// </summary>
-        public void Apply()
+        /// <param name="buildPath"></param>
+        /// <returns></returns>
+        public BlendTree Build(string buildPath = null)
         {
-            //Prj.DebugOutp(RootTree);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            PVPanMergeBlendTree PanMBT = TargetObject.AddComponent<PVPanMergeBlendTree>();
-            PanMBT.BlendTree = RootTree;
-            if (IsAbsolute) PanMBT.PathMode = MergeAnimatorPathMode.Absolute;
-            else if (RelativeRoot != null) PanMBT.RelativePathRoot.Set(RelativeRoot);
+            LowLevelDebugPrint($@"DEBUG:{_buildedPath}");
+            if (_buildedPath != null)
+            {
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                LowLevelDebugPrint($@"ファイルを更新しました{_buildedPath}");
+            }
+            else
+            {
+                _buildedPath = OutpAsset(RootTree, buildPath);
+                LowLevelDebugPrint($@"ビルドしました{_buildedPath}");
+            }
+            return RootTree;
+        }
+
+        /// <summary>
+        /// BlendTreeをオブジェクトにアタッチする
+        /// </summary>
+        /// <param name="tgt"></param>
+        /// <param name="isAbsolute"></param>
+        /// <param name="relativeRoot"></param>
+        /// <returns></returns>
+        public PVPanMergeBlendTree Attach(bool isAbsolute = false, GameObject relativeRoot = null) => Attach(_prj, isAbsolute, relativeRoot);
+        public PVPanMergeBlendTree Attach(PandraProject prj , bool isAbsolute = false, GameObject relativeRoot = null)
+        {
+            GameObject tgt = prj.CreateObject($@"DBT{_thisTreeName}");
+            return Attach(tgt, isAbsolute, relativeRoot);
+        }
+        public PVPanMergeBlendTree Attach(GameObject tgt, bool isAbsolute = false, GameObject relativeRoot = null)
+        {
+            PVPanMergeBlendTree PanMBT = tgt.AddComponent<PVPanMergeBlendTree>();
+            PanMBT.BlendTree = Build();
+            if (isAbsolute) PanMBT.PathMode = MergeAnimatorPathMode.Absolute;
+            else if (relativeRoot != null) PanMBT.RelativePathRoot.Set(relativeRoot);
+            return PanMBT;
         }
 
         /// <summary>
@@ -154,7 +186,7 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
         /// <summary>
-        /// 最初のBlendTreeを定義し、確定処理を実施
+        /// 最初のBlendTreeを定義する
         /// </summary>
         /// <param name="act">処理</param>
         public void RootDBT(Action act = null)
@@ -165,14 +197,13 @@ namespace com.github.pandrabox.pandravase.editor
                 {
                     Param("Env/DBTEnable").AddD(() => act());
                     IsMMDSafe = false;
-                    Prj.DebugPrint("MMDSafeが指定されています。これはEnvの実装を前提としていますが、自動的には作成しません");
+                    LowLevelDebugPrint("MMDSafeが指定されています。これはEnvの実装を前提としていますが、自動的には作成しません");
                 }
                 else
                 {
                     act();
                 }
             }
-            Apply();
         }
 
         /// <summary>
@@ -209,7 +240,7 @@ namespace com.github.pandrabox.pandravase.editor
         public BlendTreeBuilder Param(float Threshold, float ThresholdY) => ParentTreeParameterSet(BlendTreeType.SimpleDirectional2D, null, Threshold, ThresholdY);
         public BlendTreeBuilder ParentTreeParameterSet(BlendTreeType treeType, string directParameterName, float threshold, float thresholdY)
         {
-            if (ChildWait) Prj.DebugPrint("ChildWaitが設定されています。P命令を使ったらすぐにC命令をつかうべきです。", false);
+            if (ChildWait) LowLevelDebugPrint("ChildWaitが設定されています。P命令を使ったらすぐにC命令をつかうべきです。", false);
             ParentTreeType = treeType;
             ParentDirectParameterName = GetParameterName(directParameterName);
             ParentThreshold = threshold;
@@ -229,13 +260,13 @@ namespace com.github.pandrabox.pandravase.editor
         public void AddD(Action act = null) => ChildSet(BlendTreeType.Direct, null, null, null, act);
         public void Add1D(string ThresholdName, Action act) => ChildSet(BlendTreeType.Simple1D, ThresholdName, null, null, act);
         public void Add2D(string ThresholdName, string ThresholdNameY, Action act) => ChildSet(BlendTreeType.SimpleDirectional2D, ThresholdName, ThresholdNameY, null, act);
-        public void AddAAP(params object[] args) => AddMotion(new AnimationClipsBuilder(Prj).AAP(args));
-        public void AddMotion(string motionPath) => AddMotion(Prj.LoadMotion(motionPath));
+        public void AddAAP(params object[] args) => AddMotion(new AnimationClipsBuilder().AAP(args));
+        public void AddMotion(string motionPath) => AddMotion(AssetDatabase.LoadAssetAtPath<Motion>(motionPath));
         public void AddMotion(Motion motionClip) => ChildSet(null, null, null, motionClip, null);
         public void ChildSet(BlendTreeType? treeType, string thresholdName, string thresholdNameY, Motion motionClip, Action act)
         {
-            if (CurrentTree.blendType != ParentTreeType) Prj.DebugPrint($@"Type Mismatch Error:親タイプは{ParentTreeType}であるべきところ、カレントタイプは{CurrentType}です。", false, LogType.Error);
-            if (!ChildWait) Prj.DebugPrint($"ChildWaitが設定されていません。これが明確な意図に基づかない場合、P命令抜けの可能性が高いです。 \n {treeType},{thresholdName},{thresholdNameY},{motionClip}", false);
+            if (CurrentTree.blendType != ParentTreeType) LowLevelDebugPrint($@"Type Mismatch Error:親タイプは{ParentTreeType}であるべきところ、カレントタイプは{CurrentType}です。", false, LogType.Exception);
+            if (!ChildWait) LowLevelDebugPrint($"ChildWaitが設定されていません。これが明確な意図に基づかない場合、P命令抜けの可能性が高いです。 \n {treeType},{thresholdName},{thresholdNameY},{motionClip}", false);
             ChildWait = false;
             ChildTreeType = treeType;
             ChildThresholdName = GetParameterName(thresholdName);
@@ -256,7 +287,7 @@ namespace com.github.pandrabox.pandravase.editor
             var OnStartCurrentTree = CurrentTree;
             if (CurrentType == BlendTreeType.Simple1D && CurrentTree.children.Any(c => c.threshold > ParentThreshold))
             {
-                Prj.DebugPrint("[BlendTreeBuilder.1DThresholdError] 登録済のThresholdより小さいThresholdを登録しようとしました。これは複雑な問題を起こすため、禁止されています。", false, LogType.Error);
+                LowLevelDebugPrint("[BlendTreeBuilder.1DThresholdError] 登録済のThresholdより小さいThresholdを登録しようとしました。これは複雑な問題を起こすため、禁止されています。", false, LogType.Error);
                 return;
             }
 
@@ -337,10 +368,10 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private string GetParameterName(string name)
+        private string GetParameterName( string name)
         {
             if (name != null && (name == Util.ONEPARAM || name.ToLower() == "pan/one" || name == "1")) return Util.ONEPARAM;
-            var p = Prj.GetParameterName(name);
+            var p = _suffix + name;
             return p;
         }
     }

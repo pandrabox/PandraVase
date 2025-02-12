@@ -41,8 +41,8 @@ namespace com.github.pandrabox.pandravase.editor
 
     public class PVnBitSyncMain
     {
-        PandraProject _prj;
-        PVnBitSync[] _nBitSyncs;
+        private PandraProject _prj;
+        private PVnBitSync[] _nBitSyncs;
 
 
         public PVnBitSyncMain(VRCAvatarDescriptor desc)
@@ -54,70 +54,47 @@ namespace com.github.pandrabox.pandravase.editor
             CreateDecoder();
         }
 
-        private (float min, float max, float step) GetRange(PVnBitSync.PVnBitSyncData tgt)
-        {
-            float rmin, rmax;
-            if (tgt.SyncMode == PVnBitSync.nBitSyncMode.IntMode)
-            {
-                rmin = 0;
-                rmax = tgt.Bit ^ 2 - 1;
-            }
-            else if (tgt.SyncMode == PVnBitSync.nBitSyncMode.FloatMode)
-            {
-                rmin = 0;
-                rmax = 1;
-            }
-            else
-            {
-                rmin = tgt.SyncMin;
-                rmax = tgt.SyncMax;
-            }
-            float rstep = (rmax - rmin) / ((1 << tgt.Bit) - 1);
-            return (rmin, rmax, rstep);
-        }
-
-        private BlendTreeBuilder bb;
-        float _min, _max, _step;
         private void CreateDecoder()
         {
-            bb = new BlendTreeBuilder(_prj, false, "Decoder");
+            var bb = new BlendTreeBuilder("Decoder");
             bb.RootDBT(() =>
             {
-
+                bb.NName("nBitSync").Param("1");
                 foreach (var tgtp in _nBitSyncs) // 各コンポーネントのループ
                 {
                     if (tgtp == null || tgtp.nBitSyncs.Count == 0) continue;
                     foreach (var tgt in tgtp.nBitSyncs) // コンポーネントに複数定義されているnBitSyncのループ
                     {
                         if (tgt == null || tgt.TxName == null || tgt.TxName.Length == 0 || tgt.RxName == null || tgt.RxName.Length == 0 || tgt.Bit == 0) continue;
-                        (_min, _max, _step) = GetRange(tgt);
                         if (tgt.HostDecode == true)
                         {
-                            UnitDecoder(tgt);
+                            UnitDecoder(bb, tgt);
                         }
                         else
                         {
-                            bb.Param("1").Add1D("IsLocal", () =>
+                            bb.Add1D("IsLocal", () =>
                             {
-                                bb.Param(0).AddD(() => UnitDecoder(tgt));
-                                bb.Param(1).AssignmentBy1D(tgt.TxName, _min, _max, tgt.RxName);
+                                bb.Param(0);
+                                UnitDecoder(bb, tgt);
+                                bb.NName("ParameterCopy").Param(1).AssignmentBy1D(tgt.TxName, tgt.Min, tgt.Max, tgt.RxName);
                             });
                         }
                     }
                 }
             });
+            bb.Attach(_prj);
         }
 
-        private void UnitDecoder(PVnBitSync.PVnBitSyncData tgt)
+        private void UnitDecoder(BlendTreeBuilder bb, PVnBitSync.PVnBitSyncData tgt)
         {
-            bb.Param("1").NName(tgt.RxName).AddD(() => {
-                bb.Param("1").AddAAP(tgt.RxName, _min);
-                for (int j = 0; j < tgt.Bit; j++) // 各Bitのループ
+            bb.NName($@"Decode{tgt.RxName}").AddD(() => {
+                bb.Param("1").AddAAP(tgt.RxName, tgt.Min);
+                for (int j = 0; j < tgt.Bit; j++)
                 {
                     bb.Param("1").Add1D($@"{tgt.TxName}/b{j}", () =>
                     {
                         bb.Param(0).AddAAP(tgt.RxName, 0);
-                        bb.Param(1).AddAAP(tgt.RxName, _step * (1 << j));
+                        bb.Param(1).AddAAP(tgt.RxName, tgt.Step * (1 << j));
                     });
                 }
             });
@@ -127,9 +104,6 @@ namespace com.github.pandrabox.pandravase.editor
         {
             AnimatorBuilder ab = new AnimatorBuilder("Encoder");
             ab.AddLayer("PVnBitSync/Encode").AddState("Local").TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, 0.5f, "IsLocal");
-            //ab.AddLayer("PVnBitSync/Encode").AddState("LocalClear").TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, 0.5f, "IsLocal");
-            //AnimatorState localClear = ab.CurrentState;
-            //ab.AddState("Local").TransToCurrent(localClear).MoveInstant();
             AnimatorState localRoot = ab.CurrentState;
             foreach (var tgtp in _nBitSyncs) // 各コンポーネントのループ
             {
@@ -137,9 +111,8 @@ namespace com.github.pandrabox.pandravase.editor
                 foreach (var tgt in tgtp.nBitSyncs) // コンポーネントに複数定義されているnBitSyncのループ
                 {
                     if (tgt == null || tgt.TxName == null || tgt.TxName.Length == 0 || tgt.RxName == null || tgt.RxName.Length == 0 || tgt.Bit == 0) continue;
-                    ab.AddAnimatorParameter(tgt.RxName); //Encode処理ではいらないのだが、Decode側に追加機能がないので確認用に定義
+                    ab.AddAnimatorParameter(tgt.RxName); //Encode処理ではいらないのだが、Decode側で追加する機能がないので確認用に定義
                     ab.AddSubStateMachine(tgt.TxName);
-                    var (min, max, step) = GetRange(tgt);
                     for (var i = 0; i < 1 << tgt.Bit; i++) // 1つのnBitSyncをFlashEncodeする1Stateのループ
                     {
                         ab.AddState($@"Tx{i}");
@@ -147,8 +120,8 @@ namespace com.github.pandrabox.pandravase.editor
                         for (int j = 0; j < tgt.Bit; j++) // 各Bitのループ
                         {
                             ab.TransToCurrent(localRoot);
-                            ab.AddCondition(AnimatorConditionMode.Greater, min + step * (i - .5f), tgt.TxName);
-                            ab.AddCondition(AnimatorConditionMode.Less, min + step * (i + .50001f), tgt.TxName);
+                            ab.AddCondition(AnimatorConditionMode.Greater, tgt.Min + tgt.Step * (i - .5f), tgt.TxName);
+                            ab.AddCondition(AnimatorConditionMode.Less, tgt.Min + tgt.Step * (i + .50001f), tgt.TxName);
                             var bit = (i >> j) & 1;
                             if (bit == 0)
                             {
@@ -162,12 +135,9 @@ namespace com.github.pandrabox.pandravase.editor
                             }
                         }
                     }
-                    for (int j = 0; j < tgt.Bit; j++) //各bitの処理
+                    //各bitを同期boolで定義
+                    for (int j = 0; j < tgt.Bit; j++) 
                     {
-                        ////初回0クリア
-                        //ab.ChangeCurrentState(localClear);
-                        //ab.SetParameterDriver($@"{tgt.TxName}/b{j}", 0);
-                        //パラメータ定義
                         var MAP = _prj.GetOrCreateComponentObject<ModularAvatarParameters>("EncorderParam", (x) => {
                             if (x.parameters == null) x.parameters = new List<ParameterConfig>();
                         });
@@ -175,8 +145,7 @@ namespace com.github.pandrabox.pandravase.editor
                     }
                 }
             }
-            ab.BuildAndAttach(_prj);
+            ab.Attach(_prj);
         }
     }
-
 }

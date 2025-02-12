@@ -40,7 +40,7 @@ namespace com.github.pandrabox.pandravase.editor
     {
         private PandraProject _prj;
         private Transform CurrentFolder => folderTree.Last();
-        public bool IsRoot => folderTree.Count == 0;
+        private bool IsRoot => folderTree.Count == 0;
         private List<Transform> folderTree;
         private bool _parameterDef;
         private ModularAvatarParameters _param;
@@ -114,6 +114,15 @@ namespace com.github.pandrabox.pandravase.editor
             return this;
         }
 
+        /// <summary>
+        /// 現在のツリーの編集を完了しCurrentを上に移動する
+        /// </summary>
+        public MenuBuilder ExitFolder()
+        {
+            folderTree.RemoveAt(folderTree.Count - 1);
+            return this;
+        }
+
         private MenuBuilder AddToggleOrButton(bool isButton, string parameterName, float val, ParameterSyncType parameterSyncType = ParameterSyncType.NotSynced, string menuName = null, float defaultVal = 0, bool localOnly = true)
         {
             menuName = menuName ?? parameterName;
@@ -129,6 +138,9 @@ namespace com.github.pandrabox.pandravase.editor
             return this;
         }
 
+        /// <summary>
+        /// ExpressionParameterの定義
+        /// </summary>
         private MenuBuilder AddParameter(string parameterName, ParameterSyncType parameterSyncType, float defaultVal = 0, bool localOnly = true)
         {
             if (!_parameterDef) return this;
@@ -145,7 +157,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// メニュー追加の基本操作
         /// </summary>
-        public MenuBuilder AddGenericMenu(string menuName, Action<ModularAvatarMenuItem> x, bool allowRoot=false)
+        private MenuBuilder AddGenericMenu(string menuName, Action<ModularAvatarMenuItem> x, bool allowRoot=false)
         {
             if (!allowRoot && IsRoot)
             {
@@ -157,15 +169,6 @@ namespace com.github.pandrabox.pandravase.editor
             _currentMenu.name = menuName;
 
             _prj.DebugPrint($@"MenuBuildeはメニュー{menuName}を生成しました");
-            return this;
-        }
-
-        /// <summary>
-        /// 現在のツリーの編集を完了しCurrentを上に移動する
-        /// </summary>
-        public MenuBuilder ExitFolder()
-        {
-            folderTree.RemoveAt(folderTree.Count - 1);
             return this;
         }
     }

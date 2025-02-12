@@ -17,7 +17,12 @@ namespace com.github.pandrabox.pandravase.editor
     {
         private AnimationClip _clip;
         private EditorCurveBinding _curveBinding;
-        
+        private bool _compositing = false;
+        private int _compositeMode = 0;
+        private string _axisId = null;
+        private Axis _axis;
+        private string axisName => _axis.ToString().ToLower();
+
         /// <summary>
         /// 単体のAnimationClipを生成する。基本的にはAnimationClipsBuilderから呼び出してください
         /// </summary>
@@ -25,6 +30,31 @@ namespace com.github.pandrabox.pandravase.editor
         {
             _clip = new AnimationClip();
             _clip.name = clipName;
+        }
+
+        public AnimationClipBuilder IsVector3(Action<AnimationClipBuilder> a, string axisId="@a")
+        {
+            _compositing= true;
+            _axisId = axisId;
+            for (int i = 0; i < 3; i++)
+            {
+                _axis=(Axis)i;
+                a(this);
+            }
+            _compositing = false;
+            return this;
+        }
+        public AnimationClipBuilder IsQuaternion(Action<AnimationClipBuilder> a, string axisId = "@a")
+        {
+            _compositing = true;
+            _axisId = axisId;
+            for (int i = 0; i < 4; i++)
+            {
+                _axis = (Axis)i;
+                a(this);
+            }
+            _compositing = false;
+            return this;
         }
 
         /// <summary>
@@ -41,6 +71,7 @@ namespace com.github.pandrabox.pandravase.editor
         public AnimationClipBuilder Bind(Transform target, Transform relativeRoot, Type inType, string inPropertyName) => Bind(GetRelativePath(relativeRoot, target), inType, inPropertyName);
         public AnimationClipBuilder Bind(string inPath, Type inType, string inPropertyName)
         {
+            if(_compositing) inPropertyName = inPropertyName.Replace("@a", axisName);
             _curveBinding = EditorCurveBinding.FloatCurve(inPath, inType, inPropertyName);
             return this;
         }
@@ -53,6 +84,12 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="time2">key2の時間</param>
         /// <param name="val2">key2の値</param>
         /// <returns>this</returns>
+        public AnimationClipBuilder Liner(float time1, Vector3 val1, float time2, float val2) => Liner(time1, val1.GetAxis(_axis), time2, val2);
+        public AnimationClipBuilder Liner(float time1, float val1, float time2, Vector3 val2) => Liner(time1, val1, time2, val2.GetAxis(_axis));
+        public AnimationClipBuilder Liner(float time1, Vector3 val1, float time2, Vector3 val2) => Liner(time1, val1.GetAxis(_axis), time2, val2.GetAxis(_axis));
+        public AnimationClipBuilder Liner(float time1, Quaternion val1, float time2, float val2) => Liner(time1, val1.GetAxis(_axis), time2, val2);
+        public AnimationClipBuilder Liner(float time1, float val1, float time2, Quaternion val2) => Liner(time1, val1, time2, val2.GetAxis(_axis));
+        public AnimationClipBuilder Liner(float time1, Quaternion val1, float time2, Quaternion val2) => Liner(time1, val1.GetAxis(_axis), time2, val2.GetAxis(_axis));
         public AnimationClipBuilder Liner(float time1, float val1, float time2, float val2)
         {
             if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
@@ -66,14 +103,38 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="keyPairs">偶数要素にキーの時間、奇数要素にキーの値</param>
         /// <returns>this</returns>
-        public AnimationClipBuilder Smooth(params float[] keyPairs)
+        public AnimationClipBuilder Smooth(params System.Object[] keyPairs)
         {
-            if(_curveBinding==null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
+            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
             var keys = new List<Keyframe>();
             for (int i = 0; i < keyPairs.Length - 1; i += 2)
             {
-                Keyframe k = new Keyframe(keyPairs[i], keyPairs[i + 1]);
-                keys.Add(k);
+                float? time=null, value = null;
+                if (keyPairs[i] is float t)
+                {
+                    time = t;
+                }
+                else
+                {
+                    LowLevelDebugPrint($@"Smoothキーペアの時間の指定が不正です({keyPairs[i].GetType()})。floatで指定してください。", true, LogType.Exception);
+                }
+                if (keyPairs[i+1] is float f)
+                {
+                    value = f;
+                }
+                if (keyPairs[i+1] is Vector3 v)
+                {
+                    value = v.GetAxis(_axis);
+                }
+                if(keyPairs[i + 1] is Quaternion q)
+                {
+                    value = q.GetAxis(_axis);
+                }
+                if(time.HasValue && value.HasValue)
+                {
+                    Keyframe k = new Keyframe(time.Value, value.Value);
+                    keys.Add(k);
+                }
             }
             AnimationCurve curve = new AnimationCurve(keys.ToArray());
             AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
@@ -85,6 +146,8 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="val">定数</param>
         /// <returns>this</returns>
+        public AnimationClipBuilder Const2F(Vector3 vals) => Const2F(vals.GetAxis(_axis));
+        public AnimationClipBuilder Const2F(Quaternion vals) => Const2F(vals.GetAxis(_axis));
         public AnimationClipBuilder Const2F(float val)
         {
             if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
@@ -92,6 +155,7 @@ namespace com.github.pandrabox.pandravase.editor
             AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
             return this;
         }
+
 
         /// <summary>
         /// AnimationClipを出力
