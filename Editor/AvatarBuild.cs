@@ -9,21 +9,19 @@ using VRC.Core;
 using System.Reflection;
 using VRC.SDKBase.Editor;
 
-
 namespace com.github.pandrabox.pandravase.editor
 {
-#if PANDRADBG
-    public class PVPrefabBuildC
+    public class AvatarBuildMenuDefinition
     {
-        [MenuItem("PanDbg/< PrefabBuild Test>")]
-        public static void PVPrefabBuildTest()
+        [MenuItem("GameObject/BuildAndTest", false, 0)]
+        private static void AvatarBuild_BuildAndTest()
         {
-            new PVPrefabBuildMain(BuildMode.Test);
+            new AvatarBuild(Selection.activeGameObject, BuildMode.Test);
         }
-        [MenuItem("PanDbg/< PrefabBuild Upload>")]
-        public static void PVPrefabBuildUpload()
+        [MenuItem("GameObject/BuildAndUpload", false, 0)]
+        private static void AvatarBuild_BuildAndUpload()
         {
-            new PVPrefabBuildMain(BuildMode.Upload);
+            new AvatarBuild(Selection.activeGameObject, BuildMode.Upload);
         }
     }
 
@@ -32,24 +30,32 @@ namespace com.github.pandrabox.pandravase.editor
         Test,Upload
     }
 
-    public class PVPrefabBuildMain
+    public class AvatarBuild
     {
-        const string PREFABPATH = "Assets/Pan/DevTool/PrefabBuild/FlatsPlus.prefab";
+
+        BuildAvatarTarget _tgt;
         BuildMode _buildMode;
-        public PVPrefabBuildMain(BuildMode buildMode)
+        public AvatarBuild(GameObject tgt, BuildMode buildMode = BuildMode.Upload)
         {
-            ClearConsole();
-            Debug.LogWarning($@"PrefabBuild {buildMode.ToString()} Start");
+            _tgt = new BuildAvatarTarget(tgt);
             _buildMode = buildMode;
-            Run();
+            ClearConsole();
+            Debug.LogWarning($@"AvatarBuilder Build {tgt.name} On Mode {buildMode.ToString()} Start");
+            ActivateSDKPanel();
+            UploadAvatarAsync();
         }
 
-        private async void Run()　//コンストラクタでawaitできないのでメソッドに分ける
+        public class BuildAvatarTarget
         {
-            using (UploadAvatar uploadAvatar = new UploadAvatar(PREFABPATH))
+            public GameObject Avatar { get; }
+            public string BlueprintId { get; }
+            public BuildAvatarTarget(GameObject tgt)
             {
-                ActivateSDKPanel();
-                await UploadAvatarAsync(uploadAvatar);
+                Avatar = tgt;
+                PipelineManager pipeline = tgt.GetComponent<PipelineManager>();
+                if (pipeline == null) { EditorUtility.DisplayDialog("エラー", $@"PipelineManagerが見つかりません。{tgt.name}に正しくアタッチされているか確認して下さい", "OK"); return; }
+                BlueprintId = pipeline?.blueprintId;
+                if (BlueprintId == null || BlueprintId.Length == 0) { EditorUtility.DisplayDialog("エラー", $@"BlueprintIdの取得に失敗しました", "OK"); return; }
             }
         }
 
@@ -58,7 +64,7 @@ namespace com.github.pandrabox.pandravase.editor
             EditorApplication.ExecuteMenuItem("VRChat SDK/Show Control Panel");
         }
 
-        private async Task UploadAvatarAsync(UploadAvatar uploadAvatar) // 実作業
+        private async Task UploadAvatarAsync() // 実作業
         {
             if (!VRCSdkControlPanel.TryGetBuilder<IVRCSdkAvatarBuilderApi>(out var builder))
             {
@@ -71,10 +77,16 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 Debug.Log("VRCAvatarを取得します");
                 VRCAvatar vrcAvatar = default;
-                vrcAvatar = await VRCApi.GetAvatar(uploadAvatar.BlueprintId, true);
+                vrcAvatar = await VRCApi.GetAvatar(_tgt.BlueprintId, true);
                 Debug.Log("アバターをビルドします");
-                await builder.BuildAndUpload(uploadAvatar.Avatar, vrcAvatar, vrcAvatar.ThumbnailImageUrl);
-                //await builder.BuildAndTest(avatar); //Testならこちら
+                if (_buildMode == BuildMode.Test)
+                {
+                    await builder.BuildAndTest(_tgt.Avatar);
+                }
+                else
+                {
+                    await builder.BuildAndUpload(_tgt.Avatar, vrcAvatar, vrcAvatar.ThumbnailImageUrl);
+                }
                 Debug.Log("アバターのビルドとアップロードが完了しました。");
             }
             catch (Exception e)
@@ -125,29 +137,6 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
         /// <summary>
-        /// プレハブのインスタンシング、アップロード必要情報の取得、破棄
-        /// </summary>
-        public class UploadAvatar : IDisposable
-        {
-            public GameObject Avatar { get; }
-            public string BlueprintId { get; }
-            public UploadAvatar(string prefabPath)
-            {
-                Avatar = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
-                if (Avatar == null) { EditorUtility.DisplayDialog("エラー", $@"アバターが見つかりません。{prefabPath}にアバターがあるか確認して下さい", "OK"); Dispose(); }
-                Avatar.name = Avatar.name.Replace("(Clone)", "");
-                PipelineManager pipeline = Avatar.GetComponent<PipelineManager>();
-                if (pipeline == null) { EditorUtility.DisplayDialog("エラー", $@"PipelineManagerが見つかりません。{Avatar.name}に正しくアタッチされているか確認して下さい", "OK"); Dispose(); }
-                BlueprintId = pipeline?.blueprintId;
-                if (BlueprintId == null || BlueprintId.Length==0) { EditorUtility.DisplayDialog("エラー", $@"BlueprintIdの取得に失敗しました", "OK"); Dispose(); }
-            }
-            public void Dispose()
-            {
-                GameObject.DestroyImmediate(Avatar);
-            }
-        }
-
-        /// <summary>
         /// コンソールをクリア
         /// https://baba-s.hatenablog.com/entry/2018/12/05/141500
         /// コガネブログ　baba_s様
@@ -166,5 +155,4 @@ namespace com.github.pandrabox.pandravase.editor
             method.Invoke(null, null);
         }
     }
-#endif
 }
