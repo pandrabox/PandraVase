@@ -18,8 +18,6 @@ namespace com.github.pandrabox.pandravase.editor
         private AnimationClip _clip;
         private EditorCurveBinding _curveBinding;
         private bool _compositing = false;
-        private int _compositeMode = 0;
-        private string _axisId = null;
         private Axis _axis;
         private string axisName => _axis.ToString().ToLower();
 
@@ -35,7 +33,6 @@ namespace com.github.pandrabox.pandravase.editor
         public AnimationClipBuilder IsVector3(Action<AnimationClipBuilder> a, string axisId="@a")
         {
             _compositing= true;
-            _axisId = axisId;
             for (int i = 0; i < 3; i++)
             {
                 _axis=(Axis)i;
@@ -47,7 +44,6 @@ namespace com.github.pandrabox.pandravase.editor
         public AnimationClipBuilder IsQuaternion(Action<AnimationClipBuilder> a, string axisId = "@a")
         {
             _compositing = true;
-            _axisId = axisId;
             for (int i = 0; i < 4; i++)
             {
                 _axis = (Axis)i;
