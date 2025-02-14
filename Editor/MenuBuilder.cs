@@ -150,7 +150,7 @@ namespace com.github.pandrabox.pandravase.editor
             p.syncType = parameterSyncType;
             p.localOnly = localOnly;
             _param.parameters.Add(p);
-            _prj.DebugPrint($@"MenuBuildeはパラメータ{parameterName}({parameterSyncType},{defaultVal},{localOnly})を定義しました");
+            _prj.DebugPrint($@"MenuBuilderはパラメータ{parameterName}({parameterSyncType},{defaultVal},{localOnly})を定義しました");
             return this;
         }
 
