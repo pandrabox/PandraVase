@@ -28,6 +28,18 @@ namespace com.github.pandrabox.pandravase.editor
             SetDebugMode(true);
             new PVnBitSyncMain(TopAvatar);
         }
+        [MenuItem("PanDbg/PVnBitSync2")]
+        public static void PVnBitSync2_Debug()
+        {
+            var prj = VaseProject(TopAvatar);
+            prj.SetDebugMode(true);
+            prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.IntMode);
+            if(Msgbox("実体化しますか？", true) == true)
+            {
+                new PVnBitSyncMain(TopAvatar); 
+            }   
+            
+        }
     }
 #endif
 
@@ -59,7 +71,7 @@ namespace com.github.pandrabox.pandravase.editor
             var bb = new BlendTreeBuilder("Decoder");
             bb.RootDBT(() =>
             {
-                bb.NName("nBitSync").Param("1");
+                bb.NName("nBitSync");
                 foreach (var tgtp in _nBitSyncs) // 各コンポーネントのループ
                 {
                     if (tgtp == null || tgtp.nBitSyncs.Count == 0) continue;
@@ -68,11 +80,12 @@ namespace com.github.pandrabox.pandravase.editor
                         if (tgt == null || tgt.TxName == null || tgt.TxName.Length == 0 || tgt.RxName == null || tgt.RxName.Length == 0 || tgt.Bit == 0) continue;
                         if (tgt.HostDecode == true)
                         {
+                            bb.Param("1");
                             UnitDecoder(bb, tgt);
                         }
                         else
                         {
-                            bb.Add1D("IsLocal", () =>
+                            bb.Param("1").Add1D("IsLocal", () =>
                             {
                                 bb.Param(0);
                                 UnitDecoder(bb, tgt);
@@ -87,6 +100,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         private void UnitDecoder(BlendTreeBuilder bb, PVnBitSync.PVnBitSyncData tgt)
         {
+            if(tgt==null || tgt.RxName==null || tgt.RxName.Length == 0) return;
             bb.NName($@"Decode{tgt.RxName}").AddD(() => {
                 bb.Param("1").AddAAP(tgt.RxName, tgt.Min);
                 for (int j = 0; j < tgt.Bit; j++)
