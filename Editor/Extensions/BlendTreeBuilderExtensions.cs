@@ -21,11 +21,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// targetParamが変更されたらtargetParamIsDiffに1を返す
         /// </summary>
-        public static void FDiffChecker(this BlendTreeBuilder bb, string targetParam, float min = 0, float max=1)
+        public static void FDiffChecker(this BlendTreeBuilder bb, string targetParam, string resultSuffix="IsDiff", float min = 0, float max=1)
         {
             string memory = $"{targetParam}Memory";
             string subtracted = $"{targetParam}Subtracted";
-            string result = $"{targetParam}IsDiff";
+            string result = $"{targetParam}{resultSuffix}";
             bb.NName("DiffChecker").AddD(() => {
                 bb.NName("Save and Subtract1").Param("1").Add1D(targetParam, () =>
                 {
