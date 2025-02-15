@@ -14,12 +14,12 @@ namespace com.github.pandrabox.pandravase.editor
 {
     public class AvatarBuildMenuDefinition
     {
-        [MenuItem("GameObject/BuildAndTest", false, 0)]
+        [MenuItem("GameObject/PanBuildAndTest", false, 0)]
         private static void AvatarBuild_BuildAndTest()
         {
             new AvatarBuild(Selection.activeGameObject, BuildMode.Test);
         }
-        [MenuItem("GameObject/BuildAndUpload", false, 0)]
+        [MenuItem("GameObject/PanBuildAndUpload", false, 0)]
         private static void AvatarBuild_BuildAndUpload()
         {
             new AvatarBuild(Selection.activeGameObject, BuildMode.Upload);
@@ -88,11 +88,13 @@ namespace com.github.pandrabox.pandravase.editor
                 {
                     await builder.BuildAndUpload(_tgt.Avatar, vrcAvatar, vrcAvatar.ThumbnailImageUrl);
                 }
-                Msgbox("アバターのビルドとアップロードが完了しました。");
+                PlayClip("Packages/com.github.pandrabox.pandravase/Assets/AvatarBuild/lvup2.mp3");
+                Debug.Log("アバターのビルドとアップロードが完了しました。");
             }
             catch (Exception e)
             {
-                Msgbox("アバターのビルドとテスト中にエラーが発生しました: " + e.Message);
+                PlayClip("Packages/com.github.pandrabox.pandravase/Assets/AvatarBuild/chin.mp3");
+                Debug.Log("アバターのビルドとテスト中にエラーが発生しました: " + e.Message);
             }
         }
 

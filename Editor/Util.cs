@@ -689,6 +689,38 @@ namespace com.github.pandrabox.pandravase.editor
             }
         }
 
+
+        /// <summary>
+        /// エディタ上で音を鳴らす
+        /// </summary>
+        public static void PlayClip(string clipPath)
+        {
+            AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(clipPath);
+            if (clip == null)
+            {
+                Debug.LogWarning("AudioClip not found! Make sure the file path is correct.");
+            }
+
+            var unityEditorAssembly = typeof(AudioImporter).Assembly;
+            var audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
+
+            var method = audioUtilClass.GetMethod(
+                "PlayClip",
+                BindingFlags.Static | BindingFlags.Public,
+                null,
+                new Type[] { typeof(AudioClip), typeof(int), typeof(bool) },
+                null
+            );
+
+            if (method == null)
+            {
+                Debug.LogError("PlayClip メソッドが見つかりません。");
+                return;
+            }
+
+            method.Invoke(null, new object[] { clip, 0, false });
+        }
+
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
         public static PandraProject VaseProject(GameObject child) => VaseProject(GetAvatarDescriptor(child));
         public static PandraProject VaseProject(Transform child) => VaseProject(GetAvatarDescriptor(child));
