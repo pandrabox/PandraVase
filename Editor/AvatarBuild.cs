@@ -88,11 +88,11 @@ namespace com.github.pandrabox.pandravase.editor
                 {
                     await builder.BuildAndUpload(_tgt.Avatar, vrcAvatar, vrcAvatar.ThumbnailImageUrl);
                 }
-                Debug.Log("アバターのビルドとアップロードが完了しました。");
+                Msgbox("アバターのビルドとアップロードが完了しました。");
             }
             catch (Exception e)
             {
-                Debug.LogError("アバターのビルドとテスト中にエラーが発生しました: " + e.Message);
+                Msgbox("アバターのビルドとテスト中にエラーが発生しました: " + e.Message);
             }
         }
 
@@ -104,13 +104,13 @@ namespace com.github.pandrabox.pandravase.editor
             void OnBuildProgress(object sender, string e) => Debug.Log($"ビルド進行中: {e}");
             void OnBuildFinish(object sender, string result) => Debug.Log($"ビルド終了: {result}");
             void OnBuildSuccess(object sender, string result) => Debug.Log($"ビルド成功: {result}");
-            void OnBuildError(object sender, string error) => Msgbox($"ビルドエラー: {error}");
+            void OnBuildError(object sender, string error) => Debug.Log($"ビルドエラー: {error}");
             void OnSdkUploadStateChange(object sender, SdkUploadState sbs) => Debug.Log($@"アップロードモード:{sbs}");
             void OnUploadStart(object sender, object e) => Debug.Log("アップロード開始");
             void OnUploadProgress(object sender, (string status, float percentage) progress) => Debug.Log($"アップロード進行中: {progress.status}, {progress.percentage * 100}%");
             void OnUploadFinish(object sender, string result) => Debug.Log($"アップロード終了: {result}");
-            void OnUploadSuccess(object sender, string result) => Msgbox($"アップロード成功: {result}");
-            void OnUploadError(object sender, string error) => Msgbox($"アップロードエラー: {error}");
+            void OnUploadSuccess(object sender, string result) => Debug.Log($"アップロード成功: {result}");
+            void OnUploadError(object sender, string error) => Debug.Log($"アップロードエラー: {error}");
             builder.OnSdkBuildStateChange -= OnSdkBuildStateChange;
             builder.OnSdkBuildStateChange += OnSdkBuildStateChange;
             builder.OnSdkBuildStart -= OnBuildStart;
