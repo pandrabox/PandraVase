@@ -161,7 +161,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (!allowRoot && IsRoot)
             {
-                LowLevelDebugPrint("Root状態でMenu作成が呼ばれました。これは許可されていません");
+                LowLevelDebugPrint("Root状態でMenu作成が呼ばれました。これは許可されていません。最低１回のAddFolderを実行してください。",level:LogType.Exception);
                 return this;
             }
             Transform parent = IsRoot ? _prj.PrjRootObj.transform : CurrentFolder;
