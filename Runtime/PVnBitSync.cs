@@ -23,7 +23,7 @@ namespace com.github.pandrabox.pandravase.runtime
             public float SyncMin = 0.0f;
             public float SyncMax = 1.0f;
             public float Min => SyncMode == nBitSyncMode.Custom ? SyncMin : 0.0f;
-            public float Max => SyncMode == nBitSyncMode.Custom ? SyncMax : SyncMode == nBitSyncMode.IntMode ? Bit ^ 2 - 1 : 1.0f;
+            public float Max => SyncMode == nBitSyncMode.Custom ? SyncMax : SyncMode == nBitSyncMode.IntMode ? (1 << Bit) - 1 : 1.0f;
             public float Step => (Max - Min) / ((1 << Bit) - 1);
         }
 
