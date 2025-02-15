@@ -11,6 +11,7 @@ using UnityEditor;
 using nadena.dev.ndmf;
 using nadena.dev.modular_avatar.core;
 using com.github.pandrabox.pandravase.runtime;
+using System.Reflection;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -58,6 +59,11 @@ namespace com.github.pandrabox.pandravase.editor
 
             if (level == LogType.Log) Debug.Log(msg);
             else if (level == LogType.Error) Debug.LogError(msg);
+            else if (level == LogType.Exception)
+            {
+                Debug.LogException(new Exception(msg));
+                EditorUtility.DisplayDialog("Error", msg, "OK");
+            }
             else Debug.LogWarning(msg);
         }
 
@@ -648,6 +654,26 @@ namespace com.github.pandrabox.pandravase.editor
             return children;
         }
 
+
+
+        /// <summary>
+        /// コンソールをクリア
+        /// https://baba-s.hatenablog.com/entry/2018/12/05/141500
+        /// コガネブログ　baba_s様
+        /// </summary>
+        public static void ClearConsole()
+        {
+            var type = Assembly
+            .GetAssembly(typeof(SceneView))
+#if UNITY_2017_1_OR_NEWER
+            .GetType("UnityEditor.LogEntries")
+#else
+            .GetType( "UnityEditorInternal.LogEntries" )
+#endif
+        ;
+            var method = type.GetMethod("Clear", BindingFlags.Static | BindingFlags.Public);
+            method.Invoke(null, null);
+        }
 
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
         public static PandraProject VaseProject(GameObject child) => VaseProject(GetAvatarDescriptor(child));

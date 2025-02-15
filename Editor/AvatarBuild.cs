@@ -8,6 +8,7 @@ using VRC.SDKBase.Editor.Api;
 using VRC.Core;
 using System.Reflection;
 using VRC.SDKBase.Editor;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -134,25 +135,6 @@ namespace com.github.pandrabox.pandravase.editor
             builder.OnSdkUploadSuccess += OnUploadSuccess;
             builder.OnSdkUploadError -= OnUploadError;
             builder.OnSdkUploadError += OnUploadError;
-        }
-
-        /// <summary>
-        /// コンソールをクリア
-        /// https://baba-s.hatenablog.com/entry/2018/12/05/141500
-        /// コガネブログ　baba_s様
-        /// </summary>
-        static void ClearConsole()
-        {
-            var type = Assembly
-            .GetAssembly(typeof(SceneView))
-#if UNITY_2017_1_OR_NEWER
-            .GetType("UnityEditor.LogEntries")
-#else
-            .GetType( "UnityEditorInternal.LogEntries" )
-#endif
-        ;
-            var method = type.GetMethod("Clear", BindingFlags.Static | BindingFlags.Public);
-            method.Invoke(null, null);
         }
     }
 }
