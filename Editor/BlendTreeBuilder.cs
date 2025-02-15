@@ -87,7 +87,6 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns></returns>
         public BlendTree Build(string buildPath = null)
         {
-            LowLevelDebugPrint($@"DEBUG:{_buildedPath}");
             if (_buildedPath != null)
             {
                 AssetDatabase.SaveAssets();
@@ -265,8 +264,8 @@ namespace com.github.pandrabox.pandravase.editor
         public void AddMotion(Motion motionClip) => ChildSet(null, null, null, motionClip, null);
         public void ChildSet(BlendTreeType? treeType, string thresholdName, string thresholdNameY, Motion motionClip, Action act)
         {
-            if (CurrentTree.blendType != ParentTreeType) LowLevelDebugPrint($@"Type Mismatch Error:親タイプは{ParentTreeType}であるべきところ、カレントタイプは{CurrentType}です。", false, LogType.Exception);
-            if (!ChildWait) LowLevelDebugPrint($"ChildWaitが設定されていません。これが明確な意図に基づかない場合、P命令抜けの可能性が高いです。 \n {treeType},{thresholdName},{thresholdNameY},{motionClip}", false);
+            if (CurrentTree.blendType != ParentTreeType) LowLevelDebugPrint($@"【{_thisTreeName}】Type Mismatch Error :親タイプは{ParentTreeType}であるべきところ、カレントタイプは{CurrentType}です。", false, LogType.Exception);
+            if (!ChildWait) LowLevelDebugPrint($"【{_thisTreeName}】:ChildWaitが設定されていません。これが明確な意図に基づかない場合、P命令抜けの可能性が高いです。 \n {treeType},{thresholdName},{thresholdNameY},{motionClip}", false);
             ChildWait = false;
             ChildTreeType = treeType;
             ChildThresholdName = GetParameterName(thresholdName);
@@ -287,7 +286,7 @@ namespace com.github.pandrabox.pandravase.editor
             var OnStartCurrentTree = CurrentTree;
             if (CurrentType == BlendTreeType.Simple1D && CurrentTree.children.Any(c => c.threshold > ParentThreshold))
             {
-                LowLevelDebugPrint("[BlendTreeBuilder.1DThresholdError] 登録済のThresholdより小さいThresholdを登録しようとしました。これは複雑な問題を起こすため、禁止されています。", false, LogType.Error);
+                LowLevelDebugPrint($"【{_thisTreeName}】[BlendTreeBuilder.1DThresholdError] 登録済のThresholdより小さいThresholdを登録しようとしました。これは複雑な問題を起こすため、禁止されています。", false, LogType.Error);
                 return;
             }
 

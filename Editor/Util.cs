@@ -675,6 +675,19 @@ namespace com.github.pandrabox.pandravase.editor
             method.Invoke(null, null);
         }
 
+        public static bool Msgbox(string msg, bool yesno = false)
+        {
+            if (yesno)
+            {
+                return EditorUtility.DisplayDialog("PandraVase", msg, "Yes", "No");
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("PandraVase", msg, "OK");
+                return true;
+            }
+        }
+
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
         public static PandraProject VaseProject(GameObject child) => VaseProject(GetAvatarDescriptor(child));
         public static PandraProject VaseProject(Transform child) => VaseProject(GetAvatarDescriptor(child));
