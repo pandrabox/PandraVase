@@ -677,6 +677,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         public static bool Msgbox(string msg, bool yesno = false)
         {
+            LowLevelDebugPrint(msg);
             if (yesno)
             {
                 return EditorUtility.DisplayDialog("PandraVase", msg, "Yes", "No");
