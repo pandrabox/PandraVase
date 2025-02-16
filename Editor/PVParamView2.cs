@@ -44,37 +44,39 @@ namespace com.github.pandrabox.pandravase.editor
         private const float DisplayInterval= -0.06f;
         public ParamView2Main(VRCAvatarDescriptor desc)
         {
-            PanCapture capture = new PanCapture(new Color(0, 0, 0, 0), width: 512);
-            PVParamView2[] targets= desc.transform.GetComponentsInChildren<PVParamView2>();
-            AnimationClipsBuilder ab = new AnimationClipsBuilder();
-            foreach (PVParamView2 target in targets)
+            using(PanCapture capture = new PanCapture(new Color(0, 0, 0, 0), width: 512))
             {
-                var maxDisits = Math.Max(Math.Abs(target.MinValue).ToString().Length, Math.Abs(target.MaxValue).ToString().Length);
-                GameObject obj = target.gameObject;
-                BlendTreeBuilder bb = new BlendTreeBuilder("ParamView2", "ParamView2");
-                bb.RootDBT(() =>
+                PVParamView2[] targets = desc.transform.GetComponentsInChildren<PVParamView2>();
+                AnimationClipsBuilder ab = new AnimationClipsBuilder();
+                foreach (PVParamView2 target in targets)
                 {
-                    for (int i = 0; i < target.parameterName.Count; i++)
+                    var maxDisits = Math.Max(Math.Abs(target.MinValue).ToString().Length, Math.Abs(target.MaxValue).ToString().Length);
+                    GameObject obj = target.gameObject;
+                    BlendTreeBuilder bb = new BlendTreeBuilder("ParamView2", "ParamView2");
+                    bb.RootDBT(() =>
                     {
-                        if (i == 0)
+                        for (int i = 0; i < target.parameterName.Count; i++)
                         {
+                            if (i == 0)
+                            {
 
+                            }
+                            string paramName = target.parameterName[i];
+                            ParamDisplay display = new ParamDisplay(target.gameObject, i, maxDisits);
+                            Texture2D paramNameImg = capture.TextToImage(paramName.PadString(40), Color.white);
+                            display.NameMaterial.mainTexture = paramNameImg;
+                            ab.Clip($@"D{i}0").Bind($@"ParamDisplay{i}", typeof(MeshRenderer), "material._Test").Const2F(target.MinValue);
+                            ab.Clip($@"D{i}1").Bind($@"ParamDisplay{i}", typeof(MeshRenderer), "material._Test").Const2F(target.MaxValue);
+                            bb.Param("1").Add1D($@"${paramName}", () =>
+                            {
+                                bb.Param(target.MinValue).AddMotion(ab.Outp($@"D{i}0"));
+                                bb.Param(target.MaxValue).AddMotion(ab.Outp($@"D{i}1"));
+                            });
                         }
-                        string paramName = target.parameterName[i];
-                        ParamDisplay display = new ParamDisplay(target.gameObject, i, maxDisits);
-                        Texture2D paramNameImg = capture.TextToImage(paramName.PadString(40), Color.white);
-                        display.NameMaterial.mainTexture = paramNameImg;
-                        ab.Clip($@"D{i}0").Bind($@"ParamDisplay{i}", typeof(MeshRenderer), "material._Test").Const2F(target.MinValue);
-                        ab.Clip($@"D{i}1").Bind($@"ParamDisplay{i}", typeof(MeshRenderer), "material._Test").Const2F(target.MaxValue);
-                        bb.Param("1").Add1D($@"${paramName}", () =>
-                        {
-                            bb.Param(target.MinValue).AddMotion(ab.Outp($@"D{i}0"));
-                            bb.Param(target.MaxValue).AddMotion(ab.Outp($@"D{i}1"));
-                        });
-                    }
-                });
-                bb.Attach(obj);
-            }
+                    });
+                    bb.Attach(obj);
+                }
+            }            
         }
 
         private class ParamDisplay
