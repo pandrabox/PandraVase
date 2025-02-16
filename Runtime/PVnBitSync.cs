@@ -6,6 +6,7 @@ using nadena.dev.modular_avatar.core;
 using VRC.SDKBase;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
@@ -25,6 +26,8 @@ namespace com.github.pandrabox.pandravase.runtime
             public float Min => SyncMode == nBitSyncMode.Custom ? SyncMin : 0.0f;
             public float Max => SyncMode == nBitSyncMode.Custom ? SyncMax : SyncMode == nBitSyncMode.IntMode ? (1 << Bit) - 1 : 1.0f;
             public float Step => (Max - Min) / ((1 << Bit) - 1);
+            public bool SyncSwitch = false; //trueなら{TxName}SyncingがONの時だけ同期する
+            public string SyncSwitchParameter => $@"{TxName}Syncing";
         }
 
         public enum nBitSyncMode
@@ -34,7 +37,7 @@ namespace com.github.pandrabox.pandravase.runtime
             Custom = 2
         }
 
-        public List<PVnBitSyncData> nBitSyncs = new List<PVnBitSyncData> { new PVnBitSyncData() };
+        public List<PVnBitSyncData> nBitSyncs = new List<PVnBitSyncData> {};
 
         /// <summary>
         /// スクリプトアクセス用
@@ -45,7 +48,8 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <param name="syncMode">intなら0～2^bit-1, floatなら0～1, Customならminmax範囲を同期</param>
         /// <param name="min">Custom時の最小値</param>
         /// <param name="max">Custom時の最大値</param>
-        public void Set(string txName, int Bit, nBitSyncMode syncMode, bool hostDecode = false, float min = 0.0f, float max = 1.0f)
+        /// <param name="SyncSwitch">trueなら{TxName}SyncingがONの時だけ同期する</param>
+        public PVnBitSyncData Set(string txName, int Bit, nBitSyncMode syncMode, bool hostDecode = false, float min = 0.0f, float max = 1.0f, bool SyncSwitch = false)
         {
             if (nBitSyncs == null) nBitSyncs = new List<PVnBitSyncData>();
             var p = new PVnBitSyncData();
@@ -56,7 +60,9 @@ namespace com.github.pandrabox.pandravase.runtime
             p.HostDecode = hostDecode;
             p.SyncMin = min;
             p.SyncMax = max;
+            p.SyncSwitch = SyncSwitch;
             nBitSyncs.Add(p);
+            return p;
         }
     }
 }

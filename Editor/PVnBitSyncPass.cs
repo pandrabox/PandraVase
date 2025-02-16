@@ -33,8 +33,9 @@ namespace com.github.pandrabox.pandravase.editor
         {
             var prj = VaseProject(TopAvatar);
             prj.SetDebugMode(true);
-            prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.IntMode);
-            if(Msgbox("実体化しますか？", true) == true)
+            var s = prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.FloatMode, SyncSwitch:true, hostDecode:true);
+            new MenuBuilder(prj).AddFolder("test").AddRadial("test").AddToggle(s.SyncSwitchParameter, 1, ParameterSyncType.Bool);
+            if (Msgbox("実体化しますか？", true) == true)
             {
                 new PVnBitSyncMain(TopAvatar); 
             }   
@@ -117,7 +118,8 @@ namespace com.github.pandrabox.pandravase.editor
         private void CreateEncoder()
         {
             AnimatorBuilder ab = new AnimatorBuilder("Encoder");
-            ab.AddLayer("PVnBitSync/Encode").AddState("Local").TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, 0.5f, "IsLocal");
+            ab.AddLayer("PVnBitSync/Encode").AddState("Local")
+                .TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, 0.5f, "IsLocal");
             AnimatorState localRoot = ab.CurrentState;
             foreach (var tgtp in _nBitSyncs) // 各コンポーネントのループ
             {
@@ -136,6 +138,32 @@ namespace com.github.pandrabox.pandravase.editor
                             ab.TransToCurrent(localRoot);
                             ab.AddCondition(AnimatorConditionMode.Greater, tgt.Min + tgt.Step * (i - .5f), tgt.TxName);
                             ab.AddCondition(AnimatorConditionMode.Less, tgt.Min + tgt.Step * (i + .50001f), tgt.TxName);
+                            if(tgt.SyncSwitch)
+                            {
+                                ab.AddCondition(AnimatorConditionMode.Greater, .5f, tgt.SyncSwitchParameter);
+                            }
+                            var bit = (i >> j) & 1;
+                            if (bit == 0)
+                            {
+                                ab.AddCondition(AnimatorConditionMode.Greater, .5f, $@"{tgt.TxName}/b{j}");
+                                ab.SetParameterDriver($@"{tgt.TxName}/b{j}", 0);
+                            }
+                            else
+                            {
+                                ab.AddCondition(AnimatorConditionMode.Less, .5f, $@"{tgt.TxName}/b{j}");
+                                ab.SetParameterDriver($@"{tgt.TxName}/b{j}", 1);
+                            }
+                        }
+                    }
+                    if (tgt.SyncSwitch) //SyncSwitchがあり、OFFの時の処理（最小値を送信）
+                    {
+                        ab.AddState($@"NoSync");
+                        ab.TransFromCurrent(localRoot).MoveInstant();
+                        int i = 0;
+                        for (int j = 0; j < tgt.Bit; j++)
+                        {
+                            ab.TransToCurrent(localRoot);
+                            ab.AddCondition(AnimatorConditionMode.Less, .5f, tgt.SyncSwitchParameter);
                             var bit = (i >> j) & 1;
                             if (bit == 0)
                             {
