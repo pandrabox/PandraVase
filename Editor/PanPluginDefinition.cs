@@ -24,6 +24,7 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVReplacePlayablePass.Instance);
             seq.Run(PVActiveOverridePass.Instance);
             seq.Run(PVnBitSyncPass.Instance);
+            seq.Run(PVParamView2Pass.Instance);
             seq.Run(PVPanMergeBlendTreePass.Instance);
             seq = InPhase(BuildPhase.Optimizing).BeforePlugin("nadena.dev.modular-avatar");
         }

@@ -12,6 +12,8 @@ using nadena.dev.ndmf;
 using nadena.dev.modular_avatar.core;
 using com.github.pandrabox.pandravase.runtime;
 using System.Reflection;
+using UnityEditor.Animations;
+using nadena.dev.ndmf.util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -719,6 +721,93 @@ namespace com.github.pandrabox.pandravase.editor
             }
 
             method.Invoke(null, new object[] { clip, 0, false });
+        }
+
+
+        /// <summary>
+        /// BlendTreeのパラメータを取得
+        /// </summary>
+        /// <param name="blendTree"></param>
+        /// <returns></returns>
+        public static string[] ExtractBlendTreeParameters(BlendTree blendTree)
+        {
+            HashSet<string> parameterNames = new HashSet<string>();
+
+            foreach (var asset in blendTree.ReferencedAssets(includeScene: false))
+            {
+                if (asset is BlendTree bt2)
+                {
+                    if (!string.IsNullOrEmpty(bt2.blendParameter) && bt2.blendType != BlendTreeType.Direct)
+                    {
+                        parameterNames.Add(bt2.blendParameter);
+                    }
+
+                    if (bt2.blendType != BlendTreeType.Direct && bt2.blendType != BlendTreeType.Simple1D)
+                    {
+                        if (!string.IsNullOrEmpty(bt2.blendParameterY))
+                        {
+                            parameterNames.Add(bt2.blendParameterY);
+                        }
+                    }
+
+                    if (bt2.blendType == BlendTreeType.Direct)
+                    {
+                        foreach (var childMotion in bt2.children)
+                        {
+                            if (!string.IsNullOrEmpty(childMotion.directBlendParameter))
+                            {
+                                parameterNames.Add(childMotion.directBlendParameter);
+                            }
+                        }
+                    }
+                }
+                else if (asset is AnimationClip clip)
+                {
+                    // AnimationClip内のfloatパラメータを抽出
+                    ExtractFloatParametersFromAnimationClip(clip, parameterNames);
+                }
+            }
+            return new List<string>(parameterNames).ToArray();
+        }
+
+        /// <summary>
+        /// AnimationClip内のfloatパラメータを抽出 ExtractBlendTreeParametersから呼び出す専用のもの
+        /// </summary>
+        /// <param name="clip"></param>
+        /// <param name="parameterNames"></param>
+        private static void ExtractFloatParametersFromAnimationClip(AnimationClip clip, HashSet<string> parameterNames)
+        {
+            // AnimationClip内のパラメータ（Keyframeなど）を解析し、float型のパラメータを追加
+            if (clip != null)
+            {
+                foreach (var binding in AnimationUtility.GetCurveBindings(clip))
+                {
+                    // float型のパラメータを抽出
+                    if (binding.type == typeof(Animator))
+                    {
+                        parameterNames.Add(binding.propertyName);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 文字列の左右に適当なスペースを追加する
+        /// </summary>
+        /// <param name="str">文字列</param>
+        /// <param name="targetLength">最終的な長さ</param>
+        public static string PadString(this string str, int targetLength)
+        {
+            if (str.Length >= targetLength)
+            {
+                return str; // 目標文字数以上ならそのまま返す
+            }
+
+            int spacesToAdd = targetLength - str.Length;
+            int leftSpaces = spacesToAdd / 2;
+            int rightSpaces = spacesToAdd - leftSpaces;
+
+            return new string(' ', leftSpaces) + str + new string(' ', rightSpaces);
         }
 
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);

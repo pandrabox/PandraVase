@@ -367,9 +367,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private string GetParameterName( string name)
+        private string GetParameterName(string name)
         {
             if (name != null && (name == Util.ONEPARAM || name.ToLower() == "pan/one" || name == "1")) return Util.ONEPARAM;
+            if(name == null || name.Length<1) return "";
+            if (name.StartsWith("$")) return name.Substring(1);
             var p = _suffix + name;
             return p;
         }
