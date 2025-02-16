@@ -33,8 +33,8 @@ namespace com.github.pandrabox.pandravase.editor
         {
             var prj = VaseProject(TopAvatar);
             prj.SetDebugMode(true);
-            var s = prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.FloatMode, SyncSwitch:true, hostDecode:true);
-            new MenuBuilder(prj).AddFolder("test").AddRadial("test").AddToggle(s.SyncSwitchParameter, 1, ParameterSyncType.Bool);
+            var s = prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.FloatMode, toggleSync:true, hostDecode:true);
+            new MenuBuilder(prj).AddFolder("test").AddRadial("test").AddToggle(s.SyncParameter, 1, ParameterSyncType.Bool);
             if (Msgbox("実体化しますか？", true) == true)
             {
                 new PVnBitSyncMain(TopAvatar); 
@@ -138,9 +138,9 @@ namespace com.github.pandrabox.pandravase.editor
                             ab.TransToCurrent(localRoot);
                             ab.AddCondition(AnimatorConditionMode.Greater, tgt.Min + tgt.Step * (i - .5f), tgt.TxName);
                             ab.AddCondition(AnimatorConditionMode.Less, tgt.Min + tgt.Step * (i + .50001f), tgt.TxName);
-                            if(tgt.SyncSwitch)
+                            if(tgt.ToggleSync)
                             {
-                                ab.AddCondition(AnimatorConditionMode.Greater, .5f, tgt.SyncSwitchParameter);
+                                ab.AddCondition(AnimatorConditionMode.Greater, .5f, tgt.SyncParameter);
                             }
                             var bit = (i >> j) & 1;
                             if (bit == 0)
@@ -155,7 +155,7 @@ namespace com.github.pandrabox.pandravase.editor
                             }
                         }
                     }
-                    if (tgt.SyncSwitch) //SyncSwitchがあり、OFFの時の処理（最小値を送信）
+                    if (tgt.ToggleSync) //SyncSwitchがあり、OFFの時の処理（最小値を送信）
                     {
                         ab.AddState($@"NoSync");
                         ab.TransFromCurrent(localRoot).MoveInstant();
@@ -163,7 +163,7 @@ namespace com.github.pandrabox.pandravase.editor
                         for (int j = 0; j < tgt.Bit; j++)
                         {
                             ab.TransToCurrent(localRoot);
-                            ab.AddCondition(AnimatorConditionMode.Less, .5f, tgt.SyncSwitchParameter);
+                            ab.AddCondition(AnimatorConditionMode.Less, .5f, tgt.SyncParameter);
                             var bit = (i >> j) & 1;
                             if (bit == 0)
                             {

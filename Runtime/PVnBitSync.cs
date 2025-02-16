@@ -26,8 +26,8 @@ namespace com.github.pandrabox.pandravase.runtime
             public float Min => SyncMode == nBitSyncMode.Custom ? SyncMin : 0.0f;
             public float Max => SyncMode == nBitSyncMode.Custom ? SyncMax : SyncMode == nBitSyncMode.IntMode ? (1 << Bit) - 1 : 1.0f;
             public float Step => (Max - Min) / ((1 << Bit) - 1);
-            public bool SyncSwitch = false; //trueなら{TxName}SyncingがONの時だけ同期する
-            public string SyncSwitchParameter => $@"{TxName}Syncing";
+            public bool ToggleSync = false; //trueなら{TxName}SyncがONの時だけ同期する
+            public string SyncParameter => $@"{TxName}Sync";
         }
 
         public enum nBitSyncMode
@@ -48,8 +48,8 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <param name="syncMode">intなら0～2^bit-1, floatなら0～1, Customならminmax範囲を同期</param>
         /// <param name="min">Custom時の最小値</param>
         /// <param name="max">Custom時の最大値</param>
-        /// <param name="SyncSwitch">trueなら{TxName}SyncingがONの時だけ同期する</param>
-        public PVnBitSyncData Set(string txName, int Bit, nBitSyncMode syncMode, bool hostDecode = false, float min = 0.0f, float max = 1.0f, bool SyncSwitch = false)
+        /// <param name="ToggleSync">trueなら{TxName}SyncがONの時だけ同期する</param>
+        public PVnBitSyncData Set(string txName, int Bit, nBitSyncMode syncMode, bool hostDecode = false, float min = 0.0f, float max = 1.0f, bool ToggleSync = false)
         {
             if (nBitSyncs == null) nBitSyncs = new List<PVnBitSyncData>();
             var p = new PVnBitSyncData();
@@ -60,7 +60,7 @@ namespace com.github.pandrabox.pandravase.runtime
             p.HostDecode = hostDecode;
             p.SyncMin = min;
             p.SyncMax = max;
-            p.SyncSwitch = SyncSwitch;
+            p.ToggleSync = ToggleSync;
             nBitSyncs.Add(p);
             return p;
         }

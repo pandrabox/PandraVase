@@ -179,11 +179,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="hostDecode">Hostででコードするかどうか</param>
         /// <param name="min">Mode=Custom時の最小</param>
         /// <param name="max">Mode=Custom時の最大</param>
-        /// <param name="SyncSwitch">指定してあるならそのパラメータがONの時だけ同期する</param>
-        public PVnBitSync.PVnBitSyncData VirtualSync(string txName, int Bit, PVnBitSync.nBitSyncMode syncMode, bool hostDecode = false, float min = 0.0f, float max = 1.0f, bool SyncSwitch = false)
+        /// <param name="toggleSync">指定してあるならそのパラメータがONの時だけ同期する</param>
+        public PVnBitSync.PVnBitSyncData VirtualSync(string txName, int Bit, PVnBitSync.nBitSyncMode syncMode, bool hostDecode = false, float min = 0.0f, float max = 1.0f, bool toggleSync = false)
         {
             var s = CreateComponentObject<PVnBitSync>($@"VirtualSync{txName}");
-            return s.Set(txName, Bit, syncMode, hostDecode, min, max, SyncSwitch);
+            return s.Set(txName, Bit, syncMode, hostDecode, min, max, toggleSync);
         }
 
         /////////////////////////DEBUG/////////////////////////
