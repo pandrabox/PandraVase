@@ -54,6 +54,7 @@ namespace com.github.pandrabox.pandravase.editor
             AssetDatabase.Refresh();
         }
 
+        public static void LowLevelExeption(string message, bool debugOnly = true, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)=> LowLevelDebugPrint(message, debugOnly, LogType.Exception, projectName, callerMethodName, callerLineNumber);
         public static void LowLevelDebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
         {
             if (debugOnly && !PDEBUGMODE) return;
@@ -110,6 +111,8 @@ namespace com.github.pandrabox.pandravase.editor
         public static VRCAvatarDescriptor GetAvatarDescriptor(GameObject current) => GetAvatarDescriptor(current?.transform);
         public static VRCAvatarDescriptor GetAvatarDescriptor(Transform current)
         {
+            if (current == null) return null;
+            if(current.GetComponent<VRCAvatarDescriptor>() != null) return current.GetComponent<VRCAvatarDescriptor>();
             return FindComponentInParent<VRCAvatarDescriptor>(current);
         }
         public static bool IsInAvatar(GameObject current) => IsInAvatar(current?.transform);
