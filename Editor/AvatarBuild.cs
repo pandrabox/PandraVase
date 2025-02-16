@@ -14,12 +14,12 @@ namespace com.github.pandrabox.pandravase.editor
 {
     public class AvatarBuildMenuDefinition
     {
-        [MenuItem("GameObject/PanBuildAndTest", false, 0)]
+        [MenuItem("GameObject/Pan/BuildAndTest", false, 0)]
         private static void AvatarBuild_BuildAndTest()
         {
             new AvatarBuild(Selection.activeGameObject, BuildMode.Test);
         }
-        [MenuItem("GameObject/PanBuildAndUpload", false, 0)]
+        [MenuItem("GameObject/Pan/BuildAndUpload", false, 0)]
         private static void AvatarBuild_BuildAndUpload()
         {
             new AvatarBuild(Selection.activeGameObject, BuildMode.Upload);
