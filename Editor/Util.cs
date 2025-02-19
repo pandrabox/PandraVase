@@ -107,6 +107,7 @@ namespace com.github.pandrabox.pandravase.editor
         public static GameObject GetAvatarRootGameObject(Component tgt) => GetAvatarDescriptor(tgt).gameObject;
         public static Transform GetAvatarRootTransform(Component tgt) => GetAvatarDescriptor(tgt).transform;
         public static VRCAvatarDescriptor GetAvatarDescriptor(Component current) => GetAvatarDescriptor(current?.transform);
+        public static VRCAvatarDescriptor GetAvatarDescriptor(GameObject current) => GetAvatarDescriptor(current?.transform);
         public static VRCAvatarDescriptor GetAvatarDescriptor(Transform current)
         {
             if (current == null) return null;
@@ -644,6 +645,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <returns></returns>
         public static List<Transform> GetDirectChildren(Component parent) => GetDirectChildren(parent.transform);
+        public static List<Transform> GetDirectChildren(GameObject parent) => GetDirectChildren(parent.transform);
         public static List<Transform> GetDirectChildren(Transform parent)
         {
             List<Transform> children = new List<Transform>();

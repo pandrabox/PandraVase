@@ -114,10 +114,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         private string ToggleOnName(string relativePath) => $@"o{SanitizeStr(relativePath)}";
         private string ToggleOffName(string relativePath) => $@"x{SanitizeStr(relativePath)}";
-        public void CreateToggleAnim(GameObject target, GameObject relativeRoot) => CreateToggleAnim(GetRelativePath(relativeRoot, target));
-        public void CreateToggleAnim(Transform target, GameObject relativeRoot) => CreateToggleAnim(GetRelativePath(relativeRoot, target));
-        public void CreateToggleAnim(GameObject target, Transform relativeRoot) => CreateToggleAnim(GetRelativePath(relativeRoot, target));
-        public void CreateToggleAnim(Transform target, Transform relativeRoot) => CreateToggleAnim(GetRelativePath(relativeRoot, target));
+        public void CreateToggleAnim(Component target, Component relativeRoot) => CreateToggleAnim(GetRelativePath(relativeRoot, target));
         public void CreateToggleAnim(string relativePath)
         {
             Clip(ToggleOnName(relativePath)).Bind(relativePath, typeof(GameObject), "m_IsActive").Const2F(1);
@@ -127,15 +124,9 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// Object Toggle Animの取得
         /// </summary>
-        public AnimationClip OnAnim(GameObject target, GameObject relativeRoot) => OnAnim(GetRelativePath(relativeRoot, target));
-        public AnimationClip OnAnim(Transform target, GameObject relativeRoot) => OnAnim(GetRelativePath(relativeRoot, target));
-        public AnimationClip OnAnim(GameObject target, Transform relativeRoot) => OnAnim(GetRelativePath(relativeRoot, target));
-        public AnimationClip OnAnim(Transform target, Transform relativeRoot) => OnAnim(GetRelativePath(relativeRoot, target));
+        public AnimationClip OnAnim(Component target, Component relativeRoot) => OnAnim(GetRelativePath(relativeRoot, target));
         public AnimationClip OnAnim(string relativePath) => OutpToggle(true, relativePath);
-        public AnimationClip OffAnim(GameObject target, GameObject relativeRoot) => OffAnim(GetRelativePath(relativeRoot, target));
-        public AnimationClip OffAnim(Transform target, GameObject relativeRoot) => OffAnim(GetRelativePath(relativeRoot, target));
-        public AnimationClip OffAnim(GameObject target, Transform relativeRoot) => OffAnim(GetRelativePath(relativeRoot, target));
-        public AnimationClip OffAnim(Transform target, Transform relativeRoot) => OffAnim(GetRelativePath(relativeRoot, target));
+        public AnimationClip OffAnim(Component target, Component relativeRoot) => OffAnim(GetRelativePath(relativeRoot, target));
         public AnimationClip OffAnim(string relativePath) => OutpToggle(false, relativePath);
         public AnimationClip OutpToggle(bool isOn, string relativePath)
         {

@@ -61,10 +61,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="inPropertyName">Bind対象のプロパティ名</param>
         /// <param name="curveType">Bind対象のタイプ</param>
         /// <returns>this</returns>
-        public AnimationClipBuilder Bind(GameObject target, GameObject relativeRoot, Type inType, string inPropertyName) => Bind(GetRelativePath(relativeRoot, target), inType, inPropertyName);
-        public AnimationClipBuilder Bind(Transform target, GameObject relativeRoot, Type inType, string inPropertyName) => Bind(GetRelativePath(relativeRoot, target), inType, inPropertyName);
-        public AnimationClipBuilder Bind(GameObject target, Transform relativeRoot, Type inType, string inPropertyName) => Bind(GetRelativePath(relativeRoot, target), inType, inPropertyName);
-        public AnimationClipBuilder Bind(Transform target, Transform relativeRoot, Type inType, string inPropertyName) => Bind(GetRelativePath(relativeRoot, target), inType, inPropertyName);
+        public AnimationClipBuilder Bind(Component target, Component relativeRoot, Type inType, string inPropertyName) => Bind(GetRelativePath(relativeRoot, target), inType, inPropertyName);
         public AnimationClipBuilder Bind(string inPath, Type inType, string inPropertyName)
         {
             if(_compositing) inPropertyName = inPropertyName.Replace("@a", axisName);

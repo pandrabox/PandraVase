@@ -43,7 +43,7 @@ namespace com.github.pandrabox.pandravase.editor
             ClearConsole();
             Debug.LogWarning($@"AvatarBuilder Build {tgt.name} On Mode {buildMode.ToString()} Start");
             ActivateSDKPanel();
-            UploadAvatarAsync();
+            _ = UploadAvatarAsync(); // 'await' 演算子を適用するため、非同期メソッドの呼び出しを待機します
         }
 
         public class BuildAvatarTarget
