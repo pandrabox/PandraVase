@@ -104,11 +104,9 @@ namespace com.github.pandrabox.pandravase.editor
             LowLevelDebugPrint($@"Componentの探索に失敗しました");
             return null;
         }
-        public static GameObject GetAvatarRootGameObject(GameObject tgt) => GetAvatarDescriptor(tgt).gameObject;
-        public static GameObject GetAvatarRootGameObject(Transform tgt) => GetAvatarDescriptor(tgt).gameObject;
-        public static Transform GetAvatarRootTransform(GameObject tgt) => GetAvatarDescriptor(tgt).transform;
-        public static Transform GetAvatarRootTransform(Transform tgt) => GetAvatarDescriptor(tgt).transform;
-        public static VRCAvatarDescriptor GetAvatarDescriptor(GameObject current) => GetAvatarDescriptor(current?.transform);
+        public static GameObject GetAvatarRootGameObject(Component tgt) => GetAvatarDescriptor(tgt).gameObject;
+        public static Transform GetAvatarRootTransform(Component tgt) => GetAvatarDescriptor(tgt).transform;
+        public static VRCAvatarDescriptor GetAvatarDescriptor(Component current) => GetAvatarDescriptor(current?.transform);
         public static VRCAvatarDescriptor GetAvatarDescriptor(Transform current)
         {
             if (current == null) return null;
@@ -366,7 +364,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// オブジェクトの削除
         /// </summary>
         /// <param name="target"></param>
-        static public void RemoveObject(Transform target) => RemoveObject(target?.gameObject);
+        static public void RemoveObject(Component target) => RemoveObject(target?.gameObject);
         static public void RemoveObject(GameObject target)
         {
             if (target != null)
@@ -374,10 +372,9 @@ namespace com.github.pandrabox.pandravase.editor
                 GameObject.DestroyImmediate(target);
             }
         }
-        static public void RemoveChildObject(Transform parent, string name) => RemoveObject(GetChildObject(parent, name));
-        static public void RemoveChildObject(GameObject parent, string name) => RemoveChildObject(parent?.transform, name);
+        static public void RemoveChildObject(Component parent, string name) => RemoveObject(GetChildObject(parent, name));
+        static public GameObject GetChildObject(Component parent, string name) => GetChildObject(parent?.transform, name);
         static public GameObject GetChildObject(Transform parent, string name) => parent?.Find(name)?.gameObject;
-        static public GameObject GetChildObject(GameObject parent, string name) => GetChildObject(parent?.transform, name);
 
         /// <summary>
         /// 文字列を無害化
@@ -401,7 +398,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="Target">対象</param>
         /// <param name="SW">設定値</param>
-        public static void SetEditorOnly(Transform Target, bool SW) => SetEditorOnly(Target?.gameObject, SW);
+        public static void SetEditorOnly(Component Target, bool SW) => SetEditorOnly(Target?.gameObject, SW);
         public static void SetEditorOnly(GameObject Target, bool SW)
         {
             if (SW)
@@ -421,7 +418,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="target">対象</param>
         /// <returns>状態(trueならばエディタオンリー)</returns>
-        public static bool IsEditorOnly(Transform target) => IsEditorOnly(target?.gameObject);
+        public static bool IsEditorOnly(Component target) => IsEditorOnly(target?.gameObject);
         public static bool IsEditorOnly(GameObject target)
         {
             return target.tag == "EditorOnly" && target.activeSelf == false;
@@ -433,9 +430,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="parent">親</param>
         /// <param name="child">子</param>
         /// <returns>相対パス</returns>
-        public static string GetRelativePath(Transform parent, GameObject child) => GetRelativePath(parent, child?.transform);
-        public static string GetRelativePath(GameObject parent, Transform child) => GetRelativePath(parent?.transform, child);
-        public static string GetRelativePath(GameObject parent, GameObject child) => GetRelativePath(parent?.transform, child?.transform);
+        public static string GetRelativePath(Component parent, Component child) => GetRelativePath(parent?.transform, child?.transform);
         public static string GetRelativePath(Transform parent, Transform child)
         {
             if (parent == null || child == null) return null;
@@ -648,7 +643,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// Transformの直接の子を返す
         /// </summary>
         /// <returns></returns>
-        public static List<Transform> GetDirectChildren(GameObject parent) => GetDirectChildren(parent.transform);
+        public static List<Transform> GetDirectChildren(Component parent) => GetDirectChildren(parent.transform);
         public static List<Transform> GetDirectChildren(Transform parent)
         {
             List<Transform> children = new List<Transform>();
@@ -814,11 +809,35 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
         public static PandraProject VaseProject(BuildContext ctx) => VaseProject(ctx.AvatarDescriptor);
-        public static PandraProject VaseProject(GameObject child) => VaseProject(GetAvatarDescriptor(child));
-        public static PandraProject VaseProject(Transform child) => VaseProject(GetAvatarDescriptor(child));
+        public static PandraProject VaseProject(Component child) => VaseProject(GetAvatarDescriptor(child));
         public static PandraProject VaseProject(VRCAvatarDescriptor desc)
         {
             return new PandraProject(desc, "PandraVase", ProjectTypes.VPM);
+        }
+
+
+        /// <summary>
+        /// 名前で子Transformを検索します。非アクティブな子も含めます。
+        /// </summary>
+        /// <param name="parent">親コンポーネント</param>
+        /// <param name="name">検索する名前</param>
+        /// <param name="includeInactive">非アクティブな子を含めるかどうか</param>
+        /// <returns>見つかったTransform</returns>
+        public static Transform FindEx(this Component parent, string name, bool includeInactive = true)
+        {
+            if (parent == null || string.IsNullOrEmpty(name))
+            {
+                LowLevelExeption("FindEx: parent or name is null or empty.");
+                return null;
+            }
+            if (includeInactive)
+            {
+                return parent.GetComponentsInChildren<Transform>(true).FirstOrDefault(child => child.name == name);
+            }
+            else
+            {
+                return parent.transform.Find(name);
+            }
         }
     }
 }
