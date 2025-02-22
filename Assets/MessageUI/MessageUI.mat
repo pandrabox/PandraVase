@@ -82,20 +82,20 @@ Material:
     - _OutlineCutoff: 0.333
     - _OutlineCutout: 0.24
     - _OutlineSize: 7.09
-    - _OutlineSmooth: 0.046
+    - _OutlineSmooth: 0.1
     - _OutlineTextCutoff: 0.552
     - _OutlineThickness: 10
-    - _OutlineWidth: 1.38
+    - _OutlineWidth: 4
     - _Parallax: 0.02
     - _Pivot: 0
-    - _Size: 0.4
+    - _Size: 1
     - _Smoothness: 0.142
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TextCutoff: 0.256
+    - _TextCutoff: 0.4
     - _TextEdge: 0.5
-    - _TextSmooth: 0.241
+    - _TextSmooth: 0.2
     - _Threshold: 0.644
     - _UVSec: 0
     - _ZWrite: 1

@@ -28,13 +28,70 @@ namespace com.github.pandrabox.pandravase.editor
         public static void PVMessageUIPass_Debug()
         {
             SetDebugMode(true);
-            new MsgTexture();
+            new PVMessageUIPassMain(TopAvatar);
         }
     }
 #endif
 
+    public class PVMessageUIPass : Pass<PVMessageUIPass>
+    {
+        protected override void Execute(BuildContext ctx)
+        {
+            foreach ( var a in AllAvatar)
+            {
+                new PVMessageUIPassMain(a);
+            }
+        }
+    }
+    public class PVMessageUIPassMain
+    {
+        PandraProject _prj;
+        public PVMessageUIPassMain(VRCAvatarDescriptor desc)
+        {
+            _prj = VaseProject(desc);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.github.pandrabox.pandravase/Assets/MessageUI/MessageUI.prefab");
+            var go = GameObject.Instantiate(prefab);
+            go.transform.SetParent(_prj.PrjRootObj.transform);
+
+            var ac = new AnimationClipsBuilder();
+            ac.Clip("off").Bind("Display", typeof(MeshRenderer), "material._CurrentNo").Const2F(0)
+                        .Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0);
+            var ab = new AnimatorBuilder("MessageUI");
+            ab.AddLayer().AddState("Local").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.If, 0, "IsLocal");
+            var localState = ab.CurrentState;
+
+
+            var mb = new MenuBuilder(_prj).AddFolder("MessageUI");
+            for (int i = 0; i < 5; i++)
+            {
+                ac.Clip($"m{i}").Bind("Display", typeof(MeshRenderer), "material._CurrentNo").Smooth(0f, (float)i, 3f, (float)i)
+                            .Bind("Display", typeof(GameObject), "m_IsActive").Smooth(0f, 1f, 3f, 1f);
+                ab.AddState($"m{i}").SetMotion(ac.Outp($"m{i}")).TransToCurrent(localState).AddCondition(AnimatorConditionMode.If, 0, $"IsM{i}", true);
+                mb.AddToggle($"IsM{i}", 1, ParameterSyncType.Bool, localOnly: false);
+            }
+
+            ac.Clip("s0").Bind("Display", typeof(MeshRenderer), "material._Size").Const2F(0);
+            ac.Clip("s1").Bind("Display", typeof(MeshRenderer), "material._Size").Const2F(1);
+            var bb = new BlendTreeBuilder("size");
+            bb.RootDBT(() => {
+                bb.Param("1").Add1D("menusize", () =>
+                {
+                    bb.Param(0).AddMotion(ac.Outp("s0"));
+                    bb.Param(1).AddMotion(ac.Outp("s1"));
+                });
+            });
+            mb.AddRadial("menusize",defaultVal:1,localOnly:false);
+
+
+            ab.Attach(go);
+            bb.Attach(go);
+
+
+        }
+    }
     public class MsgTexture
     {
+
         public MsgTexture()
         {
             int padding = 3;

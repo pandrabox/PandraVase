@@ -16,17 +16,17 @@
         _Size("Size", Range(0, 1)) = 0.5
 
         [Header(Text)]
-        _TextCutoff("Text Cutoff", Range(0,1)) = 0.7
-        _TextSmooth("Text Smooth", Range(0,3)) = 0.1
+        _TextCutoff("Text Cutoff", Range(0,1)) = 0.4
+        _TextSmooth("Text Smooth", Range(0,3)) = 0.2
 
         [Space(10)]
         [Header(Outline)]
-        _OutlineWidth("Width", Range(0, 10)) = 1
-        _OutlineSmooth("Smooth", Range(0,1)) = 0.05
+        _OutlineWidth("Width", Range(0, 10)) = 4
+        _OutlineSmooth("Smooth", Range(0,1)) = 0.1
 
         [Space(10)]
         [Header(Label)]
-        _HeightRatio("Height Ratio", Range(0, 1)) = 0.1
+        _HeightRatio("Height Ratio", Range(0, 1)) = 0.125
         _CurrentNo("Current Number", Int) = 0
     }
 
