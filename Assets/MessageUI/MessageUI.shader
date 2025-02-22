@@ -21,7 +21,7 @@
 
         [Space(10)]
         [Header(Outline)]
-        _OutlineWidth("Width", Range(0, 100)) = 3.5
+        _OutlineWidth("Width", Range(0, 10)) = 1
         _OutlineSmooth("Smooth", Range(0,1)) = 0.05
 
         [Space(10)]
@@ -133,9 +133,16 @@
             v2f vert(appdata v)
             {
                 v2f o;
-                half sectionHeight = _HeightRatio;
+                // テクスチャの横幅に対する高さの割合を計算
+                half aspectRatio = _MainTex_TexelSize.z / _MainTex_TexelSize.w; // width/height
+                half sectionHeight = _HeightRatio * aspectRatio;
+                half totalSections = 1.0h / sectionHeight;
+                
+
+
+                // 正確な位置計算
                 o.uv.x = v.uv.x;
-                o.uv.y = 1.0h - (sectionHeight * (_CurrentNo + v.uv.y));
+                o.uv.y = 1.0h - (v.uv.y * sectionHeight + _CurrentNo * sectionHeight);
                 
                 half3 cameraPos = _WorldSpaceCameraPos;
                 half3 cameraForward = -UNITY_MATRIX_V._m20_m21_m22;
@@ -144,11 +151,15 @@
                 half3 rightDir = normalize(UNITY_MATRIX_V._m00_m01_m02);
                 half3 upDir    = normalize(UNITY_MATRIX_V._m10_m11_m12);
                 
-                half fovY = atan(1.0h / unity_CameraProjection._m11);
-                half scaleBase = 2.0h * tan(fovY);
-                half scaleWidth = min(scaleBase / _HeightRatio, scaleBase) * _Size;
+                half fovY = atan(1.0h / unity_CameraProjection._m11) * 2.0h;
+                half fovX = atan(1.0h / unity_CameraProjection._m00) * 2.0h;
+
+                half frustumHeight = 2.0h * tan(fovY * 0.5h);
+                half frustumWidth = 2.0h * tan(fovX * 0.5h);
+
+                half scaleWidth = min(frustumHeight/ _HeightRatio, frustumWidth) * _Size;
                 half scaleHeight = scaleWidth * _HeightRatio;
-                
+
                 half3 billboardPos = fixedPosition
                     - rightDir * (v.vertex.x * scaleWidth)
                     - upDir    * (v.vertex.y * scaleHeight);

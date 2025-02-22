@@ -39,7 +39,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             int padding = 3;
             int width = 2048;
-            float heightRatio = 0.1f;
+            float heightRatio = 1/8f;
             int height = (int)(width * heightRatio);
             int y = (width - height) / 2;
             List<Texture2D> msgTexs = new List<Texture2D>();
@@ -60,7 +60,8 @@ namespace com.github.pandrabox.pandravase.editor
             }
 
             Texture2D combinedTexture = CombineTexturesVertically(msgTexs);
-            OutpAsset(combinedTexture);
+            var path = OutpAsset(combinedTexture);
+            SetTextureImportSettings(path);
 
 
             AssetDatabase.Refresh();
@@ -93,6 +94,27 @@ namespace com.github.pandrabox.pandravase.editor
             return combinedTexture;
         }
 
+        private void SetTextureImportSettings(string path)
+        {
+            TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer != null)
+            {
+
+                importer.textureType = TextureImporterType.Default;
+                importer.textureShape = TextureImporterShape.Texture2D;
+                importer.sRGBTexture = false;
+                importer.alphaSource = TextureImporterAlphaSource.None;
+                importer.alphaIsTransparency = false;
+                importer.npotScale = TextureImporterNPOTScale.None;
+                importer.isReadable = true;
+                importer.mipmapEnabled = true;
+                importer.wrapMode = TextureWrapMode.Repeat;
+                importer.filterMode = FilterMode.Bilinear;
+                importer.maxTextureSize = 8192; // Set to the maximum size supported by Unity
+                importer.textureCompression = TextureImporterCompression.CompressedLQ;
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+            }
+        }
 
     }
 
