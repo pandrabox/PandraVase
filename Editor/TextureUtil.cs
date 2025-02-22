@@ -147,13 +147,35 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="height">高さ　省略時正方形</param>
         /// <param name="x">矩形左上座標 省略時0</param>
         /// <param name="y">矩形左上座標 省略時x</param>
-        public static void DrawRect(this Texture2D texture, Color? color=null, int width=-1, int height=-1, int x=0, int y=-1)
+        public static void DrawRect(this Texture2D texture, Color? color = null, int x = 0, int y = 0, int width = -1, int height = -1)
         {
-            if (texture == null) return;
             if (width == -1) width = texture.width;
-            if (height == -1) height = width;
-            if (y == -1) y = x;
-            texture.SetPixels(x, y, width, height, Enumerable.Repeat(color ?? Color.white, width * height).ToArray());
+            if (height == -1) height = texture.height;
+            Color fillColor = color ?? Color.clear;
+            Color[] fillPixels = Enumerable.Repeat(fillColor, width * height).ToArray();
+            texture.SetPixels(x, y, width, height, fillPixels);
+            texture.Apply();
+        }
+
+        /// <summary>
+        /// テクスチャをトリムする
+        /// </summary>
+        /// <param name="texture">入力</param>
+        /// <param name="x">切り出しx座標</param>
+        /// <param name="y">切り出しy座標</param>
+        /// <param name="width">切り出し幅（省略時、テクスチャ幅-x*2）</param>
+        /// <param name="height">切り出し高さ（省略時、テクスチャ高さ-y*2）</param>
+        /// <returns></returns>
+        public static Texture2D Trim(this Texture2D texture, int x, int y, int width = -1, int height = -1)
+        {
+            if (width == -1) width = texture.width - x * 2;
+            if (height == -1) height = texture.height - y * 2;
+            LowLevelDebugPrint($"Trimming texture: {texture.width}x{texture.height} -> {width}x{height}");
+            Texture2D trimmedTexture = new Texture2D(width, height);
+            Color[] pixels = texture.GetPixels(x, y, width, height);
+            trimmedTexture.SetPixels(pixels);
+            trimmedTexture.Apply();
+            return trimmedTexture;
         }
     }
 }

@@ -140,7 +140,23 @@ namespace com.github.pandrabox.pandravase.editor
             }
 
             var assetPath = AssetSavePath(asset, path);
-            AssetDatabase.CreateAsset(asset, assetPath);
+            LowLevelDebugPrint($"保存パス: {assetPath}", debugOnly: false, level: LogType.Log);
+
+            if (asset is Texture2D texture)
+            {
+                TextureUtil.SaveTexture(texture, assetPath);
+                return assetPath;
+            }
+
+            try
+            {
+                AssetDatabase.CreateAsset(asset, assetPath);
+            }
+            catch (Exception ex)
+            {
+                LowLevelDebugPrint($"アセットの作成に失敗しました: {ex.Message}", debugOnly: false, level: LogType.Error);
+                return null;
+            }
 
             return assetPath;
         }

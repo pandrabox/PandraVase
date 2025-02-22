@@ -15,6 +15,9 @@ using System.Linq;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDKBase;
 using System.Text.RegularExpressions;
+using static com.github.pandrabox.pandravase.editor.TextureUtil;
+using System.Security.Cryptography;
+
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -34,23 +37,65 @@ namespace com.github.pandrabox.pandravase.editor
     {
         public MsgTexture()
         {
-            string[] msgs = new string[] { "Hello", "World", "!" };
-            int width = 512;
-            float heightRatio = .1f;
+            int padding = 3;
+            int width = 2048;
+            float heightRatio = 0.1f;
             int height = (int)(width * heightRatio);
-            using (var capture = new PanCapture(Color.black))
+            int y = (width - height) / 2;
+            List<Texture2D> msgTexs = new List<Texture2D>();
+            using (var c = new PanCapture(Color.black, padding: padding, width: width))
             {
-                var p = capture.TextToImage("test", Color.white);
-                var p2 = Util.OutpAsset(p);
-                LowLevelDebugPrint(p2);
+                msgTexs.Add(c.TextToImage("Hello, World!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("こんにちは、世界!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("안녕하세요, 세계!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("你好，世界!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("Hello, World!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("こんにちは、世界!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("안녕하세요, 세계!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("你好，世界!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("Hello, World!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("こんにちは、世界!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("안녕하세요, 세계!".PadString(100), Color.white).Trim(0, y));
+                msgTexs.Add(c.TextToImage("你好，世界!".PadString(100), Color.white).Trim(0, y));
             }
 
-            //foreach (var msg in msgs)
-            //{
-            //    var p = capture.TextToImage(msg, Color.white);
-            //    var p2 = Util.OutpAsset(p);
-            //    LowLevelDebugPrint(p2);
-            //}
+            Texture2D combinedTexture = CombineTexturesVertically(msgTexs);
+            OutpAsset(combinedTexture);
+
+
+            AssetDatabase.Refresh();
         }
+
+        private Texture2D CombineTexturesVertically(List<Texture2D> textures)
+        {
+            if (textures == null || textures.Count == 0)
+            {
+                Debug.LogError("No textures to combine.");
+                return null;
+            }
+
+            int width = textures[0].width;
+            int totalHeight = textures.Sum(tex => tex.height);
+
+            Texture2D combinedTexture = new Texture2D(width, totalHeight, TextureFormat.RGBA32, false);
+            int offsetY = 0;
+
+            // テクスチャを逆順に結合
+            for (int i = textures.Count - 1; i >= 0; i--)
+            {
+                Texture2D tex = textures[i];
+                Color[] pixels = tex.GetPixels();
+                combinedTexture.SetPixels(0, offsetY, tex.width, tex.height, pixels);
+                offsetY += tex.height;
+            }
+
+            combinedTexture.Apply();
+            return combinedTexture;
+        }
+
+
     }
+
+
+
 }
