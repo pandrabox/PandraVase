@@ -43,36 +43,106 @@ namespace com.github.pandrabox.pandravase.editor
     public class PVMessageUIPassMain
     {
         PandraProject _prj;
+        PVMessageUI[] targets;
+        GameObject MsgRoot;
+        
         public PVMessageUIPassMain(VRCAvatarDescriptor desc)
         {
-            var tgt = desc.transform.GetComponentInChildren<PVMessageUI>();
-            if (tgt == null) return;
+            targets = desc.transform.GetComponentsInChildren<PVMessageUI>();
+            if (targets.Length == 0) return;
             _prj = VaseProject(desc);
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.github.pandrabox.pandravase/Assets/MessageUI/MessageUI.prefab");
-            var go = GameObject.Instantiate(prefab);
-            go.transform.SetParent(_prj.PrjRootObj.transform);
+            PrefabInstantiate();
+            CreateImage();
+            CreateAnimator();
+        }
+
+        private void CreateAnimator()
+        {
+
+
 
             var ac = new AnimationClipsBuilder();
-            ac.Clip("off").Bind("Display", typeof(MeshRenderer), "material._CurrentNo").Const2F(0)
-                        .Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0);
-            var ab = new AnimatorBuilder("MessageUI");
-            ab.AddLayer().AddState("Local").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.If, 0, "IsLocal");
-            if (true)
-            {
-                LowLevelDebugPrint("注意：デバッグのために全体表示してます");
-                ab.TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.IfNot, 0, "IsLocal");
-            }
+            ac.Clip("off").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0);
+            var ab = new AnimatorBuilder("MessageUI").AddLayer();
+            ab.AddSubStateMachine("Local");
+            ab.AddState("Local").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, .5f, "IsLocal");
             var localState = ab.CurrentState;
+            ab.AddSubStateMachine("Remote");
+            ab.AddState("Remote").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Less, .5f, "IsLocal");
+            var remoteState = ab.CurrentState;
 
 
             var mb = new MenuBuilder(_prj).AddFolder("MessageUI");
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < targets.Length; i++)
             {
-                ac.Clip($"m{i}").Bind("Display", typeof(MeshRenderer), "material._CurrentNo").Smooth(0f, (float)i, 3f, (float)i)
-                            .Bind("Display", typeof(GameObject), "m_IsActive").Smooth(0f, 1f, 3f, 1f);
-                ab.AddState($"m{i}").SetMotion(ac.Outp($"m{i}")).TransToCurrent(localState).AddCondition(AnimatorConditionMode.If, 0, $"IsM{i}", true);
-                mb.AddToggle($"IsM{i}", 1, ParameterSyncType.Bool, localOnly: false);
+                PVMessageUI tgt = targets[i];
+
+                ac.Clip($"Appear{i}")
+                    .Bind("Display", typeof(GameObject), "m_IsActive").Smooth(0, 1, tgt.DisplayDuration, 1)
+                    .Bind("Display", typeof(MeshRenderer), "material._CurrentNo").Const2F(i)
+                    .Color("Display", typeof(MeshRenderer), "material._TextColor", tgt.TextColor)
+                    .Color("Display", typeof(MeshRenderer), "material._OutlineColor", tgt.OutlineColor);
+
+
+                var rootState = tgt.IsRemote ? remoteState : localState;
+                string usedParamName = $"{tgt.ParameterName}IsUsed";
+                ab.SetCurrentStateMachine(tgt.IsRemote ? "Remote" : "Local");
+
+                
+
+
+                //-----------------Appear-----------------
+                ab.AddState($"Appear{i}").SetMotion(ac.Outp($"Appear{i}"));
+                ab.SetParameterDriver(usedParamName, 1);
+
+                //if (tgt.ConditionMode == AnimatorConditionMode.Equals)
+                //{
+                //    ab.TransToCurrent(root)
+                //        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue - 0.00001f, tgt.ParameterName).MoveInstant()
+                //        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue + 0.00001f, tgt.ParameterName).MoveInstant();
+                //    if (tgt.InactiveByParameter)
+                //    {
+                //        ab.TransFromCurrent(root).AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue - 0.00001f, tgt.ParameterName).MoveInstant();
+                //        ab.TransFromCurrent(root).AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue + 0.00001f, tgt.ParameterName).MoveInstant();
+                //    }
+                //}
+
+                if (tgt.ConditionMode == AnimatorConditionMode.If)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
+                    if(tgt.InactiveByParameter)
+                    {
+                        ab.TransFromCurrent(rootState)
+                            .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName);
+                    }
+                }
+                ab.TransFromCurrent(rootState, hasExitTime: true);
+
+
+
+
+                //-----------------Reset-----------------
+
+                ab.AddState($"Reset{i}").SetParameterDriver(usedParamName, 0);
+                if (tgt.ConditionMode == AnimatorConditionMode.If)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+
+                ab.TransFromCurrent(rootState).MoveInstant();
+
+
+
+
+
+
+                mb.AddToggle(tgt.ParameterName, 1, ParameterSyncType.Bool);
             }
+
 
             ac.Clip("s0").Bind("Display", typeof(MeshRenderer), "material._Size").Const2F(0);
             ac.Clip("s1").Bind("Display", typeof(MeshRenderer), "material._Size").Const2F(1);
@@ -84,49 +154,44 @@ namespace com.github.pandrabox.pandravase.editor
                     bb.Param(1).AddMotion(ac.Outp("s1"));
                 });
             });
-            mb.AddRadial("menusize",defaultVal:1,localOnly:false);
+            mb.AddRadial("menusize", defaultVal: 1);
 
 
-            ab.Attach(go);
-            bb.Attach(go);
-
-
+            ab.Attach(MsgRoot);
+            bb.Attach(MsgRoot);
         }
-    }
-    public class MsgTexture
-    {
 
-        public MsgTexture()
+        private void CreateImage()
         {
             int padding = 3;
             int width = 2048;
-            float heightRatio = 1/8f;
+            float heightRatio = 1 / 8f;
             int height = (int)(width * heightRatio);
             int y = (width - height) / 2;
             List<Texture2D> msgTexs = new List<Texture2D>();
             using (var c = new PanCapture(Color.black, padding: padding, width: width))
             {
-                msgTexs.Add(c.TextToImage("Hello, World!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("こんにちは、世界!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("안녕하세요, 세계!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("你好，世界!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("Hello, World!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("こんにちは、世界!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("안녕하세요, 세계!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("你好，世界!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("Hello, World!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("こんにちは、世界!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("안녕하세요, 세계!".PadString(100), Color.white).Trim(0, y));
-                msgTexs.Add(c.TextToImage("你好，世界!".PadString(100), Color.white).Trim(0, y));
+                foreach (PVMessageUI tgt in targets)
+                {
+                    msgTexs.Add(c.TextToImage(tgt.Message.PadString(100), Color.white).Trim(0, y));
+                }
             }
-
             Texture2D combinedTexture = CombineTexturesVertically(msgTexs);
             var path = OutpAsset(combinedTexture);
             SetTextureImportSettings(path);
 
-
-            AssetDatabase.Refresh();
+            // Set combinedTexture to the MainTexture of the MeshRenderer's 0th material in "Display" object
+            var displayObj = MsgRoot.transform.Find("Display");
+            if (displayObj != null)
+            {
+                var meshRenderer = displayObj.GetComponent<MeshRenderer>();
+                if (meshRenderer != null && meshRenderer.materials.Length > 0)
+                {
+                    meshRenderer.materials[0].mainTexture = combinedTexture;
+                }
+            }
         }
+
 
         private Texture2D CombineTexturesVertically(List<Texture2D> textures)
         {
@@ -178,8 +243,16 @@ namespace com.github.pandrabox.pandravase.editor
             }
         }
 
+
+
+        private void PrefabInstantiate()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.github.pandrabox.pandravase/Assets/MessageUI/MessageUI.prefab");
+            MsgRoot = GameObject.Instantiate(prefab);
+            MsgRoot.transform.SetParent(_prj.PrjRootObj.transform);
+        }
+
+
     }
-
-
 
 }

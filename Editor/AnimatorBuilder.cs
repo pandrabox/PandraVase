@@ -79,20 +79,29 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// CurrentStateへの遷移を定義 ExitTime等を指定する場合はtiを指定する、しないとほぼ全0
         /// </summary>
-        public AnimatorBuilder TransToCurrent(AnimatorState from, TransitionInfo ti = null) => SetTransition(from, _currentState, ti);
+        public AnimatorBuilder TransToCurrent(AnimatorState from, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0) 
+                => SetTransition(from, _currentState, hasExitTime, exitTime, fixedDuration, transitionDuration, transitionOffset);
 
         /// <summary>
         /// CurrentStateから遷移を定義 ExitTime等を指定する場合はtiを指定する、しないとほぼ全0
         /// </summary>
-        public AnimatorBuilder TransFromCurrent(AnimatorState to, TransitionInfo ti = null) => SetTransition(_currentState, to, ti);
+        public AnimatorBuilder TransFromCurrent(AnimatorState to, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0) 
+                => SetTransition(_currentState, to, hasExitTime, exitTime, fixedDuration, transitionDuration, transitionOffset);
 
 
         /// <summary>
         /// 任意２ステート間の遷移を定義 ExitTime等を指定する場合はtiを指定する、しないとほぼ全0
         /// </summary>
-        public AnimatorBuilder SetTransition(AnimatorState from, AnimatorState to, TransitionInfo transitionInfo = null)
+        /// <param name="from">遷移元</param>
+        /// <param name="to">遷移先</param>
+        /// <param name="hasExitTime">trueに設定すると、現在のアニメーション状態が指定された終了時間（ExitTime）に達したときにトランジションが発生します。</param>
+        /// <param name="exitTime">トランジションが発生する時間（正規化された時間）。例えば、0.75に設定すると、アニメーションの75%が終了した時点でトランジションが発生します。</param>
+        /// <param name="fixedDuration">trueにするとtransitionDurationの単位がsになります。</param>
+        /// <param name="transitionDuration">トランジションの期間（秒）。例えば、1.0に設定すると、トランジションに1秒かかります。</param>
+        /// <param name="transitionOffset">トランジションの開始オフセット（正規化された時間）。例えば、0.1に設定すると、トランジションが通常よりも早く開始されます。</param>
+        public AnimatorBuilder SetTransition(AnimatorState from, AnimatorState to, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0)
         {
-            if (transitionInfo == null) transitionInfo = FastTrans;
+            TransitionInfo transitionInfo = new TransitionInfo(hasExitTime, exitTime, fixedDuration, transitionDuration, transitionOffset);
             _currentTransition = from.AddTransition(to);
             _currentTransition.canTransitionToSelf = false;
             _currentTransition.hasExitTime = transitionInfo.HasExitTime;
@@ -135,7 +144,7 @@ namespace com.github.pandrabox.pandravase.editor
             _currentTransition.AddCondition(mode, threshold, param);
             if (roundTrip)
             {
-                SetTransition(_currentTransitionTo, _currentTransitionFrom, _currentTransitionInfo);
+                SetTransition(_currentTransitionTo, _currentTransitionFrom, _currentTransitionInfo.HasExitTime, _currentTransitionInfo.ExitTime, _currentTransitionInfo.FixedDuration, _currentTransitionInfo.TransitionDuration, _currentTransitionInfo.TransitionOffset);
                 if (mode == AnimatorConditionMode.If)
                 {
                     AddCondition(AnimatorConditionMode.IfNot, threshold, param);
@@ -307,10 +316,40 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public AnimatorBuilder SetCurrentStateMachine(string name)
         {
-            var child = _currentLayer?.stateMachine?.stateMachines?.FirstOrDefault(x => x.stateMachine?.name == name);
-            SetCurrentStateMachine(child);
+            if (_currentLayer == null)
+            {
+                LowLevelExeption("Current layer is null.");
+                return this;
+            }
+
+            if (_currentLayer.stateMachine == null)
+            {
+                LowLevelExeption("Current layer's state machine is null.");
+                return this;
+            }
+
+            if (_currentLayer.stateMachine.stateMachines == null || _currentLayer.stateMachine.stateMachines.Length == 0)
+            {
+                LowLevelExeption("Current layer's state machine has no sub-state machines.");
+                return this;
+            }
+
+            AnimatorStateMachine stateMachine = _currentLayer.stateMachine.stateMachines
+                .FirstOrDefault(sm => sm.stateMachine.name == name).stateMachine;
+
+            if (stateMachine == null)
+            {
+                LowLevelExeption($"State machine '{name}' not found.");
+                return this;
+            }
+
+            SetCurrentStateMachine(stateMachine);
             return this;
         }
+
+
+
+
 
         /// <summary>
         /// カレントサブステートマシンを設定する
@@ -319,7 +358,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (c == null)
             {
-                LowLevelDebugPrint($@"ステートマシン{c}を取得しようとし、失敗しました");
+                LowLevelExeption($@"ステートマシン{c}を取得しようとし、失敗しました");
                 _currentStateMachine = null;
                 return this;
             }
@@ -336,6 +375,12 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public AnimatorBuilder SetCurrentStateMachine(AnimatorStateMachine stateMachine)
         {
+            if (stateMachine == null)
+            {
+                LowLevelExeption($@"カレントサブステートマシンの設定に、失敗しました");
+                _currentStateMachine = null;
+                return this;
+            }
             _currentStateMachine = stateMachine;
             return this;
         }

@@ -53,6 +53,25 @@ namespace com.github.pandrabox.pandravase.editor
             return this;
         }
 
+
+
+
+        /// <summary>
+        /// 色のバインドと定数定義
+        /// </summary>
+        /// <param name="inPath">Bind対象の相対パス</param>
+        /// <param name="inType">Bind対象のタイプ</param>
+        /// <param name="inPropertyName">Bind対象のプロパティ名(末尾の.*を除く)</param>
+        /// <param name="c">設定する色</param>
+        public AnimationClipBuilder Color(string inPath, Type inType, string inPropertyName, Color c)
+        {
+            Bind(inPath, inType, $@"{inPropertyName}.r").Const2F(c.r);
+            Bind(inPath, inType, $@"{inPropertyName}.g").Const2F(c.g);
+            Bind(inPath, inType, $@"{inPropertyName}.b").Const2F(c.b);
+            Bind(inPath, inType, $@"{inPropertyName}.a").Const2F(c.a);
+            return this;
+        }
+
         /// <summary>
         /// Bindingの定義
         /// </summary>
@@ -68,6 +87,7 @@ namespace com.github.pandrabox.pandravase.editor
             _curveBinding = EditorCurveBinding.FloatCurve(inPath, inType, inPropertyName);
             return this;
         }
+
 
         /// <summary>
         /// 直前に定義したBindに基づきLinerカーブをセット
@@ -102,28 +122,28 @@ namespace com.github.pandrabox.pandravase.editor
             var keys = new List<Keyframe>();
             for (int i = 0; i < keyPairs.Length - 1; i += 2)
             {
-                float? time=null, value = null;
-                if (keyPairs[i] is float t)
+                float? time = null, value = null;
+                if (keyPairs[i] is IConvertible)
                 {
-                    time = t;
+                    time = Convert.ToSingle(keyPairs[i]);
                 }
                 else
                 {
-                    LowLevelDebugPrint($@"Smoothキーペアの時間の指定が不正です({keyPairs[i].GetType()})。floatで指定してください。", true, LogType.Exception);
+                    LowLevelDebugPrint($@"Smoothキーペアの時間の指定が不正です({keyPairs[i].GetType()})。floatにキャスト可能な型で指定してください。", true, LogType.Exception);
                 }
-                if (keyPairs[i+1] is float f)
+                if (keyPairs[i + 1] is IConvertible)
                 {
-                    value = f;
+                    value = Convert.ToSingle(keyPairs[i + 1]);
                 }
-                if (keyPairs[i+1] is Vector3 v)
+                else if (keyPairs[i + 1] is Vector3 v)
                 {
                     value = v.GetAxis(_axis);
                 }
-                if(keyPairs[i + 1] is Quaternion q)
+                else if (keyPairs[i + 1] is Quaternion q)
                 {
                     value = q.GetAxis(_axis);
                 }
-                if(time.HasValue && value.HasValue)
+                if (time.HasValue && value.HasValue)
                 {
                     Keyframe k = new Keyframe(time.Value, value.Value);
                     keys.Add(k);
@@ -148,7 +168,6 @@ namespace com.github.pandrabox.pandravase.editor
             AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
             return this;
         }
-
 
         /// <summary>
         /// AnimationClipを出力
