@@ -107,7 +107,8 @@ namespace com.github.pandrabox.pandravase.editor
                 importer.alphaIsTransparency = false;
                 importer.npotScale = TextureImporterNPOTScale.None;
                 importer.isReadable = true;
-                importer.mipmapEnabled = true;
+                importer.streamingMipmaps = true;
+                importer.mipmapEnabled = false;
                 importer.wrapMode = TextureWrapMode.Repeat;
                 importer.filterMode = FilterMode.Bilinear;
                 importer.maxTextureSize = 8192; // Set to the maximum size supported by Unity
