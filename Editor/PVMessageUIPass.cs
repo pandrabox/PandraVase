@@ -37,10 +37,7 @@ namespace com.github.pandrabox.pandravase.editor
     {
         protected override void Execute(BuildContext ctx)
         {
-            foreach ( var a in AllAvatar)
-            {
-                new PVMessageUIPassMain(a);
-            }
+            new PVMessageUIPassMain(ctx.AvatarDescriptor);
         }
     }
     public class PVMessageUIPassMain
@@ -48,6 +45,8 @@ namespace com.github.pandrabox.pandravase.editor
         PandraProject _prj;
         public PVMessageUIPassMain(VRCAvatarDescriptor desc)
         {
+            var tgt = desc.transform.GetComponentInChildren<PVMessageUI>();
+            if (tgt == null) return;
             _prj = VaseProject(desc);
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.github.pandrabox.pandravase/Assets/MessageUI/MessageUI.prefab");
             var go = GameObject.Instantiate(prefab);
@@ -58,6 +57,11 @@ namespace com.github.pandrabox.pandravase.editor
                         .Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0);
             var ab = new AnimatorBuilder("MessageUI");
             ab.AddLayer().AddState("Local").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.If, 0, "IsLocal");
+            if (true)
+            {
+                LowLevelDebugPrint("注意：デバッグのために全体表示してます");
+                ab.TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.IfNot, 0, "IsLocal");
+            }
             var localState = ab.CurrentState;
 
 
