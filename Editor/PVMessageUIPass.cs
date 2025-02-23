@@ -45,7 +45,7 @@ namespace com.github.pandrabox.pandravase.editor
         PandraProject _prj;
         PVMessageUI[] targets;
         GameObject MsgRoot;
-        
+
         public PVMessageUIPassMain(VRCAvatarDescriptor desc)
         {
             targets = desc.transform.GetComponentsInChildren<PVMessageUI>();
@@ -71,7 +71,7 @@ namespace com.github.pandrabox.pandravase.editor
             ab.AddState("Remote").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Less, .5f, "IsLocal");
             var remoteState = ab.CurrentState;
 
-
+            
             var mb = new MenuBuilder(_prj).AddFolder("MessageUI");
             for (int i = 0; i < targets.Length; i++)
             {
@@ -88,24 +88,14 @@ namespace com.github.pandrabox.pandravase.editor
                 string usedParamName = $"{tgt.ParameterName}IsUsed";
                 ab.SetCurrentStateMachine(tgt.IsRemote ? "Remote" : "Local");
 
-                
+
 
 
                 //-----------------Appear-----------------
                 ab.AddState($"Appear{i}").SetMotion(ac.Outp($"Appear{i}"));
                 ab.SetParameterDriver(usedParamName, 1);
 
-                //if (tgt.ConditionMode == AnimatorConditionMode.Equals)
-                //{
-                //    ab.TransToCurrent(root)
-                //        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue - 0.00001f, tgt.ParameterName).MoveInstant()
-                //        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue + 0.00001f, tgt.ParameterName).MoveInstant();
-                //    if (tgt.InactiveByParameter)
-                //    {
-                //        ab.TransFromCurrent(root).AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue - 0.00001f, tgt.ParameterName).MoveInstant();
-                //        ab.TransFromCurrent(root).AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue + 0.00001f, tgt.ParameterName).MoveInstant();
-                //    }
-                //}
+               
 
                 if (tgt.ConditionMode == AnimatorConditionMode.If)
                 {
@@ -118,6 +108,68 @@ namespace com.github.pandrabox.pandravase.editor
                             .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName);
                     }
                 }
+                if(tgt.ConditionMode == AnimatorConditionMode.IfNot)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
+                    if (tgt.InactiveByParameter)
+                    {
+                        ab.TransFromCurrent(rootState)
+                            .AddCondition(AnimatorConditionMode.Greater, 0.5f, tgt.ParameterName);
+                    }
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Greater)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
+                    if (tgt.InactiveByParameter)
+                    {
+                        ab.TransFromCurrent(rootState)
+                            .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue, tgt.ParameterName);
+                    }
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Less)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
+                    if (tgt.InactiveByParameter)
+                    {
+                        ab.TransFromCurrent(rootState)
+                            .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue, tgt.ParameterName);
+                    }
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Equals)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue - DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue + DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
+                    if (tgt.InactiveByParameter)
+                    {
+                        ab.TransFromCurrent(rootState).AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue - DELTA, tgt.ParameterName);
+                        ab.TransFromCurrent(rootState).AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue + DELTA, tgt.ParameterName);
+                    }
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.NotEqual)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue - DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue + DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
+                    if (tgt.InactiveByParameter)
+                    {
+                        ab.TransFromCurrent(rootState)
+                            .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue - DELTA, tgt.ParameterName)
+                            .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue + DELTA, tgt.ParameterName);
+                    }
+                }
+
+
                 ab.TransFromCurrent(rootState, hasExitTime: true);
 
 
@@ -132,10 +184,42 @@ namespace com.github.pandrabox.pandravase.editor
                         .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName)
                         .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
                 }
+                if(tgt.ConditionMode == AnimatorConditionMode.IfNot)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Greater)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Less)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Equals)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue - DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue + DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.NotEqual)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue - DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue + DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
 
                 ab.TransFromCurrent(rootState).MoveInstant();
-
-
 
 
 
