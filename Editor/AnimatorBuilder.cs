@@ -255,11 +255,19 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public AnimatorBuilder AddAnimatorParameter(string name, float defaultFloat = 0, AnimatorControllerParameterType type = AnimatorControllerParameterType.Float)
         {
+            if (_ac.parameters.Any(p => p.name == name))
+            {
+                LowLevelDebugPrint($@"アニメータパラメータ{name}は既に存在します", level: LogType.Log);
+                return this;
+            }
+            LowLevelDebugPrint($@"アニメータパラメータ{name}({type}, {defaultFloat})を追加します");
             _ac.parameters = _ac.parameters.Concat(
                 new[] { new AnimatorControllerParameter {
                     name = name,
                     type = type ,
-                    defaultFloat = defaultFloat
+                    defaultFloat = defaultFloat ,
+                    defaultBool = defaultFloat == 1 ,
+                    defaultInt = (int)defaultFloat
                 } }
             ).ToArray();
             return this;

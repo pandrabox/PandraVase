@@ -52,6 +52,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (targets.Length == 0) return;
             _prj = VaseProject(desc);
             PrefabInstantiate();
+            targets = desc.transform.GetComponentsInChildren<PVMessageUI>();
             CreateImage();
             CreateAnimator();
         }
@@ -64,15 +65,82 @@ namespace com.github.pandrabox.pandravase.editor
             var ac = new AnimationClipsBuilder();
             ac.Clip("off").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0);
             var ab = new AnimatorBuilder("MessageUI").AddLayer();
+            ab.AddState("SWOFF").SetMotion(ac.Outp("off")).SetParameterDriver("Vase/MessageUI/SWGreater0.5IsUsed", 0);
+            var swOffState = ab.CurrentState;
             ab.AddSubStateMachine("Local");
             ab.AddState("Local").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, .5f, "IsLocal");
+            ab.AddCondition(AnimatorConditionMode.Greater, .5f, "Vase/MessageUI/SW");
+            ab.TransToCurrent(swOffState).AddCondition(AnimatorConditionMode.Greater, .5f, "IsLocal");
+            ab.AddCondition(AnimatorConditionMode.Greater, .5f, "Vase/MessageUI/SW");
+            ab.TransFromCurrent(swOffState).AddCondition(AnimatorConditionMode.Less, .5f, "Vase/MessageUI/SW");
             var localState = ab.CurrentState;
             ab.AddSubStateMachine("Remote");
             ab.AddState("Remote").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Less, .5f, "IsLocal");
             var remoteState = ab.CurrentState;
 
-            
-            var mb = new MenuBuilder(_prj).AddFolder("MessageUI");
+            //Reset (これを先にやりたいのでループを分けている）
+            for (int i = 0; i < targets.Length; i++)
+            {
+                PVMessageUI tgt = targets[i];
+
+                var rootState = tgt.IsRemote ? remoteState : localState;
+                string usedParamName = $"{tgt.ParameterName}{tgt.ConditionMode.ToString()}{tgt.ParameterValue.ToString()}IsUsed";
+                ab.SetCurrentStateMachine(tgt.IsRemote ? "Remote" : "Local");
+
+                //アバター変更時・スイッチ切り替え時に大量に表示されるのを防ぐため、初期状態でIsUsed=true
+                ab.AddAnimatorParameter(usedParamName, 1, AnimatorControllerParameterType.Bool);
+                if (usedParamName != "Vase/MessageUI/SWGreater0.5IsUsed")
+                {
+                    ab.ChangeCurrentState(swOffState).SetParameterDriver(usedParamName, 1);
+                }
+
+
+                ab.AddState($"Reset{i}").SetParameterDriver(usedParamName, 0);
+                if (tgt.ConditionMode == AnimatorConditionMode.If)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.IfNot)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Greater)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Less)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.Equals)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue - DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue + DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+                if (tgt.ConditionMode == AnimatorConditionMode.NotEqual)
+                {
+                    ab.TransToCurrent(rootState)
+                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue - DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue + DELTA, tgt.ParameterName)
+                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
+                }
+
+                ab.TransFromCurrent(rootState).MoveInstant();
+            }
+
+            //Appear
             for (int i = 0; i < targets.Length; i++)
             {
                 PVMessageUI tgt = targets[i];
@@ -83,32 +151,25 @@ namespace com.github.pandrabox.pandravase.editor
                     .Color("Display", typeof(MeshRenderer), "material._TextColor", tgt.TextColor)
                     .Color("Display", typeof(MeshRenderer), "material._OutlineColor", tgt.OutlineColor);
 
-
                 var rootState = tgt.IsRemote ? remoteState : localState;
-                string usedParamName = $"{tgt.ParameterName}IsUsed";
+                string usedParamName = $"{tgt.ParameterName}{tgt.ConditionMode.ToString()}{tgt.ParameterValue.ToString()}IsUsed";
                 ab.SetCurrentStateMachine(tgt.IsRemote ? "Remote" : "Local");
 
-
-
-
-                //-----------------Appear-----------------
                 ab.AddState($"Appear{i}").SetMotion(ac.Outp($"Appear{i}"));
                 ab.SetParameterDriver(usedParamName, 1);
-
-               
 
                 if (tgt.ConditionMode == AnimatorConditionMode.If)
                 {
                     ab.TransToCurrent(rootState)
                         .AddCondition(AnimatorConditionMode.Greater, 0.5f, tgt.ParameterName)
                         .AddCondition(AnimatorConditionMode.IfNot, 0, usedParamName);
-                    if(tgt.InactiveByParameter)
+                    if (tgt.InactiveByParameter)
                     {
                         ab.TransFromCurrent(rootState)
                             .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName);
                     }
                 }
-                if(tgt.ConditionMode == AnimatorConditionMode.IfNot)
+                if (tgt.ConditionMode == AnimatorConditionMode.IfNot)
                 {
                     ab.TransToCurrent(rootState)
                         .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName)
@@ -171,60 +232,6 @@ namespace com.github.pandrabox.pandravase.editor
 
 
                 ab.TransFromCurrent(rootState, hasExitTime: true);
-
-
-
-
-                //-----------------Reset-----------------
-
-                ab.AddState($"Reset{i}").SetParameterDriver(usedParamName, 0);
-                if (tgt.ConditionMode == AnimatorConditionMode.If)
-                {
-                    ab.TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
-                }
-                if(tgt.ConditionMode == AnimatorConditionMode.IfNot)
-                {
-                    ab.TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
-                }
-                if (tgt.ConditionMode == AnimatorConditionMode.Greater)
-                {
-                    ab.TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
-                }
-                if (tgt.ConditionMode == AnimatorConditionMode.Less)
-                {
-                    ab.TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
-                }
-                if (tgt.ConditionMode == AnimatorConditionMode.Equals)
-                {
-                    ab.TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue - DELTA, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
-                    ab.TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue + DELTA, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
-                }
-                if (tgt.ConditionMode == AnimatorConditionMode.NotEqual)
-                {
-                    ab.TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, tgt.ParameterValue - DELTA, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.Less, tgt.ParameterValue + DELTA, tgt.ParameterName)
-                        .AddCondition(AnimatorConditionMode.If, 0, usedParamName);
-                }
-
-                ab.TransFromCurrent(rootState).MoveInstant();
-
-
-
-
-                mb.AddToggle(tgt.ParameterName, 1, ParameterSyncType.Bool);
             }
 
 
@@ -232,13 +239,16 @@ namespace com.github.pandrabox.pandravase.editor
             ac.Clip("s1").Bind("Display", typeof(MeshRenderer), "material._Size").Const2F(1);
             var bb = new BlendTreeBuilder("size");
             bb.RootDBT(() => {
-                bb.Param("1").Add1D("menusize", () =>
+                bb.Param("1").Add1D("Vase/MessageUI/Size", () =>
                 {
                     bb.Param(0).AddMotion(ac.Outp("s0"));
                     bb.Param(1).AddMotion(ac.Outp("s1"));
                 });
             });
-            mb.AddRadial("menusize", defaultVal: 1);
+
+            var mb = new MenuBuilder(_prj).AddFolder("GUIDE");
+            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "SW", 1);
+            mb.AddRadial("Vase/MessageUI/Size", "Size", 1).SetMessage("ガイドサイズの調整");　//ここでセットしたメッセージは処理されないが、Radialに値をセットするために必要
 
 
             ab.Attach(MsgRoot);

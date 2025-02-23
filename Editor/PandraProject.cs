@@ -186,6 +186,49 @@ namespace com.github.pandrabox.pandravase.editor
             return s.Set(txName, Bit, syncMode, hostDecode, min, max, toggleSync);
         }
 
+
+        /// <summary>
+        /// MessageUIを作成する
+        /// </summary>
+        /// <param name="message">表示する文字列</param>
+        /// <param name="parameterName">条件パラメータ</param>
+        /// <param name="conditionMode">判定方法</param>
+        /// <param name="parameterValue">判定値</param>
+        /// <param name="duration">表示時間</param>
+        /// <param name="inactiveByParameter">条件外ですぐにOFF</param>
+        /// <param name="isRemote">Remoteのみ実行</param>
+        /// <param name="textColor">文字色（白）</param>
+        /// <param name="outlineColor">アウトライン色（黒）</param>
+        public PVMessageUI SetMessage(
+            string message
+            , string parameterName = ""
+            , AnimatorConditionMode conditionMode = AnimatorConditionMode.Equals
+            , float parameterValue = 1
+            , float duration = 5
+            , bool inactiveByParameter = true
+            , bool isRemote = false
+            , Color? textColor = null
+            , Color? outlineColor = null)
+        {
+            var p = GetOrCreateObject("MessageUI");
+            var pvMessageUI = p.AddComponent<PVMessageUI>();
+            pvMessageUI.Message = message;
+            pvMessageUI.DisplayDuration = duration;
+            pvMessageUI.InactiveByParameter = inactiveByParameter;
+            pvMessageUI.IsRemote = isRemote;
+            pvMessageUI.ParameterName = parameterName;
+            pvMessageUI.ConditionMode = conditionMode;
+            pvMessageUI.ParameterValue = parameterValue;
+            pvMessageUI.TextColor = textColor ?? Color.white;
+            pvMessageUI.OutlineColor = outlineColor ?? Color.black;
+            return pvMessageUI;
+        }
+
+        public PVFrameCounter SetFrameCounter()
+        {
+            return GetOrCreateComponentObject<PVFrameCounter>("FrameCounter");
+        }
+
         /////////////////////////DEBUG/////////////////////////
         /// <summary>
         /// DebugMessageを表示する

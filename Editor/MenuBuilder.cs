@@ -45,6 +45,8 @@ namespace com.github.pandrabox.pandravase.editor
         private bool _parameterDef;
         private ModularAvatarParameters _param;
         private ModularAvatarMenuItem _currentMenu;
+        private string _currentParameterName;
+        private float _currentValue;
 
         public MenuBuilder(PandraProject prj, bool parameterDef = true)
         {
@@ -77,7 +79,17 @@ namespace com.github.pandrabox.pandravase.editor
                 var p = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
                 p.name = parameterName;
                 x.Control.subParameters = new[] { p };
+
+                _currentParameterName = $@"Vase/MessageUI/Radial/{parameterName}";
+                _currentValue = 1;
+                var p2 = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
+                p2.name = _currentParameterName;
+                x.Control.parameter = p2;
+                x.Control.value = _currentValue;
+                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, true);
             });
+
+
             AddParameter(parameterName, ParameterSyncType.Float, defaultVal, localOnly);
             return this;
         }
@@ -100,8 +112,34 @@ namespace com.github.pandrabox.pandravase.editor
                 if (merge) x.gameObject.AddComponent<PVMergeMASubMenu>();
                 x.Control.type = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.SubMenu;
                 x.MenuSource = SubmenuSource.Children;
+
+
+                _currentParameterName = $@"Vase/MessageUI/Folder/{folderName}";
+                _currentValue = 1;
+                var p = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
+                p.name = _currentParameterName;
+                x.Control.parameter = p;
+                x.Control.value = _currentValue;
+                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, true);
+
                 folderTree.Add(x.transform);
             }, true);
+            return this;
+        }
+
+        /// <summary>
+        /// カレントメニューに対するメッセージの設定
+        /// </summary>
+        public MenuBuilder SetMessage(string message
+            , string inverseMessage=null
+            , float duration = 5
+            , bool inactiveByParameter = true
+            , bool isRemote = false
+            , Color? textColor = null
+            , Color? outlineColor = null)
+        {
+            _prj.SetMessage(message, _currentParameterName, AnimatorConditionMode.Equals,_currentValue,duration,inactiveByParameter,isRemote,textColor,outlineColor);
+            if(inverseMessage != null) _prj.SetMessage(inverseMessage, _currentParameterName, AnimatorConditionMode.NotEqual, _currentValue, duration, inactiveByParameter, isRemote, textColor, outlineColor);
             return this;
         }
 
@@ -123,8 +161,13 @@ namespace com.github.pandrabox.pandravase.editor
             return this;
         }
 
+
+
+
         private MenuBuilder AddToggleOrButton(bool isButton, string parameterName, float val, ParameterSyncType parameterSyncType = ParameterSyncType.NotSynced, string menuName = null, float defaultVal = 0, bool localOnly = true)
         {
+            _currentParameterName = parameterName;
+            _currentValue = val;
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
             {
@@ -143,6 +186,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         private MenuBuilder AddParameter(string parameterName, ParameterSyncType parameterSyncType, float defaultVal = 0, bool localOnly = true)
         {
+
             if (!_parameterDef) return this;
             var p = new ParameterConfig();
             p.defaultValue = defaultVal;
