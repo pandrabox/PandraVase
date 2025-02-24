@@ -141,6 +141,8 @@ namespace com.github.pandrabox.pandravase.editor
             return clip;
         }
 
+        public AnimationClip DummyClip => AAP("Pan/Dummy", 0);
+
         /////////////////////////AAP関連の既定関数/////////////////////////
         /// <summary>
         /// AAPを生成する

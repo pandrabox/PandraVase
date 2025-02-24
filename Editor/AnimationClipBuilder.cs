@@ -53,7 +53,11 @@ namespace com.github.pandrabox.pandravase.editor
             return this;
         }
 
-
+        public AnimationClipBuilder Dummy()
+        {
+            Bind("", typeof(Animator), $@"Pan/Dummy").Const2F(Convert.ToSingle(0));
+            return this;
+        }
 
 
         /// <summary>
