@@ -45,6 +45,24 @@ using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
+
+#if PANDRADBG
+    public class PVPanMergeBlendTreePassDebug
+    {
+        [MenuItem("PanDbg/MergeBlendTree")]
+        public static void PVPanMergeBlendTreePassDebug_()
+        {
+            SetDebugMode(true);
+            foreach (var a in AllAvatar)
+            {
+                foreach (var component in a.GetComponentsInChildren<PVPanMergeBlendTree>(true))
+                {
+                    new PVPanMergeBlendTreeMain(component);
+                }
+            }
+        }
+    }
+#endif
     internal class PVPanMergeBlendTreePass : Pass<PVPanMergeBlendTreePass>
     {
         protected override void Execute(BuildContext ctx)
