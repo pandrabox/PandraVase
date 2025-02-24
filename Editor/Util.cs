@@ -121,17 +121,18 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
 
-        /////////////////////////Pathの解決/////////////////////////
         /// <summary>
         /// アセットを作成する
         /// </summary>
         /// <param name="asset">作成するアセット</param>
         /// <param name="path">パス</param>
+        /// <param name="debugOnly">デバッグモードのみ</param>
+        /// <param name="overWrite">強制上書き</param>
         /// <returns></returns>
-        public static string OutpAsset(UnityEngine.Object asset, string path = "", bool debugOnly = false)
+        public static string OutpAsset(UnityEngine.Object asset, string path = "", bool debugOnly = false, bool overWrite = true)
         {
             if (debugOnly && !PDEBUGMODE) return null;
-            if (path == "" || path==null) path = TmpFolder;
+            if (path == "" || path == null) path = TmpFolder;
             var UnityDirPath = CreateDir(path);
             if (UnityDirPath == null)
             {
@@ -150,6 +151,10 @@ namespace com.github.pandrabox.pandravase.editor
 
             try
             {
+                if (overWrite && File.Exists(assetPath))
+                {
+                    AssetDatabase.DeleteAsset(assetPath);
+                }
                 AssetDatabase.CreateAsset(asset, assetPath);
             }
             catch (Exception ex)

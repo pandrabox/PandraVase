@@ -248,7 +248,7 @@ namespace com.github.pandrabox.pandravase.editor
 
             var mb = new MenuBuilder(_prj).AddFolder("GUIDE");
             mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "SW", 1);
-            mb.AddRadial("Vase/MessageUI/Size", "Size", 1).SetMessage("ガイドサイズの調整");　//ここでセットしたメッセージは処理されないが、Radialに値をセットするために必要
+            mb.AddRadial("Vase/MessageUI/Size", "Size", .4f).SetMessage("ガイドサイズの調整");　//ここでセットしたメッセージは処理されないが、Radialに値をセットするために必要
 
 
             ab.Attach(MsgRoot);

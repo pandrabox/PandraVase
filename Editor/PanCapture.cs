@@ -25,8 +25,10 @@ namespace com.github.pandrabox.pandravase.editor
         public int RenderWidth => MarginedWidth - Padding * 2;
         public int RenderHeight => MarginedHeight - Padding * 2;
         public int RenderOrigin => Margin+Padding;
+        public Camera Camera => _camera;
         private Color _bgColor, _marginColor;
-
+        public int CaptureLayer => LayerMask.NameToLayer(CaptureLayerName);
+        public GameObject CaptureClone;
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -41,7 +43,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (height == -1) height = width;
             _camera = CreateComponentObject<Camera>((GameObject)null, "camera");
             PrepareLayer(CaptureLayerName);
-            _camera.cullingMask = 1 << LayerMask.NameToLayer(CaptureLayerName);
+            _camera.cullingMask = 1 << CaptureLayer;
             SetBackground(BGColor, marginColor);
             _camera.orthographic = true;
             SetSize(margin, padding, width, height);
@@ -134,31 +136,13 @@ namespace com.github.pandrabox.pandravase.editor
         {
             try
             {
-                //対象だけ映るようにする
-                int layer = LayerMask.NameToLayer(CaptureLayerName);
-                if (layer == -1)
-                {
-                    Debug.LogError($"Layer '{CaptureLayerName}' not found.");
-                    return null;
-                }
-                target.layer = layer;
+                target.layer = CaptureLayer;
 
                 //対象がぴったり映るようにする
                 Bounds bounds = GetEncapsulatedCubeBoundsByGameObject(target);
                 _camera.orthographicSize = bounds.size.y / 2f;
                 _camera.transform.position = new Vector3(bounds.center.x, bounds.center.y, target.transform.position.z - 10);
-
-                //キャプチャ処理
-                _camera.targetTexture = _renderTexture;
-                _camera.Render();
-                Texture2D texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false);
-                texture.DrawRect(_marginColor);
-                texture.DrawRect(width: MarginedWidth, x: Margin);
-                RenderTexture.active = _renderTexture;
-                texture.ReadPixels(new Rect(0, 0, RenderWidth, RenderHeight), RenderOrigin, RenderOrigin);
-                texture.Apply();
-                RenderTexture.active = null;
-                return texture;
+                return Capture();
             }
             finally
             {
@@ -166,6 +150,57 @@ namespace com.github.pandrabox.pandravase.editor
                 _renderTexture.Release();
                 if (removeTarget && target != null) GameObject.DestroyImmediate(target);
             }
+        }
+
+        
+
+        public GameObject CreateClone(GameObject target)
+        {
+            CaptureClone = GameObject.Instantiate(target);
+            CaptureClone.transform.position = target.transform.position;
+            Renderer[] renderers = CaptureClone.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
+            {
+                renderer.gameObject.layer = CaptureLayer;
+            }
+            return CaptureClone;
+        }
+        public Texture2D ManualRun(GameObject target, float size, GameObject positionRoot, Vector3 relativePosition)
+        {
+            try
+            {
+                _camera.transform.SetParent(positionRoot.transform);
+                _camera.orthographicSize = size;
+                _camera.transform.position = positionRoot.transform.TransformPoint(new Vector3(0, 0, relativePosition.z));
+                _camera.transform.LookAt(positionRoot.transform.position);
+                _camera.transform.position = positionRoot.transform.TransformPoint(relativePosition);
+
+                return Capture();
+            }
+            finally
+            {
+
+                if (RenderTexture.active != null) RenderTexture.active = null;
+                _renderTexture.Release();
+            }
+        }
+
+        /// <summary>
+        /// 現在のカメラ映像をTexture2Dで取得
+        /// </summary>
+        /// <returns></returns>
+        public Texture2D Capture()
+        {
+            _camera.targetTexture = _renderTexture;
+            _camera.Render();
+            Texture2D texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false);
+            texture.DrawRect(_marginColor);
+            texture.DrawRect(width: MarginedWidth, x: Margin);
+            RenderTexture.active = _renderTexture;
+            texture.ReadPixels(new Rect(0, 0, RenderWidth, RenderHeight), RenderOrigin, RenderOrigin);
+            texture.Apply();
+            RenderTexture.active = null;
+            return texture;
         }
 
         /// <summary>
@@ -176,6 +211,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (RenderTexture.active != null) RenderTexture.active = null;
             _renderTexture.Release();
             if (_camera != null) GameObject.DestroyImmediate(_camera.gameObject);
+            if(CaptureClone != null) GameObject.DestroyImmediate(CaptureClone);
         }
 
         /// <summary>

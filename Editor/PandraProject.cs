@@ -41,6 +41,8 @@ namespace com.github.pandrabox.pandravase.editor
         public string TmpFolder => Util.TmpFolder;
         public string PrjRootObjName => $@"{ProjectName}_PrjRootObj";
         public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
+        public VRCAvatarDescriptor.CustomAnimLayer[] PlayableLayers => BaseAnimationLayers;
+        //public VRCAvatarDescriptor.CustomAnimLayer FXLayer => BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)];
         public int PlayableIndex (VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
         public GameObject PrjRootObj => Util.GetOrCreateObject(RootTransform, PrjRootObjName);
         public bool IsVPM => ProjectType == ProjectTypes.VPM;
@@ -55,6 +57,17 @@ namespace com.github.pandrabox.pandravase.editor
         public GameObject ArmatureGameObject => ArmatureTransform.gameObject;
         public AvatarObjectReference ArmatureObjectReference => GetObjectReference(ArmatureGameObject);
 
+        public AnimatorController FXAnimatorController
+        {
+            // 本当はRuntimeAnimatorControllerだが、AnimatorControllerはRuntimeAnimatorControllerを継承しているのでキャスト
+            get => (AnimatorController)BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)].animatorController;
+            // VRCAvatarDescriptor.CustomAnimLayerは構造体のため変数で参照できない。よってこのセッタを使う
+            set
+            {
+                BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)].isDefault = false;
+                BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)].animatorController = value;
+            }
+        }
 
 
 
