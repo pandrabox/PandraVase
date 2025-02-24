@@ -28,6 +28,7 @@ namespace com.github.pandrabox.pandravase.editor
         private TransitionInfo _currentTransitionInfo;
         private Dictionary<AnimatorStateMachine, int> _stateCounts = new Dictionary<AnimatorStateMachine, int>();
         public AnimatorState CurrentState => _currentState;
+        public AnimatorStateMachine CurrentStateMachine => _currentStateMachine;
         public AnimatorControllerLayer CurrentLayer => _currentLayer;
         public AnimatorStateMachine CurrentRootStateMachine => CurrentLayer.stateMachine;
         public AnimatorState CurrentInitialState => CurrentRootStateMachine.defaultState;
@@ -88,6 +89,21 @@ namespace com.github.pandrabox.pandravase.editor
         public AnimatorBuilder TransFromCurrent(AnimatorState to, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0) 
                 => SetTransition(_currentState, to, hasExitTime, exitTime, fixedDuration, transitionDuration, transitionOffset);
 
+        public AnimatorBuilder TransFromAny(bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0)
+        {
+            TransitionInfo transitionInfo = new TransitionInfo(hasExitTime, exitTime, fixedDuration, transitionDuration, transitionOffset);
+            _currentTransition = _currentStateMachine.AddAnyStateTransition(_currentState);
+            _currentTransition.canTransitionToSelf = false;
+            _currentTransition.hasExitTime = transitionInfo.HasExitTime;
+            _currentTransition.exitTime = transitionInfo.ExitTime;
+            _currentTransition.hasFixedDuration = transitionInfo.FixedDuration;
+            _currentTransition.duration = transitionInfo.TransitionDuration;
+            _currentTransition.offset = transitionInfo.TransitionOffset;
+            _currentTransitionFrom = null;
+            _currentTransitionTo = _currentState;
+            _currentTransitionInfo = transitionInfo;
+            return this;
+        }
 
         /// <summary>
         /// 任意２ステート間の遷移を定義 ExitTime等を指定する場合はtiを指定する、しないとほぼ全0
@@ -223,9 +239,9 @@ namespace com.github.pandrabox.pandravase.editor
         /// stateを作成する
         /// motion省略時自動でDummyClipが入る。明示的にnullにしたい場合はnullMotionをtrueにする
         /// </summary>
-        public AnimatorBuilder AddState(string name, Motion motion = null, bool nullMotion=false)
+        public AnimatorBuilder AddState(string name, Motion motion = null, bool nullMotion=false, Vector3? position=null)
         {
-            _currentState = _currentStateMachine.AddState(name, NextStatePos());
+            _currentState = _currentStateMachine.AddState(name, position ?? NextStatePos());
             _currentState.writeDefaultValues = true;
             SetMotion(nullMotion ? null : motion ?? DummyClip);
             return this;
