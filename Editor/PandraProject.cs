@@ -57,16 +57,30 @@ namespace com.github.pandrabox.pandravase.editor
         public GameObject ArmatureGameObject => ArmatureTransform.gameObject;
         public AvatarObjectReference ArmatureObjectReference => GetObjectReference(ArmatureGameObject);
 
+        
         public AnimatorController FXAnimatorController
         {
-            // 本当はRuntimeAnimatorControllerだが、AnimatorControllerはRuntimeAnimatorControllerを継承しているのでキャスト
-            get => (AnimatorController)BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)].animatorController;
-            // VRCAvatarDescriptor.CustomAnimLayerは構造体のため変数で参照できない。よってこのセッタを使う
-            set
+            get => GetPlayableAnimatorController(VRCAvatarDescriptor.AnimLayerType.FX);
+            set => SetPlayableAnimatorController(VRCAvatarDescriptor.AnimLayerType.FX, value);
+        }
+        public AnimatorController GestureAnimatorController
+        {
+            get => GetPlayableAnimatorController(VRCAvatarDescriptor.AnimLayerType.Gesture);
+            set => SetPlayableAnimatorController(VRCAvatarDescriptor.AnimLayerType.Gesture, value);
+        }
+        public AnimatorController GetPlayableAnimatorController(VRCAvatarDescriptor.AnimLayerType type)
+        {
+            var c = BaseAnimationLayers[PlayableIndex(type)].animatorController;
+            if (c == null)
             {
-                BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)].isDefault = false;
-                BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)].animatorController = value;
+                return null;
             }
+            return (AnimatorController)c;
+        }
+        public void SetPlayableAnimatorController(VRCAvatarDescriptor.AnimLayerType type, AnimatorController c)
+        {
+            BaseAnimationLayers[PlayableIndex(type)].isDefault = false;
+            BaseAnimationLayers[PlayableIndex(type)].animatorController = c;
         }
 
 
