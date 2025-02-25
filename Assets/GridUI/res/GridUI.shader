@@ -13,6 +13,7 @@
         [Space(10)]
         [Header(General)]
         _Mode("Mode", Range(0, 1)) = 0
+        _Opacity("Opacity", Range(0, 1)) = 1.0
 
         [Space(10)]
         [Header(Mode0)]
@@ -102,7 +103,7 @@
             half _CornerThickness;
             half _Tex2Y;
             half _Tex2Size;
-
+            half _Opacity;
 
             v2f vert(appdata v)
             {
@@ -202,6 +203,7 @@
                     finalColor = fixed4(blendedRGB, blendedA);
                 }
 
+                finalColor.a *= _Opacity;
                 return finalColor;
             }
             ENDCG

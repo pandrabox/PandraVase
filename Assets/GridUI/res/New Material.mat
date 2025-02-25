@@ -76,10 +76,11 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _Opacity: 0.723
     - _OutlineSmooth: 0.1
     - _OutlineWidth: 4
     - _Parallax: 0.02
-    - _Size: 1
+    - _Size: 0.436
     - _Size2: 0.206
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
