@@ -63,7 +63,8 @@ Material:
     - _BorderWidth: 0.126
     - _BumpScale: 1
     - _CenterRectSize: 0.778
-    - _CornerSize: 0.325
+    - _CornerSize: 0.419
+    - _CornerThickness: 0.297
     - _CurrentNo: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -78,8 +79,8 @@ Material:
     - _OutlineSmooth: 0.1
     - _OutlineWidth: 4
     - _Parallax: 0.02
-    - _Size: 0.852
-    - _Size2: 0.353
+    - _Size: 1
+    - _Size2: 0.206
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -91,16 +92,16 @@ Material:
     - _TextSmooth: 0.2
     - _UVSec: 0
     - _ZWrite: 1
-    - _x: 0.55
+    - _x: 0.507
     - _xMax: 5
-    - _xPos: 0.328
-    - _y: 0.698
+    - _xPos: 0.13
+    - _y: 0.507
     - _yMax: 3
-    - _yPos: 0.62
+    - _yPos: 0.06
     m_Colors:
     - _BackgroundColor: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SelectColor: {r: 0, g: 0.71715, b: 1, a: 0.77254903}
+    - _SelectColor: {r: 1, g: 0, b: 0.7725029, a: 0.77254903}
     - _TextColor: {r: 1, g: 1, b: 1, a: 1}
