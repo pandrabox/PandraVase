@@ -251,6 +251,32 @@ namespace com.github.pandrabox.pandravase.editor
             return pvMessageUI;
         }
 
+        /// <summary>
+        /// GridUIを作成する
+        /// </summary>
+        /// <param name ="ParameterName">GridUIで管掌するパラメータ名</param>
+        /// <param name ="x">Gridの横の個数</param>
+        /// <param name ="y">Gridの縦の個数</param>
+        /// <param name = "MainTex">メインテクスチャ</param>
+        /// <param name = "LockTex">ロックテクスチャ</param>
+        /// <param name="nVirtualSync">選択対象のVirtualSync有無</param>
+        /// <param name="speed">選択移動速度</param>
+        /// <param name="createSampleMenu">サンプルメニューを作成するか(For Debug)</param>
+        public PVGridUI SetGridUI(string ParameterName, int x, int y, Texture2D MainTex=null, Texture2D LockTex=null, bool nVirtualSync=true, float speed = 0.3f, bool createSampleMenu=false)
+        {
+            var p = GetOrCreateObject("GridUI");
+            var pvGridUI = p.AddComponent<PVGridUI>();
+            pvGridUI.ParameterName = ParameterName;
+            pvGridUI.xMax = x;
+            pvGridUI.yMax = y;
+            pvGridUI.MainTex = MainTex;
+            pvGridUI.LockTex = LockTex;
+            pvGridUI.nVirtualSync = nVirtualSync;
+            pvGridUI.speed = speed;
+            pvGridUI.CreateSampleMenu = createSampleMenu;
+            return pvGridUI;
+        }
+
         public PVFrameCounter SetFrameCounter()
         {
             return GetOrCreateComponentObject<PVFrameCounter>("FrameCounter");

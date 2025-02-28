@@ -88,6 +88,11 @@ namespace com.github.pandrabox.pandravase.editor
 
         public PVPanMergeBlendTreeMain(PVPanMergeBlendTree component)
         {
+            if (component.BlendTree == null)
+            {
+                LowLevelDebugPrint("無の結合を試行しました");
+                return;
+            }
             _rootBlendTree = (BlendTree)component.BlendTree;
             _mergeHost = component.gameObject;
             _blendTreeLayerName = $@"PanMBT/{_rootBlendTree.name}";

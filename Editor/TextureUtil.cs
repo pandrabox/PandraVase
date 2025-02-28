@@ -22,6 +22,7 @@ namespace com.github.pandrabox.pandravase.editor
         public static Texture2D PackTexture(List<Texture2D> textures, int columns, int tileWidth, int tileHeight = -1) => PackTexture(textures.ToArray(), columns, tileWidth, tileHeight);
         public static Texture2D PackTexture(Texture2D[] textures, int columns, int tileWidth, int tileHeight = -1)
         {
+            //LowLevelDebugPrint($"Packing textures: {textures.Length} textures, {columns} columns, {tileWidth}x{tileHeight}");
             int unitSize = tileWidth / columns;
             SetReadable(textures);
             ResizeTextures(textures, unitSize, unitSize);

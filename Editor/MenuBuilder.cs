@@ -58,13 +58,13 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// Toggleの定義
         /// </summary>
-        public MenuBuilder AddToggle(string parameterName, float val, ParameterSyncType parameterSyncType = ParameterSyncType.NotSynced, string menuName = null, float defaultVal = 0, bool localOnly = true)
+        public MenuBuilder AddToggle(string parameterName, float val = 1, ParameterSyncType parameterSyncType = ParameterSyncType.Bool, string menuName = null, float defaultVal = 0, bool localOnly = true)
             => AddToggleOrButton(false, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
 
         /// <summary>
         /// Buttonの定義
         /// </summary>
-        public MenuBuilder AddButton(string parameterName, float val, ParameterSyncType parameterSyncType = ParameterSyncType.NotSynced, string menuName = null, float defaultVal = 0, bool localOnly = true)
+        public MenuBuilder AddButton(string parameterName, float val = 1, ParameterSyncType parameterSyncType = ParameterSyncType.Bool, string menuName = null, float defaultVal = 0, bool localOnly = true)
             => AddToggleOrButton(true, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
 
         /// <summary>
@@ -86,11 +86,36 @@ namespace com.github.pandrabox.pandravase.editor
                 p2.name = _currentParameterName;
                 x.Control.parameter = p2;
                 x.Control.value = _currentValue;
-                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, true);
+                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, localOnly);
             });
 
 
             AddParameter(parameterName, ParameterSyncType.Float, defaultVal, localOnly);
+            return this;
+        }
+
+        public MenuBuilder Add2Axis(string parameter1, string parameter2, string mainParameter, string menuName = null, float defaultVal1 = 0, float defaultVal2 = 0, bool localOnly = true)
+        {
+            menuName = menuName ?? parameter1;
+            AddGenericMenu(menuName, (x) =>
+            {
+                x.Control.type = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.TwoAxisPuppet;
+                var p1 = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
+                p1.name = parameter1;
+                var p2 = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
+                p2.name = parameter2;
+                x.Control.subParameters = new[] { p1, p2 };
+
+                _currentParameterName = mainParameter;
+                _currentValue = 1;
+                var p3 = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
+                p3.name = _currentParameterName;
+                x.Control.parameter = p3;
+                x.Control.value = _currentValue;
+                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, localOnly);
+            });
+            AddParameter(parameter1, ParameterSyncType.Float, defaultVal1, localOnly);
+            AddParameter(parameter2, ParameterSyncType.Float, defaultVal2, localOnly);
             return this;
         }
 
@@ -208,6 +233,7 @@ namespace com.github.pandrabox.pandravase.editor
                 LowLevelDebugPrint("Root状態でMenu作成が呼ばれました。これは許可されていません。最低１回のAddFolderを実行してください。",level:LogType.Exception);
                 return this;
             }
+            menuName = menuName.LastName();
             Transform parent = IsRoot ? _prj.PrjRootObj.transform : CurrentFolder;
             _currentMenu = CreateComponentObject<ModularAvatarMenuItem>(parent, menuName, (z) => x(z));
             _currentMenu.name = menuName;

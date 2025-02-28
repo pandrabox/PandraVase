@@ -11,12 +11,12 @@ struct Cell
 };
 
 // Function to calculate cell information
-inline Cell GetCell(int xMax, int yMax, half x, half y)
+inline Cell GetCell(int xMax, int yMax, int x, int y)
 {
     Cell cell;
     cell.size = float2(1.0 / xMax, 1.0 / yMax);
-    cell.x = min(int(x * xMax), xMax - 1);
-    cell.y = min(int((1-y) * yMax), yMax - 1);
+    cell.x = x;
+    cell.y = y;
     cell.min = float2(cell.x, cell.y) * cell.size;
     cell.max = cell.min + cell.size;
     cell.aspectRatio = cell.size.x / cell.size.y; // 比率を計算

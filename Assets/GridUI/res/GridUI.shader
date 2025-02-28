@@ -20,8 +20,8 @@
         _Size("Size", Range(0, 1)) = 0.5
         _xMax("X Max", Int) = 5
         _yMax("Y Max", Int) = 3
-        _x("X", Range(0, 1)) = 0.0
-        _y("Y", Range(0, 1)) = 0.0
+        _x("X", Int) = 0.0
+        _y("Y", Int) = 0.0
         _SelectColor("Select Color", Color) = (1, 0, 0, 0.5)
         _CornerSize("Corner Size", Range(0, 1)) = 0.2
         _CornerThickness("Corner Thickness", Range(0, 1)) = 0.5
@@ -96,8 +96,8 @@
             half _yPos;
             int _xMax;
             int _yMax;
-            half _x;
-            half _y;
+            int _x;
+            int _y;
             half4 _SelectColor;
             half _CornerSize;
             half _CornerThickness;

@@ -2,6 +2,7 @@
 using nadena.dev.modular_avatar.core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -18,6 +19,7 @@ namespace com.github.pandrabox.pandravase.editor
     /// </summary>
     public static class BlendTreeBuilderExtensions
     {
+        const float epsilon = 1.401298e-45F;
         /// <summary>
         /// targetParamが変更されたらtargetParamIsDiffに1を返す
         /// </summary>
@@ -52,6 +54,31 @@ namespace com.github.pandrabox.pandravase.editor
         public static void FDummyAAP(this BlendTreeBuilder bb)
         {
             bb.AddAAP("Dummy", 0);
+        }
+
+        /// <summary>
+        /// fromName(0～1)をstep段階のintに変換する(8段階なら0～7)
+        /// </summary>
+        /// <param name="bb"></param>
+        /// <param name="fromName"></param>
+        /// <param name="step"></param>
+        public static void Quantization01(this BlendTreeBuilder bb, string fromName, int step)
+        {
+            string ToName = $"{fromName}Quantized";
+            string MemoryName = $"{fromName}QuantMemory";
+            bb.NName("Quantization").Param("1").AddD(() => {
+                bb.NName("Minimization").Add1D(fromName, () =>
+                {
+                    bb.Param(0.5f / step).AddAAP(MemoryName, 0);
+                    bb.Param(0.5f / step + 1.000001f).AddAAP(MemoryName, epsilon * step);
+                });
+
+                bb.NName("Restoration").Param("1").Add1D(MemoryName, () =>
+                {
+                    bb.Param(0).AddAAP(ToName, 0);
+                    bb.Param(epsilon * step).AddAAP(ToName, step);
+                });
+            });
         }
     }
 }

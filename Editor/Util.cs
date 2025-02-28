@@ -527,6 +527,16 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
         /// <summary>
+        /// 整数pを送信するのに必要なbit数を求める
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static int TransmissionBit(int p)
+        {
+            return (int)Math.Ceiling(Math.Sqrt(p));
+        }
+
+        /// <summary>
         /// 1つ目の文字列が配列の中にあるものかどうか調べる
         /// </summary>
         /// <param name="firstString">1つ目</param>
@@ -861,6 +871,15 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 return parent.transform.Find(name);
             }
+        }
+
+        public static string LastName(this string paramPath)
+        {
+            if (paramPath.Contains("/"))
+            {
+                return paramPath.Substring(paramPath.LastIndexOf("/") + 1);
+            }
+            return paramPath;
         }
     }
 }

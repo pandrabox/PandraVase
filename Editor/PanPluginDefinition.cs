@@ -23,12 +23,13 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVUniquefyObjectPass.Instance);
             seq.Run(PVReplacePlayablePass.Instance);
             seq.Run(PVActiveOverridePass.Instance);
-            seq.Run(PVnBitSyncPass.Instance);
             seq.Run(PVParamView2Pass.Instance);
 
 
 
 
+            seq.Run(PVGridUIPass.Instance);
+            seq.Run(PVnBitSyncPass.Instance);
             seq.Run(PVMessageUIPass.Instance); //MenuBuilderで作成されるComponentの解決
             seq.Run(PVFrameCounterPass.Instance); //FrameCounterの解決
             seq.Run(PVPanMergeBlendTreePass.Instance); // PanMergeBlendTreeの解決
