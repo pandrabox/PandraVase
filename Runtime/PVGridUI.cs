@@ -12,9 +12,9 @@ namespace com.github.pandrabox.pandravase.runtime
         public int xMax, yMax;
         public Texture2D MainTex, LockTex;
         public bool nVirtualSync;
-        public float speed = 0.3f;
-        public float deadZone = 0.2f;
-        //[HideInInspector]
+        public float speed = 0.03f;
+        public float deadZone = 0.3f;
+        [HideInInspector]
         public bool CreateSampleMenu;
 
         public string Inputx => $@"{ParameterName}/x";
@@ -24,6 +24,7 @@ namespace com.github.pandrabox.pandravase.runtime
         public string Quantizedx => $@"{Currentx}Quantized";
         public string Quantizedy => $@"{Currenty}Quantized";
         public string n => $@"{ParameterName}/n";
+        public string nRx => $@"{ParameterName}/nRx";
         public string IsMode0 => $@"{ParameterName}/isMode0";
         public string IsEnable => $@"{ParameterName}/isEnable";
     }

@@ -75,7 +75,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         private void GetStructure()
         {
-            _dispRenderer = _ui.GetComponentsInChildren<MeshRenderer>()?.FirstOrDefault(x => x.name == DISPLAYNAME);
+            _dispRenderer = _ui.GetComponentsInChildren<MeshRenderer>(true)?.FirstOrDefault(x => x.name == DISPLAYNAME);
             if (_dispRenderer == null)
             {
                 LowLevelExeption("Displayが見つかりませんでした。");
@@ -92,8 +92,9 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (_ui.MainTex != null) _dispMat.mainTexture = _ui.MainTex;
             if (_ui.LockTex != null) _dispMat.SetTexture("_MainTex2", _ui.LockTex);
-            _dispMat.SetFloat("xMax", _x);
-            _dispMat.SetFloat("yMax", _y);
+            _dispMat.SetFloat("_xMax", _ui.xMax);
+            _dispMat.SetFloat("_yMax", _ui.yMax);
+            LowLevelDebugPrint($"GUI_xMax:{_ui.xMax}, yMax:{_ui.yMax}");
         }
         private void CreateControl()
         {
@@ -102,54 +103,61 @@ namespace com.github.pandrabox.pandravase.editor
             ac.Clip("y1").Bind("Display", typeof(MeshRenderer), "material._y").Const2F(1);
             ac.Clip("Mode0").Bind("Display", typeof(MeshRenderer), "material._Mode").Const2F(0);
             ac.Clip("Mode1").Bind("Display", typeof(MeshRenderer), "material._Mode").Const2F(1);
-            ac.Clip("Disable").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0);
-            ac.Clip("Enable").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(1);
-
+            ac.Clip("Disable").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0)
+                .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(0); });
+            ac.Clip("Enable").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(1)
+                .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(99999); });
+            float xSpeed = _ui.speed;
+            float ySpeed = _ui.speed / _ui.MainTex.width * _ui.MainTex.height;
             BlendTreeBuilder bb = new BlendTreeBuilder("GridUI");
             bb.RootDBT(() =>
             {
-                // ゆっくり移動の計算
-                bb.Param("1").AssignmentBy1D(_ui.Currentx, 0, 1 - _ui.speed, _ui.Currentx);
-                bb.Param("1").AssignmentBy1D(_ui.Currenty, 0, 1 - _ui.speed, _ui.Currenty);
-                bb.Param(_ui.IsEnable).AddD(()=>
-                {
-                    bb.Param(_ui.IsMode0).Add1D(_ui.Inputx, () =>
+                bb.Param("IsLocal").AddD(() => { 
+                    // ゆっくり移動の計算
+                    //Hold
+                    bb.Param("1").AssignmentBy1D(_ui.Currentx, 0, 1 - xSpeed, _ui.Currentx);
+                    bb.Param("1").AssignmentBy1D(_ui.Currenty, 0, 1 - ySpeed, _ui.Currenty);
+                    //Move
+                    bb.Param(_ui.IsEnable).AddD(()=>
                     {
-                        bb.Param(-1).AddAAP(_ui.Currentx, -_ui.speed);
-                        bb.Param(-_ui.deadZone).AddAAP(_ui.Currentx, 0);
-                        bb.Param(_ui.deadZone).AddAAP(_ui.Currentx, 0);
-                        bb.Param(1).AddAAP(_ui.Currentx, _ui.speed);
+                        bb.Param(_ui.IsMode0).Add1D(_ui.Inputx, () =>
+                        {
+                            bb.Param(-1).AddAAP(_ui.Currentx, -xSpeed);
+                            bb.Param(-_ui.deadZone).AddAAP(_ui.Currentx, 0);
+                            bb.Param(_ui.deadZone).AddAAP(_ui.Currentx, 0);
+                            bb.Param(1).AddAAP(_ui.Currentx, xSpeed);
+                        });
                     });
-                });
-                bb.Param("1").Add1D(_ui.Inputy, () =>
-                {
-                    bb.Param(-1).AddAAP(_ui.Currenty, -_ui.speed);
-                    bb.Param(-_ui.deadZone).AddAAP(_ui.Currenty, 0);
-                    bb.Param(_ui.deadZone).AddAAP(_ui.Currenty, 0);
-                    bb.Param(1).AddAAP(_ui.Currenty, _ui.speed);
-                });
-                // グリッド座標の計算
-                bb.Param("1").Quantization01(_ui.Currentx, _ui.xMax);
-                bb.Param("1").Quantization01(_ui.Currenty, _ui.yMax);
-                bb.Param(_ui.Quantizedx).AddAAP(_ui.n, 1);
-                bb.Param(_ui.Quantizedy).AddAAP(_ui.n, _ui.xMax);
-                // 同期
-                if (_ui.nVirtualSync)
-                {
-                    _prj.VirtualSync(_ui.n, TransmissionBit(_ui.xMax * _ui.yMax), PVnBitSync.nBitSyncMode.IntMode);
-                }
-                // アニメーション
-                bb.Param(_ui.Quantizedx).AddMotion(ac.Outp("x1"));
-                bb.Param(_ui.Quantizedy).AddMotion(ac.Outp("y1"));
-                bb.Param("1").Add1D(_ui.IsMode0, () =>
-                {
-                    bb.Param(0).AddMotion(ac.Outp("Mode1"));
-                    bb.Param(1).AddMotion(ac.Outp("Mode0"));
-                });
-                bb.Param("1").Add1D(_ui.IsEnable, () =>
-                {
-                    bb.Param(0).AddMotion(ac.Outp("Disable"));
-                    bb.Param(1).AddMotion(ac.Outp("Enable"));
+                    bb.Param("1").Add1D(_ui.Inputy, () =>
+                    {
+                        bb.Param(-1).AddAAP(_ui.Currenty, ySpeed);
+                        bb.Param(-_ui.deadZone).AddAAP(_ui.Currenty, 0);
+                        bb.Param(_ui.deadZone).AddAAP(_ui.Currenty, 0);
+                        bb.Param(1).AddAAP(_ui.Currenty, -ySpeed);
+                    });
+                    // グリッド座標の計算
+                    bb.Param("1").Quantization01(_ui.Currentx, _ui.xMax);
+                    bb.Param("1").Quantization01(_ui.Currenty, _ui.yMax);
+                    bb.Param(_ui.Quantizedx).AddAAP(_ui.n, 1);
+                    bb.Param(_ui.Quantizedy).AddAAP(_ui.n, _ui.xMax);
+                    // 同期
+                    if (_ui.nVirtualSync)
+                    {
+                        _prj.VirtualSync(_ui.n, TransmissionBit(_ui.xMax * _ui.yMax), PVnBitSync.nBitSyncMode.IntMode);
+                    }
+                    // アニメーション
+                    bb.Param(_ui.Quantizedx).AddMotion(ac.Outp("x1"));
+                    bb.Param(_ui.Quantizedy).AddMotion(ac.Outp("y1"));
+                    bb.Param("1").Add1D(_ui.IsMode0, () =>
+                    {
+                        bb.Param(0).AddMotion(ac.Outp("Mode1"));
+                        bb.Param(1).AddMotion(ac.Outp("Mode0"));
+                    });
+                    bb.Param("1").Add1D(_ui.IsEnable, () =>
+                    {
+                        bb.Param(0).AddMotion(ac.Outp("Disable"));
+                        bb.Param(1).AddMotion(ac.Outp("Enable"));
+                    });
                 });
             });
             bb.Attach(_ui.gameObject);

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: New Material
+  m_Name: GridUI
   m_Shader: {fileID: 4800000, guid: 16a63844732f9424e90849e77ad51581, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -76,12 +76,12 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Opacity: 0.855
+    - _Opacity: 0.85
     - _OutlineSmooth: 0.1
     - _OutlineWidth: 4
     - _Parallax: 0.02
-    - _Size: 0.436
-    - _Size2: 0.096
+    - _Size: 0.38
+    - _Size2: 0.1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -95,14 +95,14 @@ Material:
     - _ZWrite: 1
     - _x: 0
     - _xMax: 5
-    - _xPos: 0.261
+    - _xPos: 0.35
     - _y: 0
     - _yMax: 3
-    - _yPos: 0.295
+    - _yPos: 0.35
     m_Colors:
     - _BackgroundColor: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SelectColor: {r: 0.22785115, g: 1, b: 0, a: 0.77254903}
+    - _SelectColor: {r: 0, g: 0.82367873, b: 1, a: 0.77254903}
     - _TextColor: {r: 1, g: 1, b: 1, a: 1}
