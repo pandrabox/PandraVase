@@ -59,11 +59,9 @@ namespace com.github.pandrabox.pandravase.editor
 
         private void CreateAnimator()
         {
-
-
-
             var ac = new AnimationClipsBuilder();
-            ac.Clip("off").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0);
+            ac.Clip("off").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0)
+                    .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(0); });
             var ab = new AnimatorBuilder("MessageUI").AddLayer();
             ab.AddState("SWOFF").SetMotion(ac.Outp("off")).SetParameterDriver("Vase/MessageUI/SWGreater0.5IsUsed", 0);
             var swOffState = ab.CurrentState;
@@ -82,6 +80,7 @@ namespace com.github.pandrabox.pandravase.editor
             for (int i = 0; i < targets.Length; i++)
             {
                 PVMessageUI tgt = targets[i];
+                tgt.transform.localPosition=Vector3.zero;
 
                 var rootState = tgt.IsRemote ? remoteState : localState;
                 string usedParamName = $"{tgt.ParameterName}{tgt.ConditionMode.ToString()}{tgt.ParameterValue.ToString()}IsUsed";
@@ -149,7 +148,8 @@ namespace com.github.pandrabox.pandravase.editor
                     .Bind("Display", typeof(GameObject), "m_IsActive").Smooth(0, 1, tgt.DisplayDuration, 1)
                     .Bind("Display", typeof(MeshRenderer), "material._CurrentNo").Const2F(i)
                     .Color("Display", typeof(MeshRenderer), "material._TextColor", tgt.TextColor)
-                    .Color("Display", typeof(MeshRenderer), "material._OutlineColor", tgt.OutlineColor);
+                    .Color("Display", typeof(MeshRenderer), "material._OutlineColor", tgt.OutlineColor)
+                    .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(99999); });
 
                 var rootState = tgt.IsRemote ? remoteState : localState;
                 string usedParamName = $"{tgt.ParameterName}{tgt.ConditionMode.ToString()}{tgt.ParameterValue.ToString()}IsUsed";
@@ -267,6 +267,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 foreach (PVMessageUI tgt in targets)
                 {
+                    LowLevelDebugPrint($"MessageUI メッセージを画像化しています: {tgt.Message}");
                     msgTexs.Add(c.TextToImage(tgt.Message.PadString(100), Color.white).Trim(0, y));
                 }
             }

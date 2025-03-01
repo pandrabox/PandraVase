@@ -87,14 +87,22 @@ namespace com.github.pandrabox.pandravase.editor
                 LowLevelExeption("Materialが見つかりませんでした。");
                 return;
             }
+            if (_ui.MainTex == null)
+            {
+                LowLevelExeption("MainTexが見つかりませんでした。");
+                return;
+            }
         }
         private void ObjectSetting()
         {
             if (_ui.MainTex != null) _dispMat.mainTexture = _ui.MainTex;
             if (_ui.LockTex != null) _dispMat.SetTexture("_MainTex2", _ui.LockTex);
+            _dispMat.SetFloat("_Size", _ui.MenuSize);
+            _dispMat.SetFloat("_Opacity", _ui.MenuOpacity);
+            _dispMat.SetFloat("_Size2", _ui.LockSize);
+            _dispMat.SetColor("_SelectColor", _ui.SelectColor);
             _dispMat.SetFloat("_xMax", _ui.xMax);
             _dispMat.SetFloat("_yMax", _ui.yMax);
-            LowLevelDebugPrint($"GUI_xMax:{_ui.xMax}, yMax:{_ui.yMax}");
         }
         private void CreateControl()
         {
@@ -107,8 +115,8 @@ namespace com.github.pandrabox.pandravase.editor
                 .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(0); });
             ac.Clip("Enable").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(1)
                 .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(99999); });
-            float xSpeed = _ui.speed;
-            float ySpeed = _ui.speed / _ui.MainTex.width * _ui.MainTex.height;
+            float xSpeed = _ui.Speed;
+            float ySpeed = _ui.Speed / _ui.MainTex.width * _ui.MainTex.height;
             BlendTreeBuilder bb = new BlendTreeBuilder("GridUI");
             bb.RootDBT(() =>
             {
@@ -133,23 +141,37 @@ namespace com.github.pandrabox.pandravase.editor
                         bb.Param(_ui.IsMode0).Add1D(_ui.Inputx, () =>
                         {
                             bb.Param(-1).AddAAP(_ui.Currentx, -xSpeed);
-                            bb.Param(-_ui.deadZone).AddAAP(_ui.Currentx, 0);
-                            bb.Param(_ui.deadZone).AddAAP(_ui.Currentx, 0);
+                            bb.Param(-_ui.DeadZone).AddAAP(_ui.Currentx, 0);
+                            bb.Param(_ui.DeadZone).AddAAP(_ui.Currentx, 0);
                             bb.Param(1).AddAAP(_ui.Currentx, xSpeed);
                         });
                     });
                     bb.Param("1").Add1D(_ui.Inputy, () =>
                     {
                         bb.Param(-1).AddAAP(_ui.Currenty, ySpeed);
-                        bb.Param(-_ui.deadZone).AddAAP(_ui.Currenty, 0);
-                        bb.Param(_ui.deadZone).AddAAP(_ui.Currenty, 0);
+                        bb.Param(-_ui.DeadZone).AddAAP(_ui.Currenty, 0);
+                        bb.Param(_ui.DeadZone).AddAAP(_ui.Currenty, 0);
                         bb.Param(1).AddAAP(_ui.Currenty, -ySpeed);
                     });
                     // グリッド座標の計算
                     bb.Param("1").Quantization01(_ui.Currentx, _ui.xMax);
                     bb.Param("1").Quantization01(_ui.Currenty, _ui.yMax);
+                    //yの制限
+                    if (_ui.ItemCount > _ui.xMax && _ui.ItemCount != _ui.xMax * _ui.yMax)
+                    {
+                        bb.Param("1").Add1D(_ui.Quantizedx, () =>
+                        {
+                            float threshold = _ui.ItemCount % _ui.xMax;
+                            bb.Param(threshold - 0.5f).AssignmentBy1D(_ui.Quantizedy, 0, _ui.yMax, _ui.QuantLimitedy);
+                            bb.Param(threshold - 0.4f).AssignmentBy1D(_ui.Quantizedy, 0, _ui.yMax - 2, _ui.QuantLimitedy);
+                        });
+                    }
+                    else
+                    {
+                        bb.Param("1").AssignmentBy1D(_ui.Quantizedy, 0, _ui.yMax, _ui.QuantLimitedy);
+                    }
                     bb.Param(_ui.Quantizedx).AddAAP(_ui.n, 1);
-                    bb.Param(_ui.Quantizedy).AddAAP(_ui.n, _ui.xMax);
+                    bb.Param(_ui.QuantLimitedy).AddAAP(_ui.n, _ui.xMax);
                     // 同期
                     if (_ui.nVirtualSync)
                     {
@@ -158,7 +180,7 @@ namespace com.github.pandrabox.pandravase.editor
                     // アニメーション
                     //bb.Param(_ui.Quantizedx).AddMotion(ac.Outp("x1"));
                     bb.Param("1").FMultiplicationBy1D(ac.Outp("x1"), _ui.Quantizedx, 0, _ui.xMax);
-                    bb.Param("1").FMultiplicationBy1D(ac.Outp("y1"), _ui.Quantizedy, 0, _ui.yMax);
+                    bb.Param("1").FMultiplicationBy1D(ac.Outp("y1"), _ui.QuantLimitedy, 0, _ui.yMax);
 
                     bb.Param("1").Add1D(_ui.IsMode0, () =>
                     {

@@ -238,6 +238,7 @@ namespace com.github.pandrabox.pandravase.editor
             , Color? textColor = null
             , Color? outlineColor = null)
         {
+            if (message == null) return null;
             var p = GetOrCreateObject("MessageUI");
             var pvMessageUI = p.AddComponent<PVMessageUI>();
             pvMessageUI.Message = message;
@@ -273,7 +274,7 @@ namespace com.github.pandrabox.pandravase.editor
             pvGridUI.MainTex = MainTex;
             pvGridUI.LockTex = LockTex;
             pvGridUI.nVirtualSync = nVirtualSync;
-            pvGridUI.speed = speed;
+            pvGridUI.Speed = speed;
             pvGridUI.CreateSampleMenu = createSampleMenu;
             return pvGridUI;
         }

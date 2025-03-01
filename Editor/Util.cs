@@ -175,14 +175,19 @@ namespace com.github.pandrabox.pandravase.editor
         public static string AssetSavePath(UnityEngine.Object asset, string path)
         {
             if (path.HasExtension()) return path;
-            string fileName = SanitizeStr(asset.name);
+            if (asset == null)
+            {
+                LowLevelDebugPrint("アセットがnullのため保存パスの取得に失敗しました。");
+                return null;
+            }
+            string fileName = SanitizeStr(asset.name ?? "Untitled");
             var extensionMap = new Dictionary<Type, string>() {
                 { typeof(AnimationClip), ".anim" },
                 { typeof(Texture2D), ".png" },
                 { typeof(Material), ".mat" },
             };
             string extension = extensionMap.TryGetValue(asset.GetType(), out string e) ? e : ".asset";
-            string guid = path==TmpFolder ? "_" + Guid.NewGuid().ToString() : "";
+            string guid = path == TmpFolder ? "_" + Guid.NewGuid().ToString() : "";
             return Path.Combine(path, fileName + guid + extension);
         }
 

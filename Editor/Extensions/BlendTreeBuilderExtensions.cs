@@ -56,7 +56,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public static void FMultiplicationBy1D(this BlendTreeBuilder bb, Motion baseMotion, string weightParam, float weightMin, float weightMax, float? resMin = null, float? resMax = null)
         {
-            bb.Add1D(weightParam, () =>
+            bb.NName($@"{baseMotion} x {weightParam}").Add1D(weightParam, () =>
             {
                 bb.Param(weightMin).AddMotion(((AnimationClip)baseMotion).Multiplication(resMin ?? weightMin));
                 bb.Param(weightMax).AddMotion(((AnimationClip)baseMotion).Multiplication(resMax ?? weightMax));

@@ -11,6 +11,31 @@ namespace com.github.pandrabox.pandravase.editor
 {
     public static class TextureUtil
     {
+
+#if PANDRADBG
+        public class TextureUtilDebug
+        {
+            [MenuItem("PanDbg/TextureUtil/PackTexture")]
+            public static void FaceMaker_Debug()
+            {
+                SetDebugMode(true);
+                Texture2D[] testTex = new Texture2D[6];
+                for (int i = 0; i < 6; i++)
+                {
+                    testTex[i] = new Texture2D(256, 256);
+                    Color color = new Color(i / 5f, 0, 0);
+                    Color[] pixels = Enumerable.Repeat(color, 256 * 256).ToArray();
+                    testTex[i].SetPixels(pixels);
+                    testTex[i].Apply();
+                    OutpAsset(testTex[i]);
+                }
+                int x = 4;
+                var pack = PackTexture(testTex, x, 256 * x, 256 * 2, Color.green, true,6);
+                OutpAsset(pack);
+            }
+        }
+#endif
+
         /// <summary>
         /// 複数のTexture(正方形)をパッキング
         /// </summary>
@@ -18,26 +43,49 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="columns">折り返し列数</param>
         /// <param name="tileWidth">出力画像幅</param>
         /// <param name="tileHeight">出力画像高さ（省略時、正方形）</param>
+        /// <param name="baseColor">背景色（省略時透明）</param>
+        /// <param name="margin">マージン幅(2以上の偶数、省略時0)</param>
         /// <returns></returns>
-        public static Texture2D PackTexture(List<Texture2D> textures, int columns, int tileWidth, int tileHeight = -1) => PackTexture(textures.ToArray(), columns, tileWidth, tileHeight);
-        public static Texture2D PackTexture(Texture2D[] textures, int columns, int tileWidth, int tileHeight = -1)
+        public static Texture2D PackTexture(List<Texture2D> textures, int columns, int tileWidth, int tileHeight = -1, Color? baseColor = null, bool blend = false, int margin = 0) 
+            => PackTexture(textures.ToArray(), columns, tileWidth, tileHeight, baseColor, blend, margin);
+        public static Texture2D PackTexture(Texture2D[] textures, int columns, int tileWidth, int tileHeight = -1, Color? baseColor = null, bool blend = false, int margin = 0)
         {
             //LowLevelDebugPrint($"Packing textures: {textures.Length} textures, {columns} columns, {tileWidth}x{tileHeight}");
+            Color backColor = baseColor ?? new Color(1, 1, 1, 0);
             int unitSize = tileWidth / columns;
             SetReadable(textures);
+            textures = AddMargins(textures, margin / 2, backColor);
             ResizeTextures(textures, unitSize, unitSize);
             if (tileHeight == -1) tileHeight = tileWidth;
             Texture2D tileTexture = new Texture2D(tileWidth, tileHeight);
-            Color[] colors = new Color[tileWidth * tileHeight];
+            Color[] colors = Enumerable.Repeat(backColor, tileWidth * tileHeight).ToArray();
+            tileTexture.SetPixels(colors);
             for (int i = 0; i < textures.Length; i++)
             {
                 int x = i % columns * unitSize;
                 int y = tileHeight - ((i / columns + 1) * unitSize);
                 Color[] pixels = textures[i].GetPixels();
-                tileTexture.SetPixels(x, y, unitSize, unitSize, pixels);
+                if (!blend)
+                {
+                    tileTexture.SetPixels(x, y, unitSize, unitSize, pixels);
+                }
+                else
+                {
+                    for (int px = 0; px < unitSize; px++)
+                    {
+                        for (int py = 0; py < unitSize; py++)
+                        {
+                            Color srcColor = pixels[py * unitSize + px];
+                            Color dstColor = tileTexture.GetPixel(x + px, y + py);
+                            Color blendedColor = Color.Lerp(dstColor, srcColor, srcColor.a);
+                            tileTexture.SetPixel(x + px, y + py, blendedColor);
+                        }
+                    }
+                }
             }
             tileTexture.wrapMode = TextureWrapMode.Clamp;
             tileTexture.Apply();
+            tileTexture = AddMargin(tileTexture, margin / 2, backColor);
             return tileTexture;
         }
 
@@ -53,6 +101,24 @@ namespace com.github.pandrabox.pandravase.editor
             AssetDatabase.Refresh();
             LowLevelDebugPrint("Texture saved at: " + path);
         }
+
+        /// <summary>
+        /// Texture複数に同じマージンを付与
+        /// </summary>
+        /// <param name="textures"></param>
+        /// <param name="margin"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public static Texture2D[] AddMargins(Texture2D[] textures, int margin, Color? color = null)
+        {
+            for (int i = 0; i < textures.Length; i++)
+            {
+                textures[i] = AddMargin(textures[i], margin, color);
+                //OutpAsset(textures[i]);
+            }
+            return textures;
+        }
+
         /// <summary>
         /// Textureにマージンを付与
         /// </summary>
