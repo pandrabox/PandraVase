@@ -112,11 +112,21 @@ namespace com.github.pandrabox.pandravase.editor
             BlendTreeBuilder bb = new BlendTreeBuilder("GridUI");
             bb.RootDBT(() =>
             {
-                bb.Param("IsLocal").AddD(() => { 
+                bb.Param("IsLocal").AddD(() => {
                     // ゆっくり移動の計算
                     //Hold
-                    bb.Param("1").AssignmentBy1D(_ui.Currentx, 0, 1 - xSpeed, _ui.Currentx);
-                    bb.Param("1").AssignmentBy1D(_ui.Currenty, 0, 1 - ySpeed, _ui.Currenty);
+                    bb.Param("1").Add1D(_ui.Reset, () =>
+                    {
+                        bb.Param(0).AddD(() => {
+                            bb.Param("1").AssignmentBy1D(_ui.Currentx, 0, 1 - xSpeed, _ui.Currentx);
+                            bb.Param("1").AssignmentBy1D(_ui.Currenty, 0, 1 - ySpeed, _ui.Currenty);
+                        });
+                        bb.Param(1).AddD(() =>
+                        {
+                            bb.Param("1").AddAAP(_ui.Currentx, 0);
+                            bb.Param("1").AddAAP(_ui.Currenty, 0);
+                        });
+                    });
                     //Move
                     bb.Param(_ui.IsEnable).AddD(()=>
                     {
@@ -146,8 +156,10 @@ namespace com.github.pandrabox.pandravase.editor
                         _prj.VirtualSync(_ui.n, TransmissionBit(_ui.xMax * _ui.yMax), PVnBitSync.nBitSyncMode.IntMode);
                     }
                     // アニメーション
-                    bb.Param(_ui.Quantizedx).AddMotion(ac.Outp("x1"));
-                    bb.Param(_ui.Quantizedy).AddMotion(ac.Outp("y1"));
+                    //bb.Param(_ui.Quantizedx).AddMotion(ac.Outp("x1"));
+                    bb.Param("1").FMultiplicationBy1D(ac.Outp("x1"), _ui.Quantizedx, 0, _ui.xMax);
+                    bb.Param("1").FMultiplicationBy1D(ac.Outp("y1"), _ui.Quantizedy, 0, _ui.yMax);
+
                     bb.Param("1").Add1D(_ui.IsMode0, () =>
                     {
                         bb.Param(0).AddMotion(ac.Outp("Mode1"));

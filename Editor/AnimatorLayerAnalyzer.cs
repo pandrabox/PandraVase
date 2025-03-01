@@ -74,6 +74,8 @@ namespace com.github.pandrabox.pandravase.editor
             }
             foreach (var t in GestureTransitions)
             {
+                var m = t?.ToState?.motion;
+                if(m == null) continue;
                 AnimationClip clip = (AnimationClip)t.ToState.motion;
                 if (clip == null) continue;
                 EditorCurveBinding[] bodyBindings = AnimationUtility.GetCurveBindings(clip);

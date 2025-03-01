@@ -241,6 +241,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public AnimatorBuilder AddState(string name, Motion motion = null, bool nullMotion=false, Vector3? position=null)
         {
+            if(_currentStateMachine == null)
+            {
+                LowLevelExeption("Current state machineが設定されていません。レイヤを作成したか確認してください");
+                return this;
+            }
             _currentState = _currentStateMachine.AddState(name, position ?? NextStatePos());
             _currentState.writeDefaultValues = true;
             SetMotion(nullMotion ? null : motion ?? DummyClip);

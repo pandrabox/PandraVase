@@ -23,11 +23,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// targetParamが変更されたらtargetParamIsDiffに1を返す
         /// </summary>
-        public static void FDiffChecker(this BlendTreeBuilder bb, string targetParam, string resultSuffix="IsDiff", float min = 0, float max=1)
+        public static void FDiffChecker(this BlendTreeBuilder bb, string targetParam, string resultName=null, float min = 0, float max=1)
         {
             string memory = $"{targetParam}Memory";
             string subtracted = $"{targetParam}Subtracted";
-            string result = $"{targetParam}{resultSuffix}";
+            string result = resultName ?? $"{targetParam}IsDiff";
             bb.NName("DiffChecker").AddD(() => {
                 bb.NName("Save and Subtract1").Param("1").Add1D(targetParam, () =>
                 {
@@ -50,7 +50,20 @@ namespace com.github.pandrabox.pandravase.editor
         {
             bb.AssignmentBy1D(FromAAPName, FromAAPMin, FromAAPMax, ToAAPName, ToAAPMin, ToAAPMax);
         }
-        
+
+        /// <summary>
+        /// DirectによるAnimation倍率変更の代替
+        /// </summary>
+        public static void FMultiplicationBy1D(this BlendTreeBuilder bb, Motion baseMotion, string weightParam, float weightMin, float weightMax, float? resMin = null, float? resMax = null)
+        {
+            bb.Add1D(weightParam, () =>
+            {
+                bb.Param(weightMin).AddMotion(((AnimationClip)baseMotion).Multiplication(resMin ?? weightMin));
+                bb.Param(weightMax).AddMotion(((AnimationClip)baseMotion).Multiplication(resMax ?? weightMax));
+            });
+        }
+
+
         public static void FDummyAAP(this BlendTreeBuilder bb)
         {
             bb.AddAAP("Dummy", 0);

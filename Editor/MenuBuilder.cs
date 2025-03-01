@@ -173,6 +173,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public MenuBuilder SetIco(Texture2D ico)
         {
+            ico.wrapMode = TextureWrapMode.Clamp;
             _currentMenu.Control.icon = ico;
             return this;
         }

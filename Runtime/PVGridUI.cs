@@ -14,7 +14,7 @@ namespace com.github.pandrabox.pandravase.runtime
         public bool nVirtualSync;
         public float speed = 0.03f;
         public float deadZone = 0.3f;
-        [HideInInspector]
+        //[HideInInspector]
         public bool CreateSampleMenu;
 
         public string Inputx => $@"{ParameterName}/x";
@@ -27,5 +27,6 @@ namespace com.github.pandrabox.pandravase.runtime
         public string nRx => $@"{ParameterName}/nRx";
         public string IsMode0 => $@"{ParameterName}/isMode0";
         public string IsEnable => $@"{ParameterName}/isEnable";
+        public string Reset => $@"{ParameterName}/reset";
     }
 }

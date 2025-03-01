@@ -52,8 +52,8 @@ namespace com.github.pandrabox.pandravase.editor
             
             var bb = new BlendTreeBuilder("FlameCounter");
             bb.RootDBT(()=> {
-                bb.Param("1").AddAAP("Vase/FlameCount", 1);
-                bb.Param("Vase/FlameCount").AddAAP("Vase/FlameCount", 1);
+                bb.Param("1").AddAAP(_prj.FrameCount, 1);
+                bb.Param(_prj.FrameCount).AddAAP(_prj.FrameCount, 1);
             });
             bb.Attach(_prj);
         }

@@ -56,6 +56,7 @@ namespace com.github.pandrabox.pandravase.editor
         public Transform ArmatureTransform => HumanoidTransform(HumanBodyBones.Hips).parent;
         public GameObject ArmatureGameObject => ArmatureTransform.gameObject;
         public AvatarObjectReference ArmatureObjectReference => GetObjectReference(ArmatureGameObject);
+        public string FrameCount => "Vase/FrameCount";
 
         
         public AnimatorController FXAnimatorController
