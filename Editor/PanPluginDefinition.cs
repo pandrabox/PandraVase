@@ -27,13 +27,15 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVMoveToRootPass.Instance);
 
 
-
+            seq.Run(PVMMDDetectPass.Instance);
             seq.Run(PVGridUIPass.Instance);
             seq.Run(PVnBitSyncPass.Instance);
             seq.Run(PVMessageUIPass.Instance); //MenuBuilderで作成されるComponentの解決
             seq.Run(PVFrameCounterPass.Instance); //FrameCounterの解決
             seq.Run(PVPanMergeBlendTreePass.Instance); // PanMergeBlendTreeの解決
             seq = InPhase(BuildPhase.Optimizing).BeforePlugin("nadena.dev.modular-avatar");
+
+            seq.Run(PVFxSortPass.Instance);
         }
     }
 }

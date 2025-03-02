@@ -57,8 +57,10 @@ namespace com.github.pandrabox.pandravase.editor
         public GameObject ArmatureGameObject => ArmatureTransform.gameObject;
         public AvatarObjectReference ArmatureObjectReference => GetObjectReference(ArmatureGameObject);
         public string FrameCount => "Vase/FrameCount";
+        public string IsNotMMD => "Vase/IsNotMMD";
+        public string MMDForce => "Vase/MMDForce";
+        public string MMDManual => "Vase/MMDManual";
 
-        
         public AnimatorController FXAnimatorController
         {
             get => GetPlayableAnimatorController(VRCAvatarDescriptor.AnimLayerType.FX);

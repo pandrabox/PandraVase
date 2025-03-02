@@ -40,18 +40,30 @@ namespace com.github.pandrabox.pandravase.editor
 
     public class FxSortMain
     {
+        PandraProject _prj;
         public FxSortMain(VRCAvatarDescriptor desc)
         {
-            PVFxSort fxSort = (PVFxSort)desc.transform.GetComponentsInChildren(typeof(PVFxSort)).FirstOrDefault();
-            if(fxSort == null) return;
+            _prj = VaseProject(desc);
+            PVFxSort fxSort = desc.transform.GetComponentInChildren<PVFxSort>();
+            if (fxSort == null) return;
             PandraProject prj = VaseProject(desc);
             string[] sortOrder = fxSort.SortOrder;
 
+            int fxn = _prj.PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX);
+
             if (fxSort.AddBlank)
             {
-                ((AnimatorController)prj.BaseAnimationLayers[3].animatorController).AddLayer("blank");
+                var fx = prj?.BaseAnimationLayers[fxn].animatorController;
+                if (fx == null)
+                {
+                    LowLevelExeption("FxSortでFxが見つかりませんでした");
+                    return;
+                }
+                var fxc = (AnimatorController)fx;
+                fxc.AddLayer("blank");
+                prj.BaseAnimationLayers[fxn].animatorController = fxc;
             }
-            var Layers = ((AnimatorController)prj.BaseAnimationLayers[3].animatorController).layers;
+            var Layers = ((AnimatorController)prj.BaseAnimationLayers[fxn].animatorController).layers;
             var LayersCopy = new AnimatorControllerLayer[Layers.Length];
             for (int n = 0; n < sortOrder.Length; n++)
             {
@@ -86,7 +98,11 @@ namespace com.github.pandrabox.pandravase.editor
                     }
                 }
             }
-            ((AnimatorController)prj.BaseAnimationLayers[3].animatorController).layers = LayersCopy;
+            ((AnimatorController)prj.BaseAnimationLayers[fxn].animatorController).layers = LayersCopy;
+
+            // 最終的なsortOrderとレイヤ順番を表示
+            LowLevelDebugPrint("Final Sort Order: " + string.Join(", ", sortOrder));
+            LowLevelDebugPrint("Final Layer Order: " + string.Join(", ", LayersCopy.Select(layer => layer.name)));
         }
     }
 }
