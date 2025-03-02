@@ -77,6 +77,105 @@ namespace com.github.pandrabox.pandravase.editor
             return this;
         }
 
+        public AnimatorBuilder SetTemporaryPoseSpace(bool isActive)
+        {
+            VRCAnimatorTemporaryPoseSpace poseSpace = _currentState.behaviours.FirstOrDefault(b => b is VRCAnimatorTemporaryPoseSpace) as VRCAnimatorTemporaryPoseSpace;
+            if (poseSpace == null)
+            {
+                poseSpace = ScriptableObject.CreateInstance<VRCAnimatorTemporaryPoseSpace>();
+                poseSpace.enterPoseSpace = isActive;
+                if (_currentState.behaviours == null)
+                {
+                    _currentState.behaviours = new[] { poseSpace };
+                }
+                else
+                {
+                    _currentState.behaviours = _currentState.behaviours.Concat(new[] { poseSpace }).ToArray();
+                }
+            }
+            else
+            {
+                LowLevelExeption($@"{_currentState.name}には既にTemporaryPoseSpaceが設定されています");
+            }
+            return this;
+        }
+
+        public AnimatorBuilder SetLocomotionControl(bool isActive)
+        {
+            VRCAnimatorLocomotionControl locomotionControl = _currentState.behaviours.FirstOrDefault(b => b is VRCAnimatorLocomotionControl) as VRCAnimatorLocomotionControl;
+            if (locomotionControl == null)
+            {
+                locomotionControl = ScriptableObject.CreateInstance<VRCAnimatorLocomotionControl>();
+                locomotionControl.disableLocomotion = !isActive;
+                if (_currentState.behaviours == null)
+                {
+                    _currentState.behaviours = new[] { locomotionControl };
+                }
+                else
+                {
+                    _currentState.behaviours = _currentState.behaviours.Concat(new[] { locomotionControl }).ToArray();
+                }
+            }
+            else
+            {
+                LowLevelExeption($@"{_currentState.name}には既にLocomotionControlが設定されています");
+            }
+            return this;
+        }
+
+        public AnimatorBuilder SetTrackingControl(
+            bool? all = null,
+            bool? head = null,
+            bool? leftHand = null,
+            bool? rightHand = null,
+            bool? hip = null,
+            bool? leftFoot = null,
+            bool? rightFoot = null,
+            bool? leftFingers = null,
+            bool? rightFingers = null,
+            bool? eyes = null,
+            bool? mouth = null)
+        {
+            VRCAnimatorTrackingControl trackingControl = _currentState.behaviours.FirstOrDefault(b => b is VRCAnimatorTrackingControl) as VRCAnimatorTrackingControl;
+            if (trackingControl == null)
+            {
+                trackingControl = ScriptableObject.CreateInstance<VRCAnimatorTrackingControl>();
+                if (_currentState.behaviours == null)
+                {
+                    _currentState.behaviours = new[] { trackingControl };
+                }
+                else
+                {
+                    _currentState.behaviours = _currentState.behaviours.Concat(new[] { trackingControl }).ToArray();
+                }
+            }
+
+            void SetTracking(ref VRC_AnimatorTrackingControl.TrackingType trackingType, bool? value)
+            {
+                if (value.HasValue || all.HasValue)
+                {
+                    trackingType = (value ?? all).Value ? VRC_AnimatorTrackingControl.TrackingType.Tracking : VRC_AnimatorTrackingControl.TrackingType.Animation;
+                }
+            }
+
+            SetTracking(ref trackingControl.trackingHead, head);
+            SetTracking(ref trackingControl.trackingLeftHand, leftHand);
+            SetTracking(ref trackingControl.trackingRightHand, rightHand);
+            SetTracking(ref trackingControl.trackingHip, hip);
+            SetTracking(ref trackingControl.trackingLeftFoot, leftFoot);
+            SetTracking(ref trackingControl.trackingRightFoot, rightFoot);
+            SetTracking(ref trackingControl.trackingLeftFingers, leftFingers);
+            SetTracking(ref trackingControl.trackingRightFingers, rightFingers);
+            SetTracking(ref trackingControl.trackingEyes, eyes);
+            SetTracking(ref trackingControl.trackingMouth, mouth);
+
+            return this;
+        }
+
+
+
+
+
         /// <summary>
         /// CurrentStateへの遷移を定義 ExitTime等を指定する場合はtiを指定する、しないとほぼ全0
         /// </summary>
