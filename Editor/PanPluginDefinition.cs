@@ -18,6 +18,7 @@ namespace com.github.pandrabox.pandravase.editor
             seq = InPhase(BuildPhase.Resolving).BeforePlugin("nadena.dev.modular-avatar");
             seq = InPhase(BuildPhase.Generating).BeforePlugin("nadena.dev.modular-avatar");
             seq = InPhase(BuildPhase.Transforming).BeforePlugin("nadena.dev.modular-avatar");
+            seq.Run(PVInstantiatePass.Instance);
             seq.Run(PVMergeMASubMenuPass.Instance);
             seq.Run(PVPlayableRemoverPass.Instance);
             seq.Run(PVUniquefyObjectPass.Instance);

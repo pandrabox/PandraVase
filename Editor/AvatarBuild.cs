@@ -38,7 +38,12 @@ namespace com.github.pandrabox.pandravase.editor
         BuildMode _buildMode;
         public AvatarBuild(GameObject tgt, BuildMode buildMode = BuildMode.Upload)
         {
-            _tgt = new BuildAvatarTarget(tgt);
+#if PANDRADBG
+            //SetDebugMode(true);
+#endif
+            var tgtDesc = GetAvatarDescriptor(tgt);
+            tgtDesc.gameObject.SetActive(true);
+            _tgt = new BuildAvatarTarget(tgtDesc.gameObject);
             _buildMode = buildMode;
             ClearConsole();
             Debug.LogWarning($@"AvatarBuilder Build {tgt.name} On Mode {buildMode.ToString()} Start");
@@ -56,9 +61,26 @@ namespace com.github.pandrabox.pandravase.editor
                 PipelineManager pipeline = tgt.GetComponent<PipelineManager>();
                 if (pipeline == null) { EditorUtility.DisplayDialog("エラー", $@"PipelineManagerが見つかりません。{tgt.name}に正しくアタッチされているか確認して下さい", "OK"); return; }
                 BlueprintId = pipeline?.blueprintId;
+                if (BlueprintId == null || BlueprintId.Length == 0)
+                {
+                    BlueprintId = GetPanBPID();
+                    if (BlueprintId == null || BlueprintId.Length == 0) LowLevelExeption("BlueprintIdの取得に失敗しました Assets/Pan/bpid.txtにBPIDを入れてください");
+                    pipeline.blueprintId = BlueprintId;
+                }
                 if (BlueprintId == null || BlueprintId.Length == 0) { EditorUtility.DisplayDialog("エラー", $@"BlueprintIdの取得に失敗しました", "OK"); return; }
             }
+
+            private string GetPanBPID()
+            {
+                string path = System.IO.Path.Combine(Application.dataPath, "Pan/bpid.txt");
+                if (System.IO.File.Exists(path))
+                {
+                    return System.IO.File.ReadAllText(path);
+                }
+                return null;
+            }
         }
+
 
         private void ActivateSDKPanel() //SDKパネルをアクティブにする（しないとビルドできない）
         {
