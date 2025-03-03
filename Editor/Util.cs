@@ -425,8 +425,8 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="Target">対象</param>
         /// <param name="SW">設定値</param>
-        public static void SetEditorOnly(Component Target, bool SW) => SetEditorOnly(Target?.gameObject, SW);
-        public static void SetEditorOnly(GameObject Target, bool SW)
+        public static void SetEditorOnly(this Component Target, bool SW) => SetEditorOnly(Target?.gameObject, SW);
+        public static void SetEditorOnly(this GameObject Target, bool SW)
         {
             if (SW)
             {

@@ -39,7 +39,7 @@ namespace com.github.pandrabox.pandravase.editor
             foreach (var a in allAvatar)
             {
                 bool active = releace || (tgtDesc != null && a == tgtDesc);
-                SetEditorOnly(a.gameObject, !active);
+                a.gameObject.SetEditorOnly(!active);
             }
         }
     }
