@@ -57,9 +57,12 @@ namespace com.github.pandrabox.pandravase.editor
         public GameObject ArmatureGameObject => ArmatureTransform.gameObject;
         public AvatarObjectReference ArmatureObjectReference => GetObjectReference(ArmatureGameObject);
         public string FrameCount => "Vase/FrameCount";
-        public string IsNotMMD => "Vase/IsNotMMD";
-        public string MMDForce => "Vase/MMDForce";
-        public string MMDManual => "Vase/MMDManual";
+        public string IsFxLayer1Off => "Vase/IsFxLayer1Off";
+        public string IsDanceHost => "Vase/IsDance/Host";
+        public string DanceDetectMode => "Vase/DanceDetectMode";
+        public string IsDance => "Vase/IsDance";
+        public string IsNotDance => "Vase/IsNotDance";
+        public string OnDanceFxEnable => "Vase/OnDanceFxEnable";
 
         public AnimatorController FXAnimatorController
         {
@@ -145,7 +148,7 @@ namespace com.github.pandrabox.pandravase.editor
             else if (ContainsFirstString(parameterName, new string[] { "GestureRight", "GestureLeft", "GestureRightWeight", "GestureLeftWeight", "IsLocal", "InStation", "Seated", "VRMode" })) res = parameterName;
             else if (parameterName.StartsWith("Env/")) res = parameterName;
             else if (parameterName.StartsWith("Pan/")) res = parameterName;
-            else if (ContainsFirstString(parameterName, new string[] { "Time", "ExLoaded", "IsMMD", "IsNotMMD", "IsLocal", "FrameTime" })) res = $@"Env/{parameterName}";
+            else if (ContainsFirstString(parameterName, new string[] { "Time", "ExLoaded", "IsDance", "IsNotDance", "IsLocal", "FrameTime" })) res = $@"Env/{parameterName}";
             else if (parameterName.Length > 0 && parameterName[0] == '$') res = parameterName.Substring(1);
             else res = $@"{Suffix}{parameterName}";
             return res;

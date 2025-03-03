@@ -25,9 +25,9 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVActiveOverridePass.Instance);
             seq.Run(PVParamView2Pass.Instance);
             seq.Run(PVMoveToRootPass.Instance);
+            seq.Run(PVDanceControllerPass.Instance);
 
 
-            seq.Run(PVMMDDetectPass.Instance);
             seq.Run(PVGridUIPass.Instance);
             seq.Run(PVnBitSyncPass.Instance);
             seq.Run(PVMessageUIPass.Instance); //MenuBuilderで作成されるComponentの解決

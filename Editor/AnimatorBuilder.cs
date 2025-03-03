@@ -123,6 +123,30 @@ namespace com.github.pandrabox.pandravase.editor
             return this;
         }
 
+        public AnimatorBuilder SetPlayableLayerControl(VRC_PlayableLayerControl.BlendableLayer layer, bool isActive)
+        {
+            VRCPlayableLayerControl playableLayerControl = _currentState.behaviours.FirstOrDefault(b => b is VRCPlayableLayerControl) as VRCPlayableLayerControl;
+            if (playableLayerControl == null)
+            {
+                playableLayerControl = ScriptableObject.CreateInstance<VRCPlayableLayerControl>();
+                playableLayerControl.layer = layer;
+                playableLayerControl.goalWeight = isActive ? 1 : 0;
+                if (_currentState.behaviours == null)
+                {
+                    _currentState.behaviours = new[] { playableLayerControl };
+                }
+                else
+                {
+                    _currentState.behaviours = _currentState.behaviours.Concat(new[] { playableLayerControl }).ToArray();
+                }
+            }
+            else
+            {
+                LowLevelExeption($@"{_currentState.name}には既にPlayableLayerControlが設定されています");
+            }
+            return this;
+        }
+
         public AnimatorBuilder SetTrackingControl(
             bool? all = null,
             bool? head = null,
