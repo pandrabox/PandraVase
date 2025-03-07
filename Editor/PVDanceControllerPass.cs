@@ -224,7 +224,7 @@ namespace com.github.pandrabox.pandravase.editor
         
         private void CreateMenu()
         {
-            var mb = new MenuBuilder(_prj);
+            var mb = new MenuBuilder(_prj, parentFolder: _tgt.ParrentFolder);
             mb.AddFolder("DanceMode").SetMessage("ダンス対応の設定");
             mb.AddToggle(_prj.DanceDetectMode, 0, ParameterSyncType.Int, "MODE:Off", 1).SetMessage("OFF");
             mb.AddToggle(_prj.DanceDetectMode, 1, ParameterSyncType.Int, "MODE:Normal", 1).SetMessage("ダンスを自動検出(通常)");

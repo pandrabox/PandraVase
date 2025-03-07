@@ -26,13 +26,13 @@ namespace com.github.pandrabox.pandravase.editor
             var selectedObject = Selection.activeObject;
             if (selectedObject == null || (!(selectedObject is AnimationClip))) return;
             AnimationClip tgt = selectedObject as AnimationClip;
-            sb.AppendLine($@"ab.Clip(""{tgt.name}"")");
+            //sb.AppendLine($@"ab.Clip(""{tgt.name}"")");
             EditorCurveBinding[] curveBindings = AnimationUtility.GetCurveBindings(tgt);
 
             foreach (EditorCurveBinding binding in curveBindings)
             {
                 var type = binding.type.ToString().Replace("UnityEngine.", "").Replace("Animations.", "");
-                sb.AppendLine($@"   .Bind(""{binding.path}"", typeof({type}), ""{binding.propertyName}"")");
+                sb.AppendLine($@".Bind(""{binding.path}"", typeof({type}), ""{binding.propertyName}"")");
                 //AnimationCurve curve = AnimationUtility.GetEditorCurve(tgt, binding);
                 //for (var i = 0; i < curve.keys.Length; i++)
                 //{
@@ -41,7 +41,7 @@ namespace com.github.pandrabox.pandravase.editor
                 //}
             }
             string result = sb.ToString();
-            Debug.LogWarning(result);
+            LowLevelDebugPrint(result);
             EditorGUIUtility.systemCopyBuffer = result;
         }
     }

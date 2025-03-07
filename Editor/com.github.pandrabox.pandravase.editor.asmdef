@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "com.github.pandrabox.pandravase.editor",
     "references": [
         "nadena.dev.modular-avatar.core",
@@ -9,7 +9,8 @@
         "nadena.dev.ndmf.vrchat",
         "VRC.SDK3A.Editor",
         "VRC.SDKBase.Editor",
-        "com.github.pandrabox.pandravase.runtime"
+        "com.github.pandrabox.pandravase.runtime",
+        "lilToon.Editor"
     ],
     "includePlatforms": [
         "Editor"
@@ -33,6 +34,12 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "jp.lilxyzw.liltoon",
+            "expression": "",
+            "define": "PANDRAVASE_LILTOON"
+        }
+    ],
     "noEngineReferences": false
 }

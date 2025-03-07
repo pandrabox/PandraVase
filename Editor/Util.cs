@@ -54,21 +54,6 @@ namespace com.github.pandrabox.pandravase.editor
             AssetDatabase.Refresh();
         }
 
-        public static void LowLevelExeption(string message, bool debugOnly = true, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)=> LowLevelDebugPrint(message, debugOnly, LogType.Exception, projectName, callerMethodName, callerLineNumber);
-        public static void LowLevelDebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
-        {
-            if (debugOnly && !PDEBUGMODE) return;
-            var msg = $@"[PandraBox.{projectName}.{callerMethodName}:{callerLineNumber}]:{message}";
-
-            if (level == LogType.Log) Debug.Log(msg);
-            else if (level == LogType.Error) Debug.LogError(msg);
-            else if (level == LogType.Exception)
-            {
-                Debug.LogException(new Exception(msg));
-                EditorUtility.DisplayDialog("Error", msg, "OK");
-            }
-            else Debug.LogWarning(msg);
-        }
 
         /// <summary>
         /// シーンの最初に存在するアバターのDescriptor
@@ -425,8 +410,8 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         /// <param name="Target">対象</param>
         /// <param name="SW">設定値</param>
-        public static void SetEditorOnly(this Component Target, bool SW) => SetEditorOnly(Target?.gameObject, SW);
-        public static void SetEditorOnly(this GameObject Target, bool SW)
+        public static void SetEditorOnly(Component Target, bool SW) => SetEditorOnly(Target?.gameObject, SW);
+        public static void SetEditorOnly(GameObject Target, bool SW)
         {
             if (SW)
             {
@@ -885,6 +870,35 @@ namespace com.github.pandrabox.pandravase.editor
                 return paramPath.Substring(paramPath.LastIndexOf("/") + 1);
             }
             return paramPath;
+        }
+
+
+        public static void LowLevelExeption(string message, bool debugOnly = true, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0) => LowLevelDebugPrint(message, debugOnly, LogType.Exception, projectName, callerMethodName, callerLineNumber);
+        public static void LowLevelDebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
+        {
+            try
+            {
+
+                if (!debugOnly || PDEBUGMODE)
+                {
+                    var msg = $@"[PandraBox.{projectName}.{callerMethodName}:{callerLineNumber}]:{message}";
+
+                    if (level == LogType.Log) Debug.Log(msg);
+                    else if (level == LogType.Error) Debug.LogError(msg);
+                    else if (level == LogType.Exception)
+                    {
+                        Debug.LogException(new Exception(msg));
+                        EditorUtility.DisplayDialog("Error", msg, "OK");
+                    }
+                    else Debug.LogWarning(msg);
+                }
+
+                PanLog.Write($@"{DateTime.Now.ToString("HH:mm:ss")},{PanLog.CurrentClassName},{message}", detail: true);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to log message: {message}. Error: {ex.Message}");
+            }
         }
     }
 }

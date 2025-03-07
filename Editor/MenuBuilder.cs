@@ -47,12 +47,26 @@ namespace com.github.pandrabox.pandravase.editor
         private ModularAvatarMenuItem _currentMenu;
         private string _currentParameterName;
         private float _currentValue;
+        private string _parentFolder;
 
-        public MenuBuilder(PandraProject prj, bool parameterDef = true)
+        public MenuBuilder(PandraProject prj, bool parameterDef = true, string parentFolder=null)
         {
             _prj = prj;
             _parameterDef = parameterDef;
+            _parentFolder = parentFolder;
             folderTree = new List<Transform>();
+            CreateParent();
+        }
+
+        private MenuBuilder CreateParent()
+        {
+            if(_parentFolder ==null || _parentFolder == "") return this;
+            var pf = _parentFolder.Split('/');
+            foreach (var p in pf)
+            {
+                AddFolder(p, true);
+            }
+            return this;
         }
 
         /// <summary>

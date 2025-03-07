@@ -43,7 +43,7 @@ namespace com.github.pandrabox.pandravase.editor
         public VRCAvatarDescriptor.CustomAnimLayer[] BaseAnimationLayers => Descriptor.baseAnimationLayers;
         public VRCAvatarDescriptor.CustomAnimLayer[] PlayableLayers => BaseAnimationLayers;
         //public VRCAvatarDescriptor.CustomAnimLayer FXLayer => BaseAnimationLayers[PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX)];
-        public int PlayableIndex (VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
+        public int PlayableIndex(VRCAvatarDescriptor.AnimLayerType type) => Array.IndexOf(BaseAnimationLayers, BaseAnimationLayers.FirstOrDefault(l => l.type == type));
         public GameObject PrjRootObj => Util.GetOrCreateObject(RootTransform, PrjRootObjName);
         public bool IsVPM => ProjectType == ProjectTypes.VPM;
         public string PackageJsonPath => IsVPM ? $@"{ProjectFolder}package.json" : null;
@@ -269,7 +269,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="nVirtualSync">選択対象のVirtualSync有無</param>
         /// <param name="speed">選択移動速度</param>
         /// <param name="createSampleMenu">サンプルメニューを作成するか(For Debug)</param>
-        public PVGridUI SetGridUI(string ParameterName, int x, int y, Texture2D MainTex=null, Texture2D LockTex=null, bool nVirtualSync=true, float speed = 0.3f, bool createSampleMenu=false)
+        public PVGridUI SetGridUI(string ParameterName, int x, int y, Texture2D MainTex = null, Texture2D LockTex = null, bool nVirtualSync = true, float speed = 0.3f, bool createSampleMenu = false)
         {
             var p = GetOrCreateObject("GridUI");
             var pvGridUI = p.AddComponent<PVGridUI>();
@@ -336,6 +336,9 @@ namespace com.github.pandrabox.pandravase.editor
         public T GetOrCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.GetOrCreateComponentObject<T>(PrjRootObj, name, initialAction);
         public T ReCreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.ReCreateComponentObject<T>(PrjRootObj, name, initialAction);
         public T CreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.CreateComponentObject<T>(PrjRootObj, name, initialAction);
+
+
+
     }
 }
 #endif

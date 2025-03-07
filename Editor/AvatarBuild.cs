@@ -42,7 +42,7 @@ namespace com.github.pandrabox.pandravase.editor
             //SetDebugMode(true);
 #endif
             var tgtDesc = GetAvatarDescriptor(tgt);
-            tgtDesc.gameObject.SetEditorOnly(false);
+            tgtDesc.gameObject.SetActive(true);
             _tgt = new BuildAvatarTarget(tgtDesc.gameObject);
             _buildMode = buildMode;
             ClearConsole();

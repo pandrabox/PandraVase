@@ -55,6 +55,7 @@ namespace com.github.pandrabox.pandravase.editor
             targets = desc.transform.GetComponentsInChildren<PVMessageUI>();
             CreateImage();
             CreateAnimator();
+            CreateMenu();
         }
 
         private void CreateAnimator()
@@ -246,13 +247,18 @@ namespace com.github.pandrabox.pandravase.editor
                 });
             });
 
-            var mb = new MenuBuilder(_prj).AddFolder("GUIDE");
-            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "SW", 1);
-            mb.AddRadial("Vase/MessageUI/Size", "Size", .4f).SetMessage("ガイドサイズの調整");　//ここでセットしたメッセージは処理されないが、Radialに値をセットするために必要
-
 
             ab.Attach(MsgRoot);
             bb.Attach(MsgRoot);
+        }
+
+        private void CreateMenu()
+        {
+            PVMessageUIParentDefinition pVMessageUIParentDefinition = _prj.Descriptor.GetComponent<PVMessageUIParentDefinition>();
+            string parentFolder = pVMessageUIParentDefinition?.ParentFolder;
+            var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("GUIDE");
+            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "SW", 1);
+            mb.AddRadial("Vase/MessageUI/Size", "Size", .4f).SetMessage("ガイドサイズの調整");　//ここでセットしたメッセージは処理されないが、Radialに値をセットするために必要
         }
 
         private void CreateImage()
