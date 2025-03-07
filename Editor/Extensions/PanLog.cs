@@ -61,6 +61,7 @@ namespace com.github.pandrabox.pandravase.editor
             try
             {
                 if (File.Exists(path)) File.Delete(path);
+                ClearConsole();
             }
             catch (Exception ex)
             {

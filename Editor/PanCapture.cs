@@ -112,12 +112,14 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns></returns>
         public GameObject DrawText(string text, Color? fontColor = null)
         {
+            LowLevelDebugPrint($"DrawText:{text}");
             GameObject textGO = new GameObject("Text");
             textGO.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
             textGO.transform.position = new Vector3(0, 0, 10);
             TextMesh textMesh = textGO.AddComponent<TextMesh>();
+            const int alialLimit = 4096; //Alialフォントには生成限界がある
+            textMesh.fontSize = alialLimit / text.Length;
             textMesh.text = text;
-            textMesh.fontSize = 500;
             textMesh.color = fontColor ?? Color.black;
             textMesh.anchor = TextAnchor.MiddleCenter;
             return textGO;

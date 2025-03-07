@@ -1,19 +1,18 @@
 ﻿//#if UNITY_EDITOR
+using nadena.dev.modular_avatar.core;
+using nadena.dev.ndmf;
+using nadena.dev.ndmf.util;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using System.Runtime.CompilerServices;
 using System.IO;
-using VRC.SDK3.Avatars.Components;
 using System.Linq;
-using UnityEditor;
-using nadena.dev.ndmf;
-using nadena.dev.modular_avatar.core;
-using com.github.pandrabox.pandravase.runtime;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEditor.Animations;
-using nadena.dev.ndmf.util;
+using UnityEngine;
+using VRC.SDK3.Avatars.Components;
+using Debug = UnityEngine.Debug;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -96,7 +95,7 @@ namespace com.github.pandrabox.pandravase.editor
         public static VRCAvatarDescriptor GetAvatarDescriptor(Transform current)
         {
             if (current == null) return null;
-            if(current.GetComponent<VRCAvatarDescriptor>() != null) return current.GetComponent<VRCAvatarDescriptor>();
+            if (current.GetComponent<VRCAvatarDescriptor>() != null) return current.GetComponent<VRCAvatarDescriptor>();
             return FindComponentInParent<VRCAvatarDescriptor>(current);
         }
         public static bool IsInAvatar(GameObject current) => IsInAvatar(current?.transform);
@@ -336,7 +335,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
 
             GameObject res = new GameObject(name);
-            if(parent != null) res.transform.SetParent(parent.transform);
+            if (parent != null) res.transform.SetParent(parent.transform);
             initialAction?.Invoke(res);
             return res;
         }
@@ -636,8 +635,8 @@ namespace com.github.pandrabox.pandravase.editor
         public static AvatarObjectReference GetObjectReference(Transform t) => GetObjectReference(t.gameObject);
         public static AvatarObjectReference GetObjectReference(GameObject go)
         {
-            var r = new AvatarObjectReference(); 
-            r.Set(go); 
+            var r = new AvatarObjectReference();
+            r.Set(go);
             return r;
         }
 
@@ -853,14 +852,20 @@ namespace com.github.pandrabox.pandravase.editor
                 LowLevelExeption("FindEx: parent or name is null or empty.");
                 return null;
             }
+            Transform t = null;
             if (includeInactive)
             {
-                return parent.GetComponentsInChildren<Transform>(true).FirstOrDefault(child => child.name == name);
+                t = parent.GetComponentsInChildren<Transform>(true).FirstOrDefault(child => child.name == name);
             }
             else
             {
-                return parent.transform.Find(name);
+                t = parent.transform.Find(name);
             }
+            if (t == null)
+            {
+                LowLevelExeption($"FindEx: {name} not found in {parent.name}.");
+            }
+            return t;
         }
 
         public static string LastName(this string paramPath)
@@ -899,6 +904,38 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 Debug.LogError($"Failed to log message: {message}. Error: {ex.Message}");
             }
+        }
+
+        public static void AppearError(Exception ex, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
+        {
+            try
+            {
+                string stackTrace = ex.StackTrace;
+                stackTrace = ConvertToUnityPath(stackTrace);
+                LowLevelDebugPrint($"Failed work due to an error: {ex.Message}\n{stackTrace}\nException Details: {ex.ToString()}", true, LogType.Error);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to log error: {ex.Message}. Error: {e.Message}");
+            }
+        }
+
+        private static string ConvertToUnityPath(string stackTrace)
+        {
+            string[] lines = stackTrace.Split(new[] { '\n' }, StringSplitOptions.None);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = lines[i].Replace(Application.dataPath, "Assets");
+                lines[i] = lines[i].Replace(Path.Combine(new DirectoryInfo(Application.dataPath).Parent.FullName, "Packages"), "Packages");
+                lines[i] = lines[i].Replace('\\', '/');
+
+                // パスをクリック可能にするためのフォーマットに変更
+                if (lines[i].Contains(" (at ") && !lines[i].EndsWith(")"))
+                {
+                    lines[i] = lines[i].TrimEnd() + ")";
+                }
+            }
+            return string.Join("\n", lines);
         }
     }
 }
