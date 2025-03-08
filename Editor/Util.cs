@@ -338,6 +338,9 @@ namespace com.github.pandrabox.pandravase.editor
 
             GameObject res = new GameObject(name);
             if (parent != null) res.transform.SetParent(parent.transform);
+            res.transform.localPosition = Vector3.zero;
+            res.transform.localRotation = Quaternion.identity;
+            res.transform.localScale = Vector3.one;
             initialAction?.Invoke(res);
             return res;
         }

@@ -72,5 +72,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Debug/*
 Debug.meta
-Log/Log.txt.meta
-Log/Log.txt
+Log/*
+Log.meta
