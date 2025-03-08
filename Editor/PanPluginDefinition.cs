@@ -2,6 +2,10 @@
 using com.github.pandrabox.pandravase.runtime;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.fluent;
+using System;
+using System.IO;
+using System.Linq;
+using UnityEditor;
 
 [assembly: ExportsPlugin(typeof(PanPluginDefinition))]
 
@@ -9,17 +13,20 @@ namespace com.github.pandrabox.pandravase.editor
 {
     internal class PanPluginDefinition : Plugin<PanPluginDefinition>
     {
+        private Sequence seq;
+
         public override string DisplayName => "PandraVase";
         public override string QualifiedName => "com.github.pandrabox.pandravase";
 
         protected override void Configure()
         {
-            Sequence seq;
             seq = InPhase(BuildPhase.Resolving).BeforePlugin("nadena.dev.modular-avatar");
             seq = InPhase(BuildPhase.Generating).BeforePlugin("nadena.dev.modular-avatar");
             seq = InPhase(BuildPhase.Transforming).BeforePlugin("nadena.dev.modular-avatar");
-            seq.Run(PVInstantiatePass.Instance);
-            seq.Run(PVMergeMASubMenuPass.Instance);
+            // ここからプログレスバーで管理
+            seq.Run(PVInstantiatePass.Instance); //これは必ず最初にしてください（プログレスバーをここで開始しているので）
+
+            seq.Run(PVWriteDefaultOnPass.Instance);
             seq.Run(PVPlayableRemoverPass.Instance);
             seq.Run(PVUniquefyObjectPass.Instance);
             seq.Run(PVReplacePlayablePass.Instance);
@@ -31,11 +38,13 @@ namespace com.github.pandrabox.pandravase.editor
 
             seq.Run(PVGridUIPass.Instance);
             seq.Run(PVnBitSyncPass.Instance);
-            seq.Run(PVMessageUIPass.Instance); //MenuBuilderで作成されるComponentの解決
-            seq.Run(PVFrameCounterPass.Instance); //FrameCounterの解決
-            seq.Run(PVPanMergeBlendTreePass.Instance); // PanMergeBlendTreeの解決
+            seq.Run(PVMessageUIPass.Instance); // MenuBuilderで作成されるComponentの解決
+            seq.Run(PVMergeMASubMenuPass.Instance); //PVDanceControllerPass, PVMessageUIPassの解決
+            seq.Run(PVFrameCounterPass.Instance); // FrameCounterの解決
+            seq.Run(PVPanMergeBlendTreePass.Instance); // PanMergeBlendTreeの解決　これは必ず最後にして下さい（プログレスバーをここで終了しているので）
+            PanProgressBar.Hide();//あんまり意味はないのだがおなじない
+            // ここまでプログレスバーで管理
             seq = InPhase(BuildPhase.Optimizing).BeforePlugin("nadena.dev.modular-avatar");
-
             seq.Run(PVFxSortPass.Instance);
         }
     }

@@ -67,10 +67,12 @@ namespace com.github.pandrabox.pandravase.editor
     {
         protected override void Execute(BuildContext ctx)
         {
+            PanProgressBar.Show();
             foreach (var component in ctx.AvatarRootTransform.GetComponentsInChildren<PVPanMergeBlendTree>(true))
             {
                 new PVPanMergeBlendTreeMain(component);
             }
+            PanProgressBar.Hide();
         }
     }
 

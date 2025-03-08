@@ -32,6 +32,7 @@ namespace com.github.pandrabox.pandravase.editor
     {
         protected override void Execute(BuildContext ctx)
         {
+            PanProgressBar.Show();
             new PVActiveOverrideMain(ctx.AvatarDescriptor);
         }
     }

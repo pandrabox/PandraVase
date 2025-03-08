@@ -35,6 +35,7 @@ namespace com.github.pandrabox.pandravase.editor
     {
         protected override void Execute(BuildContext ctx)
         {
+            PanProgressBar.Show();
             new ParamView2Main(ctx.AvatarDescriptor);
         }
     }
@@ -44,7 +45,7 @@ namespace com.github.pandrabox.pandravase.editor
         private const float DisplayInterval= -0.06f;
         public ParamView2Main(VRCAvatarDescriptor desc)
         {
-            using(PanCapture capture = new PanCapture(new Color(0, 0, 0, 0), width: 512))
+            using (PanCapture capture = new PanCapture(new Color(0, 0, 0, 0), width: 512))
             {
                 PVParamView2[] targets = desc.transform.GetComponentsInChildren<PVParamView2>();
                 AnimationClipsBuilder ab = new AnimationClipsBuilder();

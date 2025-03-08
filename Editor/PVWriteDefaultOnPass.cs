@@ -11,6 +11,8 @@ using static com.github.pandrabox.pandravase.editor.Util;
 using VRC.SDK3.Avatars.Components;
 using UnityEditor.Animations;
 using nadena.dev.modular_avatar.core;
+using nadena.dev.ndmf;
+using com.github.pandrabox.pandravase.runtime;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -21,15 +23,26 @@ namespace com.github.pandrabox.pandravase.editor
         public static void WriteDefaultOnt_Debug()
         {
             SetDebugMode(true);
-            new WriteDefaultOn(TopAvatar);
+            new WriteDefaultOnMain(TopAvatar);
         }
     }
 #endif
-    public class WriteDefaultOn
+    internal class PVWriteDefaultOnPass : Pass<PVWriteDefaultOnPass>
+    {
+        protected override void Execute(BuildContext ctx)
+        {
+            PanProgressBar.Show();
+            new WriteDefaultOnMain(ctx.AvatarDescriptor);
+        }
+    }
+    public class WriteDefaultOnMain
     {
         PandraProject _prj;
-        public WriteDefaultOn(VRCAvatarDescriptor desc)
+        public WriteDefaultOnMain(VRCAvatarDescriptor desc)
         {
+            var _tgt = desc.GetComponentInChildren<PVWriteDefaultOn>();
+            if (_tgt == null) return;
+
             //FXのWDをON
             _prj = VaseProject(desc);
             int fxIndex = _prj.PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX);

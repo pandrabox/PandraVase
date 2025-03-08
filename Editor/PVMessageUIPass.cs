@@ -37,6 +37,7 @@ namespace com.github.pandrabox.pandravase.editor
     {
         protected override void Execute(BuildContext ctx)
         {
+            PanProgressBar.Show();
             new PVMessageUIPassMain(ctx.AvatarDescriptor);
         }
     }
@@ -254,8 +255,9 @@ namespace com.github.pandrabox.pandravase.editor
 
         private void CreateMenu()
         {
-            PVMessageUIParentDefinition pVMessageUIParentDefinition = _prj.Descriptor.GetComponent<PVMessageUIParentDefinition>();
+            PVMessageUIParentDefinition pVMessageUIParentDefinition = _prj.Descriptor.GetComponentInChildren<PVMessageUIParentDefinition>();
             string parentFolder = pVMessageUIParentDefinition?.ParentFolder;
+            LowLevelDebugPrint($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
             var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("GUIDE");
             mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "SW", 1);
             mb.AddRadial("Vase/MessageUI/Size", "Size", .4f).SetMessage("ガイドサイズの調整");　//ここでセットしたメッセージは処理されないが、Radialに値をセットするために必要

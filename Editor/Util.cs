@@ -2,6 +2,8 @@
 using nadena.dev.modular_avatar.core;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.util;
+using Newtonsoft.Json;
+using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -883,6 +885,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             try
             {
+                message = ConvertToUnityPath(message);
 
                 if (!debugOnly || PDEBUGMODE)
                 {
@@ -920,22 +923,31 @@ namespace com.github.pandrabox.pandravase.editor
             }
         }
 
-        private static string ConvertToUnityPath(string stackTrace)
+        private static string ConvertToUnityPath(string s)
         {
-            string[] lines = stackTrace.Split(new[] { '\n' }, StringSplitOptions.None);
-            for (int i = 0; i < lines.Length; i++)
-            {
-                lines[i] = lines[i].Replace(Application.dataPath, "Assets");
-                lines[i] = lines[i].Replace(Path.Combine(new DirectoryInfo(Application.dataPath).Parent.FullName, "Packages"), "Packages");
-                lines[i] = lines[i].Replace('\\', '/');
+            s = s.Replace(Application.dataPath, "Assets");
+            s = s.Replace(Path.Combine(new DirectoryInfo(Application.dataPath).Parent.FullName, "Packages"), "Packages");
+            return s;
+        }
 
-                // パスをクリック可能にするためのフォーマットに変更
-                if (lines[i].Contains(" (at ") && !lines[i].EndsWith(")"))
+        public static void AppearPackageInfo()
+        {
+            //プロジェクトに存在する全package.jsonに対して実行
+            string[] paths = Directory.GetFiles(new DirectoryInfo(Application.dataPath).Parent.FullName, "package.json", SearchOption.AllDirectories);
+            foreach (string path in paths)
+            {
+                string jsonContent = File.ReadAllText(path);
+                PackageInfo packageInfo = JsonConvert.DeserializeObject<PackageInfo>(jsonContent);
+                if (packageInfo != null)
                 {
-                    lines[i] = lines[i].TrimEnd() + ")";
+                    LowLevelDebugPrint($@"@@PackageInfo@@,{packageInfo.displayName},{packageInfo.version}");
                 }
             }
-            return string.Join("\n", lines);
+        }
+        private class PackageInfo
+        {
+            public string version { get; set; }
+            public string displayName { get; set; }
         }
     }
 }

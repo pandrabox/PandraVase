@@ -19,25 +19,25 @@ using UnityEditor.Compilation;
 namespace com.github.pandrabox.pandravase.editor
 {
 #if PANDRADBG
-    public class ClippingCancelerOnDebug
+    public class SetClippingCancelerDebug
     {
         [MenuItem("PanDbg/ClippingCancelerOn")]
         public static void ClippingCancelerOnt_Debug()
         {
             SetDebugMode(true);
-            new ClippingCancelerOn(true);
+            new SetClippingCanceler(true);
         }
         [MenuItem("PanDbg/ClippingCancelerOff")]
         public static void ClippingCancelerOfft_Debug()
         {
             SetDebugMode(true);
-            new ClippingCancelerOn(false);
+            new SetClippingCanceler(false);
         }
     }
 #endif
-    public class ClippingCancelerOn
+    public class SetClippingCanceler
     {
-        public ClippingCancelerOn(bool val)
+        public SetClippingCanceler(bool val)
         {
 #if PANDRAVASE_LILTOON
             lilToonSetting shaderSetting = null;
