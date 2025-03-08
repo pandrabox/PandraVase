@@ -11,6 +11,7 @@ using nadena.dev.ndmf.util;
 using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
 using static com.github.pandrabox.pandravase.editor.Util;
+using static com.github.pandrabox.pandravase.editor.Localizer;
 using System.Linq;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDKBase;
@@ -52,11 +53,11 @@ namespace com.github.pandrabox.pandravase.editor
             targets = desc.transform.GetComponentsInChildren<PVMessageUI>();
             if (targets.Length == 0) return;
             _prj = VaseProject(desc);
+            CreateMenu();
             PrefabInstantiate();
             targets = desc.transform.GetComponentsInChildren<PVMessageUI>();
             CreateImage();
             CreateAnimator();
-            CreateMenu();
         }
 
         private void CreateAnimator()
@@ -65,7 +66,7 @@ namespace com.github.pandrabox.pandravase.editor
             ac.Clip("off").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0)
                     .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(0); });
             var ab = new AnimatorBuilder("MessageUI").AddLayer();
-            ab.AddState("SWOFF").SetMotion(ac.Outp("off")).SetParameterDriver("Vase/MessageUI/SWGreater0.5IsUsed", 0);
+            ab.AddState("SWOFF").SetMotion(ac.Outp("off")).SetParameterDriver("Vase/MessageUI/SWEquals1IsUsed", 0);
             var swOffState = ab.CurrentState;
             ab.AddSubStateMachine("Local");
             ab.AddState("Local").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Greater, .5f, "IsLocal");
@@ -90,7 +91,7 @@ namespace com.github.pandrabox.pandravase.editor
 
                 //アバター変更時・スイッチ切り替え時に大量に表示されるのを防ぐため、初期状態でIsUsed=true
                 ab.AddAnimatorParameter(usedParamName, 1, AnimatorControllerParameterType.Bool);
-                if (usedParamName != "Vase/MessageUI/SWGreater0.5IsUsed")
+                if (usedParamName != "Vase/MessageUI/SWEquals1IsUsed")
                 {
                     ab.ChangeCurrentState(swOffState).SetParameterDriver(usedParamName, 1);
                 }
@@ -259,8 +260,8 @@ namespace com.github.pandrabox.pandravase.editor
             string parentFolder = pVMessageUIParentDefinition?.ParentFolder;
             LowLevelDebugPrint($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
             var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("Menu/MessageUI".LL());
-            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "Menu/MessageUI/SW".LL(), 1);
-            mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f);
+            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "Menu/MessageUI/SW".LL(), 1).SetMessage(L("Menu/MessageUI/SW/Detail"));
+            mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f).SetMessage(L("Menu/MessageUI/Size/Detail"),duration:15);
         }
 
         private void CreateImage()

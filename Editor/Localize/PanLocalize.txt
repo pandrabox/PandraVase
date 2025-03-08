@@ -2,6 +2,8 @@
 Menu/MessageUI,ガイド,Guide,가이드,指南,指南
 Menu/MessageUI/SW,有効,Enable,사용,启用,啟用
 Menu/MessageUI/Size,文字サイズ,Font Size,글자 크기,字体大小,字體大小
+Menu/MessageUI/SW/Detail,ガイドが有効化されました,Guide has been enabled,가이드가 활성화되었습니다,指南已启用,指南已啟用
+Menu/MessageUI/Size/Detail,文字サイズの調整,Adjust font size,글자 크기 조정,调整字体大小,調整字體大小
 
 Menu/Dance,ダンス設定,Dance Settings,댄스 설정,舞蹈设置,舞蹈設定
 Menu/Dance/MODE/Off,モード:OFF,Mode:OFF,모드:OFF,模式:关闭,模式:關閉

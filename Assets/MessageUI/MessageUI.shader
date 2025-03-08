@@ -185,8 +185,9 @@
                 half textCutHigh = _TextCutoff + _TextSmooth * width;
                 half textAlpha = smoothstep(textCutLow, textCutHigh, brightness);
 
+                half aspectRatio = _MainTex_TexelSize.z / _MainTex_TexelSize.w;
                 half pixelSize = (_OutlineWidth * 2) / (_MainTex_TexelSize.z);
-                half2 texelSize = half2(pixelSize, pixelSize);
+                half2 texelSize = half2(pixelSize, pixelSize* aspectRatio); // / _HeightRatio 
 
                 half sumWeights = 0;
                 half sumNeighborAlpha = 0;
