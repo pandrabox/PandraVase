@@ -258,9 +258,9 @@ namespace com.github.pandrabox.pandravase.editor
             PVMessageUIParentDefinition pVMessageUIParentDefinition = _prj.Descriptor.GetComponentInChildren<PVMessageUIParentDefinition>();
             string parentFolder = pVMessageUIParentDefinition?.ParentFolder;
             LowLevelDebugPrint($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
-            var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("GUIDE");
-            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "SW", 1);
-            mb.AddRadial("Vase/MessageUI/Size", "Size", .4f).SetMessage("ガイドサイズの調整");　//ここでセットしたメッセージは処理されないが、Radialに値をセットするために必要
+            var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("Menu/MessageUI".LL());
+            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "Menu/MessageUI/SW".LL(), 1);
+            mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f);
         }
 
         private void CreateImage()

@@ -11,8 +11,10 @@ using nadena.dev.ndmf.util;
 using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
 using static com.github.pandrabox.pandravase.editor.Util;
+using static com.github.pandrabox.pandravase.editor.Localizer;
 using System.Linq;
 using VRC.SDK3.Avatars.Components;
+
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -226,11 +228,11 @@ namespace com.github.pandrabox.pandravase.editor
         private void CreateMenu()
         {
             var mb = new MenuBuilder(_prj, parentFolder: _tgt.ParrentFolder);
-            mb.AddFolder("DanceMode").SetMessage("ダンス対応の設定");
-            mb.AddToggle(_prj.DanceDetectMode, 0, ParameterSyncType.Int, "MODE:Off", 1).SetMessage("OFF");
-            mb.AddToggle(_prj.DanceDetectMode, 1, ParameterSyncType.Int, "MODE:Normal", 1).SetMessage("ダンスを自動検出(通常)");
-            mb.AddToggle(_prj.DanceDetectMode, 2, ParameterSyncType.Int, "MODE:Enhance", 1).SetMessage("ダンスを自動検出(より多く検出できるが、誤検出あり)");
-            mb.AddToggle(_prj.OnDanceFxEnable, 1, ParameterSyncType.Int, "FxEnable", 1, false).SetMessage("ダンス中FXをON(通常)", "ダンス中FXをOFF(より多くのアバターでダンスできるが、同期問題あり)");
+            mb.AddFolder("Menu/Dance".LL());
+            mb.AddToggle(_prj.DanceDetectMode, 0, ParameterSyncType.Int, "Menu/Dance/MODE/Off".LL(), 1).SetMessage(L("Menu/Dance/Message/Off"), duration: 1);
+            mb.AddToggle(_prj.DanceDetectMode, 1, ParameterSyncType.Int, "Menu/Dance/MODE/Normal".LL(), 1).SetMessage(L("Menu/Dance/Message/Normal"));
+            mb.AddToggle(_prj.DanceDetectMode, 2, ParameterSyncType.Int, "Menu/Dance/MODE/Enhance".LL(), 1).SetMessage(L("Menu/Dance/Message/Enhance"));
+            mb.AddToggle(_prj.OnDanceFxEnable, 1, ParameterSyncType.Int, "Menu/Dance/FxEnable".LL(), 1, false).SetMessage(L("Menu/Dance/Message/FxEnableOn"), L("Menu/Dance/Message/FxEnableOff"));
         }
     }
 }

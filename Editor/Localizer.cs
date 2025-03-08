@@ -70,7 +70,7 @@ namespace com.github.pandrabox.pandravase.editor
             localizationDictionary = new Dictionary<string, string>();
             string projectPath = Directory.GetParent(Application.dataPath).FullName;
             //LowLevelDebugPrint("Project path: " + projectPath);
-            string[] files = Directory.GetFiles(projectPath, "PanLocalize.csv", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(projectPath, "PanLocalize.txt", SearchOption.AllDirectories);
             if (files.Length == 0)
             {
                 LowLevelExeption("Localization files not found.");
@@ -107,6 +107,8 @@ namespace com.github.pandrabox.pandravase.editor
             LoadText();
             if (localizationDictionary.TryGetValue(name, out string res))
             {
+                res = res.Replace(@"\n", "\n");
+                res = res.Replace(@"\r", "\r");
                 return res;
             }
             else
