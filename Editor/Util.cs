@@ -915,7 +915,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 string stackTrace = ex.StackTrace;
                 stackTrace = ConvertToUnityPath(stackTrace);
-                LowLevelDebugPrint($"Failed work due to an error: {ex.Message}\n{stackTrace}\nException Details: {ex.ToString()}", true, LogType.Error);
+                LowLevelDebugPrint($"@@ERROR@@Failed work due to an error: {ex.Message}\n{stackTrace}\nException Details: {ex.ToString()}", true, LogType.Error);
             }
             catch (Exception e)
             {

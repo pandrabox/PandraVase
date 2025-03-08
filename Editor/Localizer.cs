@@ -69,7 +69,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (LocalizerLanguage == null) SetLanguage();
             localizationDictionary = new Dictionary<string, string>();
             string projectPath = Directory.GetParent(Application.dataPath).FullName;
-            LowLevelDebugPrint("Project path: " + projectPath);
+            //LowLevelDebugPrint("Project path: " + projectPath);
             string[] files = Directory.GetFiles(projectPath, "PanLocalize.csv", SearchOption.AllDirectories);
             if (files.Length == 0)
             {
@@ -77,10 +77,10 @@ namespace com.github.pandrabox.pandravase.editor
                 return;
             }
 
-            LowLevelDebugPrint("Found localization files:");
+            //LowLevelDebugPrint("Found localization files:");
             foreach (var file in files)
             {
-                LowLevelDebugPrint(file);
+                //LowLevelDebugPrint(file);
                 string[] lines = File.ReadAllLines(file);
                 string[] headers = lines[0].Split(',');
                 int langIndex = Array.IndexOf(headers, LocalizerLanguage);
