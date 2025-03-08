@@ -84,7 +84,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// Radialの定義
         /// </summary>
-        public MenuBuilder AddRadial(string parameterName, string menuName = null, float defaultVal = 0, bool localOnly = true)
+        public MenuBuilder AddRadial(string parameterName, string menuName = null, float defaultVal = 0, bool localOnly = true, string mainParameterName=null)
         {
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
@@ -94,7 +94,7 @@ namespace com.github.pandrabox.pandravase.editor
                 p.name = parameterName;
                 x.Control.subParameters = new[] { p };
 
-                _currentParameterName = $@"Vase/MessageUI/Radial/{parameterName}";
+                _currentParameterName = mainParameterName ?? $@"Vase/MessageUI/Radial/{parameterName}";
                 _currentValue = 1;
                 var p2 = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
                 p2.name = _currentParameterName;
@@ -171,7 +171,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public MenuBuilder SetMessage(string message
             , string inverseMessage=null
-            , float duration = 5
+            , float duration = 3
             , bool inactiveByParameter = true
             , bool isRemote = false
             , Color? textColor = null

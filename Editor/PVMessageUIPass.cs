@@ -266,7 +266,7 @@ namespace com.github.pandrabox.pandravase.editor
         private void CreateImage()
         {
             int padding = 3;
-            int width = 2048;
+            int width = 2048/2;
             float heightRatio = 1 / 8f;
             int height = (int)(width * heightRatio);
             int y = (width - height) / 2;
