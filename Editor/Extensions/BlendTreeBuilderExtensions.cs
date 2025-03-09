@@ -1,15 +1,4 @@
-﻿using com.github.pandrabox.pandravase.runtime;
-using nadena.dev.modular_avatar.core;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using UnityEditor;
-using UnityEditor.Animations;
-using UnityEngine;
-using VRC.SDK3.Avatars.Components;
-using VRC.SDKBase;
-using static com.github.pandrabox.pandravase.editor.Util;
+﻿using UnityEngine;
 
 
 namespace com.github.pandrabox.pandravase.editor
@@ -23,12 +12,13 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// targetParamが変更されたらtargetParamIsDiffに1を返す
         /// </summary>
-        public static void FDiffChecker(this BlendTreeBuilder bb, string targetParam, string resultName=null, float min = 0, float max=1)
+        public static void FDiffChecker(this BlendTreeBuilder bb, string targetParam, string resultName = null, float min = 0, float max = 1)
         {
             string memory = $"{targetParam}Memory";
             string subtracted = $"{targetParam}Subtracted";
             string result = resultName ?? $"{targetParam}IsDiff";
-            bb.NName("DiffChecker").AddD(() => {
+            bb.NName("DiffChecker").AddD(() =>
+            {
                 bb.NName("Save and Subtract1").Param("1").Add1D(targetParam, () =>
                 {
                     bb.Param(min).AddAAP(memory, min, subtracted, -min);
@@ -79,7 +69,8 @@ namespace com.github.pandrabox.pandravase.editor
         {
             string ToName = $"{fromName}Quantized";
             string MemoryName = $"{fromName}QuantMemory";
-            bb.NName("Quantization").Param("1").AddD(() => {
+            bb.NName("Quantization").Param("1").AddD(() =>
+            {
                 bb.NName("Minimization").Add1D(fromName, () =>
                 {
                     bb.Param(0.5f / step).AddAAP(MemoryName, 0);

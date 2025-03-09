@@ -109,7 +109,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="relativeRoot"></param>
         /// <returns></returns>
         public PVPanMergeBlendTree Attach(bool isAbsolute = false, GameObject relativeRoot = null) => Attach(_prj, isAbsolute, relativeRoot);
-        public PVPanMergeBlendTree Attach(PandraProject prj , bool isAbsolute = false, GameObject relativeRoot = null)
+        public PVPanMergeBlendTree Attach(PandraProject prj, bool isAbsolute = false, GameObject relativeRoot = null)
         {
             GameObject tgt = prj.CreateObject($@"DBT{_thisTreeName}");
             return Attach(tgt, isAbsolute, relativeRoot);
@@ -370,7 +370,7 @@ namespace com.github.pandrabox.pandravase.editor
         private string GetParameterName(string name)
         {
             if (name != null && (name == Util.ONEPARAM || name.ToLower() == "pan/one" || name == "1")) return Util.ONEPARAM;
-            if(name == null || name.Length<1) return "";
+            if (name == null || name.Length < 1) return "";
             if (name.StartsWith("$")) return name.Substring(1);
             var p = _suffix + name;
             return p;

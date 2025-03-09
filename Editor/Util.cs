@@ -3,7 +3,6 @@ using nadena.dev.modular_avatar.core;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.util;
 using Newtonsoft.Json;
-using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
 using System.IO;

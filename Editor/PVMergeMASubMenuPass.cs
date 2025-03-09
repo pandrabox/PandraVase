@@ -1,20 +1,15 @@
 ﻿/// 複数・同名のGameObjectに「MergeMASubMenu」「MASubMenu」がアタッチされているとき、それをまとめる
 
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
+using nadena.dev.modular_avatar.core;
+using nadena.dev.ndmf;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -44,18 +39,18 @@ namespace com.github.pandrabox.pandravase.editor
         public MergeMASubMenuMain(VRCAvatarDescriptor desc)
         {
             //対象を取得し、GameObject名を変更
-            PVMergeMASubMenu[] targets= desc.transform.GetComponentsInChildren<PVMergeMASubMenu>();
+            PVMergeMASubMenu[] targets = desc.transform.GetComponentsInChildren<PVMergeMASubMenu>();
             foreach (PVMergeMASubMenu target in targets)
             {
-                if (target.OverrideName != null && target.OverrideName.Length>0)
+                if (target.OverrideName != null && target.OverrideName.Length > 0)
                 {
                     var c = target?.gameObject?.GetComponent<ModularAvatarMenuItem>()?.Control;
-                    if(c!=null) c.name = target.OverrideName;
+                    if (c != null) c.name = target.OverrideName;
                     target.gameObject.name = target.OverrideName;
                 }
             }
             //SubMenuItemを取得
-            List<ModularAvatarMenuItem> subMenuItems = 
+            List<ModularAvatarMenuItem> subMenuItems =
                 targets
                 .Select(o => o.GetComponent<ModularAvatarMenuItem>())
                 .Where(x =>
@@ -84,8 +79,8 @@ namespace com.github.pandrabox.pandravase.editor
                 if (pair.Value.Count > 1)
                 {
                     List<GameObject> objects = pair.Value;
-                    Transform parent = objects[0].transform; 
-                    for (int i = objects.Count-1; i > 0; i--)
+                    Transform parent = objects[0].transform;
+                    for (int i = objects.Count - 1; i > 0; i--)
                     {
                         Transform[] children = objects[i].transform.GetComponentsInChildren<Transform>();
                         foreach (Transform child in children)

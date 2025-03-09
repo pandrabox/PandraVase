@@ -1,13 +1,7 @@
-﻿using com.github.pandrabox.pandravase.runtime;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using UnityEditor;
-using UnityEditor.Animations;
-using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
 using Debug = UnityEngine.Debug;
 
@@ -39,7 +33,7 @@ namespace com.github.pandrabox.pandravase.editor
                 DirectoryCheck();
                 using (var writer = new StreamWriter(path, true))
                 {
-                    if(detail)
+                    if (detail)
                     {
                         var stackTrace = new StackTrace(true);
                         var stackFrames = stackTrace.GetFrames();

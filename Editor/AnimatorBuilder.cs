@@ -1,6 +1,4 @@
-﻿using com.github.pandrabox.pandravase.runtime;
-using nadena.dev.modular_avatar.core;
-using System;
+﻿using nadena.dev.modular_avatar.core;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -24,7 +22,7 @@ namespace com.github.pandrabox.pandravase.editor
         private AnimatorStateMachine _currentStateMachine;
         private AnimatorState _currentState;
         private AnimatorStateTransition _currentTransition;
-        private AnimatorState _currentTransitionFrom,_currentTransitionTo;
+        private AnimatorState _currentTransitionFrom, _currentTransitionTo;
         private TransitionInfo _currentTransitionInfo;
         private Dictionary<AnimatorStateMachine, int> _stateCounts = new Dictionary<AnimatorStateMachine, int>();
         public AnimatorState CurrentState => _currentState;
@@ -203,13 +201,13 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// CurrentStateへの遷移を定義 ExitTime等を指定する場合はtiを指定する、しないとほぼ全0
         /// </summary>
-        public AnimatorBuilder TransToCurrent(AnimatorState from, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0) 
+        public AnimatorBuilder TransToCurrent(AnimatorState from, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0)
                 => SetTransition(from, _currentState, hasExitTime, exitTime, fixedDuration, transitionDuration, transitionOffset);
 
         /// <summary>
         /// CurrentStateから遷移を定義 ExitTime等を指定する場合はtiを指定する、しないとほぼ全0
         /// </summary>
-        public AnimatorBuilder TransFromCurrent(AnimatorState to, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0) 
+        public AnimatorBuilder TransFromCurrent(AnimatorState to, bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0)
                 => SetTransition(_currentState, to, hasExitTime, exitTime, fixedDuration, transitionDuration, transitionOffset);
 
         public AnimatorBuilder TransFromAny(bool hasExitTime = false, float exitTime = 0, bool fixedDuration = true, float transitionDuration = 0, float transitionOffset = 0)
@@ -265,7 +263,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// roundTripがONだと逆方向のTransitionを自動で定義する(CurrentStateは維持、CurrentTransitionは移動)
         ///     modeは自動で反転する。floatはless<->greaterのため丁度のとき問題があるかもしれない(作成時ユースケースがない為一旦放置)
         /// </summary>
-        public AnimatorBuilder AddCondition(AnimatorConditionMode mode, float threshold, string param, bool roundTrip=false)
+        public AnimatorBuilder AddCondition(AnimatorConditionMode mode, float threshold, string param, bool roundTrip = false)
         {
             var type = GetParameterTypes(mode);
             var parameter = _ac.parameters.FirstOrDefault(p => p.name == param);
@@ -362,9 +360,9 @@ namespace com.github.pandrabox.pandravase.editor
         /// stateを作成する
         /// motion省略時自動でDummyClipが入る。明示的にnullにしたい場合はnullMotionをtrueにする
         /// </summary>
-        public AnimatorBuilder AddState(string name, Motion motion = null, bool nullMotion=false, Vector3? position=null)
+        public AnimatorBuilder AddState(string name, Motion motion = null, bool nullMotion = false, Vector3? position = null)
         {
-            if(_currentStateMachine == null)
+            if (_currentStateMachine == null)
             {
                 LowLevelExeption("Current state machineが設定されていません。レイヤを作成したか確認してください");
                 return this;

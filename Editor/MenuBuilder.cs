@@ -1,20 +1,12 @@
-﻿using UnityEditor;
+﻿using com.github.pandrabox.pandravase.runtime;
 using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
 using System;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
-using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
 using System.Linq;
-using VRC.SDK3.Avatars.Components;
-using static com.github.pandrabox.pandravase.editor.TextureUtil;
-using System.Text.RegularExpressions;
-using com.github.pandrabox.pandravase.editor;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -49,7 +41,7 @@ namespace com.github.pandrabox.pandravase.editor
         private float _currentValue;
         private string _parentFolder;
 
-        public MenuBuilder(PandraProject prj, bool parameterDef = true, string parentFolder=null)
+        public MenuBuilder(PandraProject prj, bool parameterDef = true, string parentFolder = null)
         {
             _prj = prj;
             _parameterDef = parameterDef;
@@ -60,7 +52,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         private MenuBuilder CreateParent()
         {
-            if(_parentFolder ==null || _parentFolder == "") return this;
+            if (_parentFolder == null || _parentFolder == "") return this;
             var pf = _parentFolder.Split('/');
             foreach (var p in pf)
             {
@@ -84,7 +76,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// Radialの定義
         /// </summary>
-        public MenuBuilder AddRadial(string parameterName, string menuName = null, float defaultVal = 0, bool localOnly = true, string mainParameterName=null)
+        public MenuBuilder AddRadial(string parameterName, string menuName = null, float defaultVal = 0, bool localOnly = true, string mainParameterName = null)
         {
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
@@ -138,7 +130,8 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public MenuBuilder AddFolder(string folderName, bool merge = false)
         {
-            AddGenericMenu(folderName, (x) => {
+            AddGenericMenu(folderName, (x) =>
+            {
                 if (IsRoot)
                 {
                     x.gameObject.AddComponent<ModularAvatarMenuInstaller>();
@@ -170,15 +163,15 @@ namespace com.github.pandrabox.pandravase.editor
         /// カレントメニューに対するメッセージの設定
         /// </summary>
         public MenuBuilder SetMessage(string message
-            , string inverseMessage=null
+            , string inverseMessage = null
             , float duration = 3
             , bool inactiveByParameter = true
             , bool isRemote = false
             , Color? textColor = null
             , Color? outlineColor = null)
         {
-            _prj.SetMessage(message, _currentParameterName, AnimatorConditionMode.Equals,_currentValue,duration,inactiveByParameter,isRemote,textColor,outlineColor);
-            if(inverseMessage != null) _prj.SetMessage(inverseMessage, _currentParameterName, AnimatorConditionMode.NotEqual, _currentValue, duration, inactiveByParameter, isRemote, textColor, outlineColor);
+            _prj.SetMessage(message, _currentParameterName, AnimatorConditionMode.Equals, _currentValue, duration, inactiveByParameter, isRemote, textColor, outlineColor);
+            if (inverseMessage != null) _prj.SetMessage(inverseMessage, _currentParameterName, AnimatorConditionMode.NotEqual, _currentValue, duration, inactiveByParameter, isRemote, textColor, outlineColor);
             return this;
         }
 
@@ -211,7 +204,7 @@ namespace com.github.pandrabox.pandravase.editor
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
             {
-                x.Control.type = isButton ? VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.Button: VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.Toggle;
+                x.Control.type = isButton ? VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.Button : VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.Toggle;
                 var p = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
                 p.name = parameterName;
                 x.Control.parameter = p;
@@ -241,11 +234,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// メニュー追加の基本操作
         /// </summary>
-        private MenuBuilder AddGenericMenu(string menuName, Action<ModularAvatarMenuItem> x, bool allowRoot=false)
+        private MenuBuilder AddGenericMenu(string menuName, Action<ModularAvatarMenuItem> x, bool allowRoot = false)
         {
             if (!allowRoot && IsRoot)
             {
-                LowLevelDebugPrint("Root状態でMenu作成が呼ばれました。これは許可されていません。最低１回のAddFolderを実行してください。",level:LogType.Exception);
+                LowLevelDebugPrint("Root状態でMenu作成が呼ばれました。これは許可されていません。最低１回のAddFolderを実行してください。", level: LogType.Exception);
                 return this;
             }
             menuName = menuName.LastName();

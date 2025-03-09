@@ -1,17 +1,8 @@
-﻿using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
+﻿using com.github.pandrabox.pandravase.runtime;
 using nadena.dev.ndmf;
-using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
 using System.Linq;
 using VRC.SDK3.Avatars.Components;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -27,7 +18,7 @@ namespace com.github.pandrabox.pandravase.editor
         }
     }
 
-    public class PVReplacePlayableMain 
+    public class PVReplacePlayableMain
     {
         private PandraProject _prj;
         public PVReplacePlayableMain(VRCAvatarDescriptor desc)

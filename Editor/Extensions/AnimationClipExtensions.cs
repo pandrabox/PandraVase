@@ -1,14 +1,5 @@
-﻿using com.github.pandrabox.pandravase.runtime;
-using nadena.dev.modular_avatar.core;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using UnityEditor;
-using UnityEditor.Animations;
+﻿using UnityEditor;
 using UnityEngine;
-using VRC.SDK3.Avatars.Components;
-using VRC.SDKBase;
 using static com.github.pandrabox.pandravase.editor.Util;
 
 

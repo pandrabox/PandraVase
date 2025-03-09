@@ -30,17 +30,14 @@
  * 改変内容：MergeBlendTreePassからBlendTree統合関連機能を削除し、パラメータをMergeAnimatorに渡す処理を追加
  */
 
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
+using nadena.dev.modular_avatar.core;
+using nadena.dev.ndmf;
+using nadena.dev.ndmf.util;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor

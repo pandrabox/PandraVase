@@ -1,19 +1,13 @@
 ﻿/// 「UniquefyObject」がアタッチされているGameObjectにおいて同じnameのものが複数ある場合、1つにする
 
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
+using nadena.dev.ndmf;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 using VRC.SDK3.Avatars.Components;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -21,7 +15,8 @@ namespace com.github.pandrabox.pandravase.editor
     public class UniquefyObjectDebug
     {
         [MenuItem("PanDbg/UniquefyObject")]
-        public static void UniquefyObject_Debug() {
+        public static void UniquefyObject_Debug()
+        {
             SetDebugMode(true);
             new UniquefyObjectMain(TopAvatar);
         }
@@ -45,7 +40,7 @@ namespace com.github.pandrabox.pandravase.editor
             for (int i = targets.Count - 1; i >= 0; i--)
             {
                 Component target = targets[i];
-                if(targets.Count(x => x.name == target.name)>1)
+                if (targets.Count(x => x.name == target.name) > 1)
                 {
                     GameObject.DestroyImmediate(target.gameObject);
                     targets.RemoveAt(i);

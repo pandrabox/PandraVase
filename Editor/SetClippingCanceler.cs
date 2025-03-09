@@ -1,20 +1,8 @@
-﻿using UnityEditor;
-using UnityEngine;
-using System;
-using VRC.SDK3A.Editor;
-using System.Threading.Tasks;
-using VRC.SDKBase.Editor.Api;
-using VRC.Core;
-using System.Reflection;
-using VRC.SDKBase.Editor;
-using static com.github.pandrabox.pandravase.editor.Util;
-using VRC.SDK3.Avatars.Components;
-using UnityEditor.Animations;
-using nadena.dev.modular_avatar.core;
-using lilToon;
-using System.Collections.Generic;
-using static lilToon.lilToonInspector;
+﻿using System.Reflection;
+using UnityEditor;
 using UnityEditor.Compilation;
+using UnityEngine;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {

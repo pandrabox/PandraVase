@@ -1,9 +1,6 @@
-﻿using com.github.pandrabox.pandravase.runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
 
@@ -30,12 +27,12 @@ namespace com.github.pandrabox.pandravase.editor
             _clip.name = clipName;
         }
 
-        public AnimationClipBuilder IsVector3(Action<AnimationClipBuilder> a, string axisId="@a")
+        public AnimationClipBuilder IsVector3(Action<AnimationClipBuilder> a, string axisId = "@a")
         {
-            _compositing= true;
+            _compositing = true;
             for (int i = 0; i < 3; i++)
             {
-                _axis=(Axis)i;
+                _axis = (Axis)i;
                 a(this);
             }
             _compositing = false;
@@ -87,7 +84,7 @@ namespace com.github.pandrabox.pandravase.editor
         public AnimationClipBuilder Bind(Component target, Component relativeRoot, Type inType, string inPropertyName) => Bind(GetRelativePath(relativeRoot, target), inType, inPropertyName);
         public AnimationClipBuilder Bind(string inPath, Type inType, string inPropertyName)
         {
-            if(_compositing) inPropertyName = inPropertyName.Replace("@a", axisName);
+            if (_compositing) inPropertyName = inPropertyName.Replace("@a", axisName);
             _curveBinding = EditorCurveBinding.FloatCurve(inPath, inType, inPropertyName);
             return this;
         }

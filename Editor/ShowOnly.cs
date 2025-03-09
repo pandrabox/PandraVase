@@ -1,16 +1,9 @@
 ﻿//コンソールをクリアして規定のプレハブをアップロードする
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using System;
-using VRC.SDK3A.Editor;
-using System.Threading.Tasks;
-using VRC.SDKBase.Editor.Api;
-using VRC.Core;
-using System.Reflection;
-using VRC.SDKBase.Editor;
-using static com.github.pandrabox.pandravase.editor.Util;
 using VRC.SDK3.Avatars.Components;
-using System.Linq;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {

@@ -1,21 +1,12 @@
 ﻿/// 複数・同名のGameObjectに「ParamView2」「MASubMenu」がアタッチされているとき、それをまとめる
 
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
-using static com.github.pandrabox.pandravase.editor.TextureUtil;
-using System.Linq;
+using nadena.dev.ndmf;
+using System;
+using UnityEditor;
+using UnityEngine;
 using VRC.SDK3.Avatars.Components;
-using VRC.SDK3.Avatars.ScriptableObjects;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -42,7 +33,7 @@ namespace com.github.pandrabox.pandravase.editor
 
     public class ParamView2Main
     {
-        private const float DisplayInterval= -0.06f;
+        private const float DisplayInterval = -0.06f;
         public ParamView2Main(VRCAvatarDescriptor desc)
         {
             using (PanCapture capture = new PanCapture(new Color(0, 0, 0, 0), width: 512))
@@ -77,7 +68,7 @@ namespace com.github.pandrabox.pandravase.editor
                     });
                     bb.Attach(obj);
                 }
-            }            
+            }
         }
 
         private class ParamDisplay

@@ -1,23 +1,15 @@
 ﻿
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
-using static com.github.pandrabox.pandravase.editor.Localizer;
+using nadena.dev.modular_avatar.core;
+using nadena.dev.ndmf;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
 using VRC.SDK3.Avatars.Components;
-using VRC.SDKBase;
-using System.Text.RegularExpressions;
-using static com.github.pandrabox.pandravase.editor.TextureUtil;
-using System.Security.Cryptography;
+using static com.github.pandrabox.pandravase.editor.Localizer;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 
 namespace com.github.pandrabox.pandravase.editor
@@ -83,7 +75,7 @@ namespace com.github.pandrabox.pandravase.editor
             for (int i = 0; i < targets.Length; i++)
             {
                 PVMessageUI tgt = targets[i];
-                tgt.transform.localPosition=Vector3.zero;
+                tgt.transform.localPosition = Vector3.zero;
 
                 var rootState = tgt.IsRemote ? remoteState : localState;
                 string usedParamName = $"{tgt.ParameterName}{tgt.ConditionMode.ToString()}{tgt.ParameterValue.ToString()}IsUsed";
@@ -241,7 +233,8 @@ namespace com.github.pandrabox.pandravase.editor
             ac.Clip("s0").Bind("Display", typeof(MeshRenderer), "material._Size").Const2F(0);
             ac.Clip("s1").Bind("Display", typeof(MeshRenderer), "material._Size").Const2F(1);
             var bb = new BlendTreeBuilder("size");
-            bb.RootDBT(() => {
+            bb.RootDBT(() =>
+            {
                 bb.Param("1").Add1D("Vase/MessageUI/Size", () =>
                 {
                     bb.Param(0).AddMotion(ac.Outp("s0"));
@@ -261,13 +254,13 @@ namespace com.github.pandrabox.pandravase.editor
             LowLevelDebugPrint($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
             var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("Menu/MessageUI".LL());
             mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "Menu/MessageUI/SW".LL(), 1).SetMessage(L("Menu/MessageUI/SW/Detail"));
-            mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f).SetMessage(L("Menu/MessageUI/Size/Detail"),duration:15);
+            mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f).SetMessage(L("Menu/MessageUI/Size/Detail"), duration: 15);
         }
 
         private void CreateImage()
         {
             int padding = 3;
-            int width = 2048/2;
+            int width = 2048 / 2;
             float heightRatio = 1 / 8f;
             int height = (int)(width * heightRatio);
             int y = (width - height) / 2;

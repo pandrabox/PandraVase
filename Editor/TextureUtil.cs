@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
@@ -30,7 +28,7 @@ namespace com.github.pandrabox.pandravase.editor
                     OutpAsset(testTex[i]);
                 }
                 int x = 4;
-                var pack = PackTexture(testTex, x, 256 * x, 256 * 2, Color.green, true,6);
+                var pack = PackTexture(testTex, x, 256 * x, 256 * 2, Color.green, true, 6);
                 OutpAsset(pack);
             }
         }
@@ -46,7 +44,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="baseColor">背景色（省略時透明）</param>
         /// <param name="margin">マージン幅(2以上の偶数、省略時0)</param>
         /// <returns></returns>
-        public static Texture2D PackTexture(List<Texture2D> textures, int columns, int tileWidth, int tileHeight = -1, Color? baseColor = null, bool blend = false, int margin = 0) 
+        public static Texture2D PackTexture(List<Texture2D> textures, int columns, int tileWidth, int tileHeight = -1, Color? baseColor = null, bool blend = false, int margin = 0)
             => PackTexture(textures.ToArray(), columns, tileWidth, tileHeight, baseColor, blend, margin);
         public static Texture2D PackTexture(Texture2D[] textures, int columns, int tileWidth, int tileHeight = -1, Color? baseColor = null, bool blend = false, int margin = 0)
         {

@@ -1,13 +1,12 @@
 ﻿//コンソールをクリアして規定のプレハブをアップロードする
+using System;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using System;
-using VRC.SDK3A.Editor;
-using System.Threading.Tasks;
-using VRC.SDKBase.Editor.Api;
 using VRC.Core;
-using System.Reflection;
+using VRC.SDK3A.Editor;
 using VRC.SDKBase.Editor;
+using VRC.SDKBase.Editor.Api;
 using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
@@ -28,7 +27,7 @@ namespace com.github.pandrabox.pandravase.editor
 
     public enum BuildMode
     {
-        Test,Upload
+        Test, Upload
     }
 
     public class AvatarBuild

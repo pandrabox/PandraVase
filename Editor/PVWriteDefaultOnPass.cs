@@ -1,18 +1,11 @@
-﻿using UnityEditor;
-using UnityEngine;
-using System;
-using VRC.SDK3A.Editor;
-using System.Threading.Tasks;
-using VRC.SDKBase.Editor.Api;
-using VRC.Core;
-using System.Reflection;
-using VRC.SDKBase.Editor;
-using static com.github.pandrabox.pandravase.editor.Util;
-using VRC.SDK3.Avatars.Components;
-using UnityEditor.Animations;
+﻿using com.github.pandrabox.pandravase.runtime;
 using nadena.dev.modular_avatar.core;
 using nadena.dev.ndmf;
-using com.github.pandrabox.pandravase.runtime;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+using VRC.SDK3.Avatars.Components;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -47,7 +40,7 @@ namespace com.github.pandrabox.pandravase.editor
             _prj = VaseProject(desc);
             int fxIndex = _prj.PlayableIndex(VRCAvatarDescriptor.AnimLayerType.FX);
             RuntimeAnimatorController runtimeFxController = desc?.baseAnimationLayers[fxIndex].animatorController;
-            if(runtimeFxController == null) return;
+            if (runtimeFxController == null) return;
             AnimatorController fxController = (AnimatorController)runtimeFxController;
             foreach (var layer in fxController.layers)
             {
@@ -61,7 +54,7 @@ namespace com.github.pandrabox.pandravase.editor
 
             //MAのWDをマッチに設定
             ModularAvatarMergeAnimator[] mama = desc.GetComponentsInChildren<ModularAvatarMergeAnimator>();
-            foreach(var m in mama)
+            foreach (var m in mama)
             {
                 m.matchAvatarWriteDefaults = true;
             }

@@ -3,11 +3,8 @@
 /// </summary>
 
 #region
-using com.github.pandrabox.pandravase.runtime;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -57,7 +54,7 @@ namespace com.github.pandrabox.pandravase.editor
         public HashSet<TransitionDetail> EmoTransitions(PandraProject prj)
         {
             var bodyMesh = prj.RootTransform.GetComponentsInChildren<SkinnedMeshRenderer>(true).FirstOrDefault(mesh => mesh.name == "Body");
-            if(bodyMesh == null)
+            if (bodyMesh == null)
             {
                 LowLevelExeption("BodyMeshが見つかりませんでした。");
                 return new HashSet<TransitionDetail>();
@@ -75,7 +72,7 @@ namespace com.github.pandrabox.pandravase.editor
             foreach (var t in GestureTransitions)
             {
                 var m = t?.ToState?.motion;
-                if(m == null) continue;
+                if (m == null) continue;
                 AnimationClip clip = (AnimationClip)t.ToState.motion;
                 if (clip == null) continue;
                 EditorCurveBinding[] bodyBindings = AnimationUtility.GetCurveBindings(clip);

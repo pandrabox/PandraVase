@@ -1,18 +1,9 @@
-﻿/// GameObjectを管理する基底クラス ※このクラスは親のクラスがPandraProjectを持っていて初期化済みであることを前提としています
+﻿using com.github.pandrabox.pandravase.runtime;
+/// GameObjectを管理する基底クラス ※このクラスは親のクラスがPandraProjectを持っていて初期化済みであることを前提としています
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.Animations;
-using System.IO;
-using static com.github.pandrabox.pandravase.editor.Util;
-using System.Runtime.CompilerServices;
 using VRC.SDK3.Avatars.Components;
-using System.Linq;
-using System.Text.RegularExpressions;
-using nadena.dev.modular_avatar.core;
-using com.github.pandrabox.pandravase.runtime;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {

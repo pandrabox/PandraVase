@@ -1,12 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
-using UnityEngine;
-using VRC.SDK3.Avatars.Components;
-using nadena.dev.modular_avatar.core;
-using VRC.SDKBase;
-using UnityEditor;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEngine;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
@@ -37,7 +32,7 @@ namespace com.github.pandrabox.pandravase.runtime
             Custom = 2
         }
 
-        public List<PVnBitSyncData> nBitSyncs = new List<PVnBitSyncData> {};
+        public List<PVnBitSyncData> nBitSyncs = new List<PVnBitSyncData> { };
 
         /// <summary>
         /// スクリプトアクセス用

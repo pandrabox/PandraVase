@@ -1,15 +1,12 @@
 ﻿#if UNITY_EDITOR
-using System;
-using UnityEngine;
-using VRC.SDK3.Avatars.Components;
-using nadena.dev.modular_avatar.core;
-using UnityEditor;
+using nadena.dev.ndmf.util;
 using System.Collections.Generic;
-using UnityEditorInternal;
+using UnityEditor;
 using UnityEditor.Animations;
+using UnityEditorInternal;
+using UnityEngine;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using BlendTree = UnityEditor.Animations.BlendTree;
-using nadena.dev.ndmf.util;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
@@ -60,7 +57,7 @@ namespace com.github.pandrabox.pandravase.runtime
             script.MinValue = EditorGUILayout.IntField("Min Value", script.MinValue);
             script.MaxValue = EditorGUILayout.IntField("Max Value", script.MaxValue);
 
-            
+
             reorderableList.DoLayoutList();
 
             EditorGUILayout.Space();

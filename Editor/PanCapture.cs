@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
@@ -24,7 +20,7 @@ namespace com.github.pandrabox.pandravase.editor
         public int MarginedHeight => Height - Margin * 2;
         public int RenderWidth => MarginedWidth - Padding * 2;
         public int RenderHeight => MarginedHeight - Padding * 2;
-        public int RenderOrigin => Margin+Padding;
+        public int RenderOrigin => Margin + Padding;
         public Camera Camera => _camera;
         private Color _bgColor, _marginColor;
         public int CaptureLayer => LayerMask.NameToLayer(CaptureLayerName);
@@ -38,7 +34,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="padding">画像内padding(paddingより内側にとる。BGColorになる)</param>
         /// <param name="width">画像横幅(省略時1024)</param>
         /// <param name="height">画像縦幅(省略時正方形)</param>
-        public PanCapture(Color? BGColor = null, Color? marginColor = null, int margin = 0, int padding =0, int width = 1024, int height = -1)
+        public PanCapture(Color? BGColor = null, Color? marginColor = null, int margin = 0, int padding = 0, int width = 1024, int height = -1)
         {
             if (height == -1) height = width;
             _camera = CreateComponentObject<Camera>((GameObject)null, "camera");
@@ -76,7 +72,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// 背景色の指定
         /// </summary>
-        public void SetBackground(Color? BGColor = null, Color? PaddingColor=null)
+        public void SetBackground(Color? BGColor = null, Color? PaddingColor = null)
         {
             _bgColor = BGColor ?? new Color(1, 1, 1, 0);
             _marginColor = PaddingColor ?? new Color(1, 1, 1, 0);
@@ -87,7 +83,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// 画像サイズの指定
         /// </summary>
-        public void SetSize(int margin = 0, int padding=0, int width = 1024, int height = -1)
+        public void SetSize(int margin = 0, int padding = 0, int width = 1024, int height = -1)
         {
             _margin = margin;
             _padding = padding;
@@ -154,7 +150,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
         }
 
-        
+
 
         public GameObject CreateClone(GameObject target)
         {
@@ -213,7 +209,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (RenderTexture.active != null) RenderTexture.active = null;
             _renderTexture.Release();
             if (_camera != null) GameObject.DestroyImmediate(_camera.gameObject);
-            if(CaptureClone != null) GameObject.DestroyImmediate(CaptureClone);
+            if (CaptureClone != null) GameObject.DestroyImmediate(CaptureClone);
         }
 
         /// <summary>

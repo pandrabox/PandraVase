@@ -1,8 +1,7 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System;
 using System.IO;
+using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor

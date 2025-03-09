@@ -1,17 +1,10 @@
-﻿using UnityEditor;
-using UnityEngine;
-using System;
-using VRC.SDK3A.Editor;
-using System.Threading.Tasks;
-using VRC.SDKBase.Editor.Api;
-using VRC.Core;
-using System.Reflection;
-using VRC.SDKBase.Editor;
-using static com.github.pandrabox.pandravase.editor.Util;
+﻿using com.github.pandrabox.pandravase.runtime;
 using nadena.dev.ndmf;
-using VRC.SDK3.Avatars.Components;
-using com.github.pandrabox.pandravase.runtime;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using VRC.SDK3.Avatars.Components;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -121,12 +114,14 @@ namespace com.github.pandrabox.pandravase.editor
             BlendTreeBuilder bb = new BlendTreeBuilder("GridUI");
             bb.RootDBT(() =>
             {
-                bb.Param("IsLocal").AddD(() => {
+                bb.Param("IsLocal").AddD(() =>
+                {
                     // ゆっくり移動の計算
                     //Hold
                     bb.Param("1").Add1D(_ui.Reset, () =>
                     {
-                        bb.Param(0).AddD(() => {
+                        bb.Param(0).AddD(() =>
+                        {
                             bb.Param("1").AssignmentBy1D(_ui.Currentx, 0, 1 - xSpeed, _ui.Currentx);
                             bb.Param("1").AssignmentBy1D(_ui.Currenty, 0, 1 - ySpeed, _ui.Currenty);
                         });
@@ -137,7 +132,7 @@ namespace com.github.pandrabox.pandravase.editor
                         });
                     });
                     //Move
-                    bb.Param(_ui.IsEnable).AddD(()=>
+                    bb.Param(_ui.IsEnable).AddD(() =>
                     {
                         bb.Param(_ui.IsMode0).Add1D(_ui.Inputx, () =>
                         {

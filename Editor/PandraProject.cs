@@ -1,18 +1,16 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
-using UnityEditor.Animations;
+using com.github.pandrabox.pandravase.runtime;
+using nadena.dev.modular_avatar.core;
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Text;
-using static com.github.pandrabox.pandravase.editor.Util;
-using System.Runtime.CompilerServices;
-using VRC.SDK3.Avatars.Components;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using nadena.dev.modular_avatar.core;
-using com.github.pandrabox.pandravase.runtime;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+using VRC.SDK3.Avatars.Components;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {

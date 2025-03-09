@@ -1,19 +1,13 @@
 ﻿
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
-using static com.github.pandrabox.pandravase.editor.Localizer;
-using System.Linq;
+using nadena.dev.modular_avatar.core;
+using nadena.dev.ndmf;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Animations;
 using VRC.SDK3.Avatars.Components;
+using static com.github.pandrabox.pandravase.editor.Localizer;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 
 namespace com.github.pandrabox.pandravase.editor
@@ -74,13 +68,17 @@ namespace com.github.pandrabox.pandravase.editor
             // DanceDetectModeに応じてDanceを検出(mode自体はローカルなのでHostで処理)
             var bb = new BlendTreeBuilder("Vase/DanceDetect");
             var ac = new AnimationClipsBuilder();
-            bb.RootDBT(() => {
-                bb.Param("IsLocal").Add1D(_prj.DanceDetectMode, () => {
+            bb.RootDBT(() =>
+            {
+                bb.Param("IsLocal").Add1D(_prj.DanceDetectMode, () =>
+                {
                     bb.NName("OFF").Param(0).AddAAP(_prj.IsDanceHost, 0);
                     bb.NName("AUTO1").Param(1).FMultiplicationBy1D(ac.AAP(_prj.IsDanceHost, 1), _prj.IsFxLayer1Off, 0, 1, 1, 0);
-                    bb.NName("AUTO2").Param(2).Add1D(_prj.IsFxLayer1Off, () => {
+                    bb.NName("AUTO2").Param(2).Add1D(_prj.IsFxLayer1Off, () =>
+                    {
                         bb.Param(0).AddAAP(_prj.IsDanceHost, 1);
-                        bb.Param(1).Add1D("InStation", () => {
+                        bb.Param(1).Add1D("InStation", () =>
+                        {
                             bb.Param(0).AddAAP(_prj.IsDanceHost, 0);
                             bb.Param(1).Add1D("Seated", () =>
                             {
@@ -224,7 +222,7 @@ namespace com.github.pandrabox.pandravase.editor
             });
             bb2.Attach(_tgt.gameObject);
         }
-        
+
         private void CreateMenu()
         {
             var mb = new MenuBuilder(_prj, parentFolder: _tgt.ParrentFolder);

@@ -1,11 +1,7 @@
 ﻿#if UNITY_EDITOR
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using com.github.pandrabox.pandravase.runtime;
 using static com.github.pandrabox.pandravase.editor.Util;
-using static com.github.pandrabox.pandravase.editor.PandraProject;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -51,7 +47,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (!Enable) return;
 
-            if (!string.IsNullOrEmpty(_logoPath)  && !string.IsNullOrEmpty(_projectName))
+            if (!string.IsNullOrEmpty(_logoPath) && !string.IsNullOrEmpty(_projectName))
             {
                 var prj = new PandraProject(_projectName, _projectType);
                 _logoPath = $@"{prj.ImgFolder}InspectorLogo.png";

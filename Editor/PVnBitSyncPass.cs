@@ -1,21 +1,14 @@
 ﻿/// floatをnBitで他のfloatに仮想同期する
 /// 注意：範囲外の値が入ると前の値のままになる
 
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
-using System.Linq;
+using nadena.dev.modular_avatar.core;
+using nadena.dev.ndmf;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Animations;
 using VRC.SDK3.Avatars.Components;
-using VRC.SDKBase;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -33,13 +26,13 @@ namespace com.github.pandrabox.pandravase.editor
         {
             var prj = VaseProject(TopAvatar);
             prj.SetDebugMode(true);
-            var s = prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.FloatMode, toggleSync:true, hostDecode:true);
+            var s = prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.FloatMode, toggleSync: true, hostDecode: true);
             new MenuBuilder(prj).AddFolder("test").AddRadial("test").AddToggle(s.SyncParameter, 1, ParameterSyncType.Bool);
             if (Msgbox("実体化しますか？", true) == true)
             {
-                new PVnBitSyncMain(TopAvatar); 
-            }   
-            
+                new PVnBitSyncMain(TopAvatar);
+            }
+
         }
     }
 #endif
@@ -102,8 +95,9 @@ namespace com.github.pandrabox.pandravase.editor
 
         private void UnitDecoder(BlendTreeBuilder bb, PVnBitSync.PVnBitSyncData tgt)
         {
-            if(tgt==null || tgt.RxName==null || tgt.RxName.Length == 0) return;
-            bb.NName($@"Decode{tgt.RxName}").AddD(() => {
+            if (tgt == null || tgt.RxName == null || tgt.RxName.Length == 0) return;
+            bb.NName($@"Decode{tgt.RxName}").AddD(() =>
+            {
                 bb.Param("1").AddAAP(tgt.RxName, tgt.Min);
                 for (int j = 0; j < tgt.Bit; j++)
                 {
@@ -139,7 +133,7 @@ namespace com.github.pandrabox.pandravase.editor
                             ab.TransToCurrent(localRoot);
                             ab.AddCondition(AnimatorConditionMode.Greater, tgt.Min + tgt.Step * (i - .5f), tgt.TxName);
                             ab.AddCondition(AnimatorConditionMode.Less, tgt.Min + tgt.Step * (i + .50001f), tgt.TxName);
-                            if(tgt.ToggleSync)
+                            if (tgt.ToggleSync)
                             {
                                 ab.AddCondition(AnimatorConditionMode.Greater, .5f, tgt.SyncParameter);
                             }
@@ -179,9 +173,10 @@ namespace com.github.pandrabox.pandravase.editor
                         }
                     }
                     //各bitを同期boolで定義
-                    for (int j = 0; j < tgt.Bit; j++) 
+                    for (int j = 0; j < tgt.Bit; j++)
                     {
-                        var MAP = _prj.GetOrCreateComponentObject<ModularAvatarParameters>("EncorderParam", (x) => {
+                        var MAP = _prj.GetOrCreateComponentObject<ModularAvatarParameters>("EncorderParam", (x) =>
+                        {
                             if (x.parameters == null) x.parameters = new List<ParameterConfig>();
                         });
                         MAP.parameters.Add(new ParameterConfig() { nameOrPrefix = $@"{tgt.TxName}/b{j}", syncType = ParameterSyncType.Bool });

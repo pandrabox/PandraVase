@@ -1,20 +1,12 @@
 ﻿/// 「FxSort」のSortOrder文字列に合わせてFxLayerを並び替える。AddBlankをtrueにすると空のFxLayerを追加する
 
-using UnityEditor;
-using nadena.dev.modular_avatar.core;
-using UnityEngine;
-using UnityEditor.Animations;
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using nadena.dev.ndmf.util;
-using nadena.dev.ndmf;
 using com.github.pandrabox.pandravase.runtime;
-using static com.github.pandrabox.pandravase.editor.Util;
+using nadena.dev.ndmf;
 using System.Linq;
+using UnityEditor;
+using UnityEditor.Animations;
 using VRC.SDK3.Avatars.Components;
-using static UnityEngine.Tilemaps.TilemapRenderer;
+using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {

@@ -1,14 +1,5 @@
-﻿using com.github.pandrabox.pandravase.runtime;
-using nadena.dev.ndmf;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using UnityEditor;
-using UnityEditor.Animations;
-using UnityEngine;
-using static com.github.pandrabox.pandravase.editor.Util;
 
 
 namespace com.github.pandrabox.pandravase.editor
@@ -25,7 +16,7 @@ namespace com.github.pandrabox.pandravase.editor
             TotalCount = count;
             CurrentCount = 0;
         }
-        public static void Show(int? count=null)
+        public static void Show(int? count = null)
         {
             if (count != null) SetTotalCount((int)count);
             CurrentCount++;
