@@ -176,6 +176,10 @@
                 {
                     discard;
                 }
+                if(isInMirror())
+                {
+                    discard;
+                }
                 
                 half4 sampled = UNITY_SAMPLE_TEX2D(_MainTex, i.uv);
                 half brightness = dot(sampled.rgb, LUMINANCE_WEIGHTS);
