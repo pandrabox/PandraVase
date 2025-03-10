@@ -336,7 +336,18 @@ namespace com.github.pandrabox.pandravase.editor
         public T CreateComponentObject<T>(string name, Action<T> initialAction = null) where T : Component => Util.CreateComponentObject<T>(PrjRootObj, name, initialAction);
 
 
-
+        public PVParameter AddParameter(string ParameterName, ParameterSyncType? syncType = null, bool? localOnly = null, float? defaultValue = null, bool? saved = null)
+        {
+            var parent = GetOrCreateObject("PVParameter");
+            var p = CreateComponentObject<PVParameter>(ParameterName);
+            p.transform.SetParent(parent.transform);
+            p.ParameterName = ParameterName;
+            p.syncType = syncType;
+            p.localOnly = localOnly;
+            p.defaultValue = defaultValue;
+            p.saved = saved;
+            return p;
+        }
     }
 }
 #endif
