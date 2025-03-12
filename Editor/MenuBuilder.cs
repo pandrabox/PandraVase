@@ -62,18 +62,6 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
         /// <summary>
-        /// Toggleの定義
-        /// </summary>
-        public MenuBuilder AddToggle(string parameterName, float val = 1, ParameterSyncType parameterSyncType = ParameterSyncType.Bool, string menuName = null, float defaultVal = 0, bool localOnly = true)
-            => AddToggleOrButton(false, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
-
-        /// <summary>
-        /// Buttonの定義
-        /// </summary>
-        public MenuBuilder AddButton(string parameterName, float val = 1, ParameterSyncType parameterSyncType = ParameterSyncType.Bool, string menuName = null, float defaultVal = 0, bool localOnly = true)
-            => AddToggleOrButton(true, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
-
-        /// <summary>
         /// Radialの定義
         /// </summary>
         public MenuBuilder AddRadial(string parameterName, string menuName = null, float defaultVal = 0, bool localOnly = true, string mainParameterName = null)
@@ -195,12 +183,26 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
 
+        #region AddToggleOrButton
 
+        /// <summary>
+        /// Toggleの定義
+        /// </summary>
+        public MenuBuilder AddToggle(string parameterName, string menuName = null, float? val = null) => AddToggle(parameterName, val, null, menuName, null, null);
+        public MenuBuilder AddToggle(string parameterName, float? val = null, ParameterSyncType? parameterSyncType = null, string menuName = null, float? defaultVal = null, bool? localOnly = null)
+            => AddToggleOrButton(false, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
 
-        private MenuBuilder AddToggleOrButton(bool isButton, string parameterName, float val, ParameterSyncType parameterSyncType = ParameterSyncType.NotSynced, string menuName = null, float defaultVal = 0, bool localOnly = true)
+        /// <summary>
+        /// Buttonの定義
+        /// </summary>
+        public MenuBuilder AddButton(string parameterName, string menuName = null, float? val = null) => AddButton(parameterName, val, null, menuName, null, null);
+        public MenuBuilder AddButton(string parameterName, float? val = null, ParameterSyncType? parameterSyncType = null, string menuName = null, float? defaultVal = null, bool? localOnly = null)
+            => AddToggleOrButton(true, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
+
+        private MenuBuilder AddToggleOrButton(bool isButton, string parameterName, float? val = null, ParameterSyncType? parameterSyncType = null, string menuName = null, float? defaultVal = null, bool? localOnly = null)
         {
             _currentParameterName = parameterName;
-            _currentValue = val;
+            _currentValue = val ?? 0;
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
             {
@@ -208,15 +210,18 @@ namespace com.github.pandrabox.pandravase.editor
                 var p = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
                 p.name = parameterName;
                 x.Control.parameter = p;
-                x.Control.value = val;
+                x.Control.value = val ?? 0;
             });
-            AddParameter(parameterName, parameterSyncType, defaultVal, localOnly);
+            _prj.AddParameter(parameterName, parameterSyncType, localOnly, defaultVal);
             return this;
         }
+
+        #endregion
 
         /// <summary>
         /// ExpressionParameterの定義
         /// </summary>
+        [Obsolete("Use _prj.AddParameter")]
         private MenuBuilder AddParameter(string parameterName, ParameterSyncType parameterSyncType, float defaultVal = 0, bool localOnly = true)
         {
 

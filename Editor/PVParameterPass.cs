@@ -8,7 +8,6 @@ using nadena.dev.ndmf;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Animations;
 using VRC.SDK3.Avatars.Components;
 using static com.github.pandrabox.pandravase.editor.Util;
 
@@ -45,7 +44,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             _desc = desc;
             _tgts = _desc.GetComponentsInChildren<PVParameter>().ToList();
-            if(_tgts.Count == 0) return;
+            if (_tgts.Count == 0) return;
             GetUniques();
             CreateModularAvatarParameters();
         }

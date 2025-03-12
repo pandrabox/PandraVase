@@ -3,9 +3,6 @@
 ///nullを指定している場合は、float,localonly=true,default=0,saved=falseとして扱いますが、重複がある場合は上書きします
 #if UNITY_EDITOR
 using nadena.dev.modular_avatar.core;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
