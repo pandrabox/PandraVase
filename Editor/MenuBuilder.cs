@@ -201,19 +201,19 @@ namespace com.github.pandrabox.pandravase.editor
 
         private MenuBuilder AddToggleOrButton(bool isButton, string parameterName, float? val = null, ParameterSyncType? parameterSyncType = null, string menuName = null, float? defaultVal = null, bool? localOnly = null)
         {
-            LowLevelDebugPrint($@"AddToggleOrButton({(isButton ? "Button": "Toggle")},Param:{parameterName},Val:{val},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
+            _currentValue = val ?? 1;
             _currentParameterName = parameterName;
-            _currentValue = val ?? 0;
+            LowLevelDebugPrint($@"AddToggleOrButton({(isButton ? "Button": "Toggle")},Param:{_currentParameterName},Val:{_currentValue},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
             {
                 x.Control.type = isButton ? VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.Button : VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.ControlType.Toggle;
                 var p = new VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter();
-                p.name = parameterName;
+                p.name = _currentParameterName;
                 x.Control.parameter = p;
-                x.Control.value = val ?? 0;
+                x.Control.value = _currentValue;
             });
-            _prj.AddParameter(parameterName, parameterSyncType, localOnly, defaultVal);
+            _prj.AddParameter(_currentParameterName, parameterSyncType, localOnly, defaultVal);
             return this;
         }
 
