@@ -201,6 +201,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         private MenuBuilder AddToggleOrButton(bool isButton, string parameterName, float? val = null, ParameterSyncType? parameterSyncType = null, string menuName = null, float? defaultVal = null, bool? localOnly = null)
         {
+            LowLevelDebugPrint($@"AddToggleOrButton({(isButton ? "Button": "Toggle")},Param:{parameterName},Val:{val},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
             _currentParameterName = parameterName;
             _currentValue = val ?? 0;
             menuName = menuName ?? parameterName;
@@ -232,7 +233,7 @@ namespace com.github.pandrabox.pandravase.editor
             p.syncType = parameterSyncType;
             p.localOnly = localOnly;
             _param.parameters.Add(p);
-            _prj.DebugPrint($@"MenuBuilderはパラメータ{parameterName}({parameterSyncType},{defaultVal},{localOnly})を定義しました");
+            _prj.DebugPrint($@"MenuBuilderはExパラメータ{parameterName}({parameterSyncType},{defaultVal},{localOnly})を定義しました");
             return this;
         }
 
@@ -251,7 +252,7 @@ namespace com.github.pandrabox.pandravase.editor
             _currentMenu = CreateComponentObject<ModularAvatarMenuItem>(parent, menuName, (z) => x(z));
             _currentMenu.name = menuName;
 
-            _prj.DebugPrint($@"MenuBuildeはメニュー{menuName}を生成しました");
+            _prj.DebugPrint($@"MenuBuilderはメニュー{menuName}を生成しました");
             return this;
         }
     }
