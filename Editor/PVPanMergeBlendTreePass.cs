@@ -89,7 +89,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (component.BlendTree == null)
             {
-                LowLevelDebugPrint("無の結合を試行しました");
+                Log.I.Info("無の結合を試行しました");
                 return;
             }
             _rootBlendTree = (BlendTree)component.BlendTree;

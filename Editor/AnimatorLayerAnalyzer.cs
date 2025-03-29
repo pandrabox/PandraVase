@@ -13,6 +13,7 @@ using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
+    using runtime;
     public class AnimatorLayerAnalyzer
     {
         public HashSet<TransitionDetail> TransitionDetails;
@@ -56,7 +57,7 @@ namespace com.github.pandrabox.pandravase.editor
             var bodyMesh = prj.RootTransform.GetComponentsInChildren<SkinnedMeshRenderer>(true).FirstOrDefault(mesh => mesh.name == "Body");
             if (bodyMesh == null)
             {
-                LowLevelExeption("BodyMeshが見つかりませんでした。");
+                Log.I.Error("BodyMeshが見つかりませんでした。");
                 return new HashSet<TransitionDetail>();
             }
             return EmoTransitions(bodyMesh);

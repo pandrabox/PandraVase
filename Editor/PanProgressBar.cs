@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using com.github.pandrabox.pandravase.runtime;
+using System.Diagnostics;
 using UnityEditor;
 
 
@@ -30,7 +31,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 callerClassName = callerClassName.Substring(0, callerClassName.Length - 4);
             }
-            Util.LowLevelDebugPrint($"PanProgressBar.Show,{callerClassName}");
+            Log.I.Info($"PanProgressBar.Show,{callerClassName}");
             EditorUtility.DisplayProgressBar(Title, callerClassName, progress);
         }
         public static void Hide()

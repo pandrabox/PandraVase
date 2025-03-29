@@ -1,4 +1,5 @@
-﻿using System;
+﻿using com.github.pandrabox.pandravase.runtime;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -69,18 +70,16 @@ namespace com.github.pandrabox.pandravase.editor
             if (LocalizerLanguage == null) SetLanguage();
             localizationDictionary = new Dictionary<string, string>();
             string projectPath = Directory.GetParent(Application.dataPath).FullName;
-            //LowLevelDebugPrint("Project path: " + projectPath);
+            Log.I.Info("Project path: " + projectPath);
             string[] files = Directory.GetFiles(projectPath, "PanLocalize.txt", SearchOption.AllDirectories);
             if (files.Length == 0)
             {
-                LowLevelExeption("Localization files not found.");
+                Log.I.Warning("Localization files not found.");
                 return;
             }
 
-            //LowLevelDebugPrint("Found localization files:");
             foreach (var file in files)
             {
-                //LowLevelDebugPrint(file);
                 string[] lines = File.ReadAllLines(file);
                 string[] headers = lines[0].Split(',');
                 int langIndex = Array.IndexOf(headers, LocalizerLanguage);
@@ -94,7 +93,7 @@ namespace com.github.pandrabox.pandravase.editor
                         string value = columns[langIndex];
                         if (localizationDictionary.ContainsKey(key))
                         {
-                            LowLevelDebugPrint("Duplicate key found in localization file: " + key);
+                            Log.I.Warning("Duplicate key found in localization file: " + key);
                         }
                         localizationDictionary[key] = value;
                     }
@@ -113,7 +112,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             else
             {
-                LowLevelDebugPrint("Localization key not found: " + name);
+                Log.I.Warning("Localization key not found: " + name);
                 return name;
             }
         }

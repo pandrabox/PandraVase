@@ -1,4 +1,5 @@
-﻿using nadena.dev.modular_avatar.core;
+﻿using com.github.pandrabox.pandravase.runtime;
+using nadena.dev.modular_avatar.core;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -70,7 +71,7 @@ namespace com.github.pandrabox.pandravase.editor
                 }
             }
             if (parameterDriver.parameters == null) parameterDriver.parameters = new List<VRC_AvatarParameterDriver.Parameter>();
-            if (parameterDriver.parameters.Any(p => p.name == name)) LowLevelDebugPrint($@"既にAPDに登録済みの変数をSetしようとしました{name}");
+            if (parameterDriver.parameters.Any(p => p.name == name)) Log.I.Warning($@"既にAPDに登録済みの変数をSetしようとしました{name}");
             parameterDriver.parameters.Add(APDParam);
             return this;
         }
@@ -93,7 +94,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             else
             {
-                LowLevelExeption($@"{_currentState.name}には既にTemporaryPoseSpaceが設定されています");
+                Log.I.Warning($@"{_currentState.name}には既にTemporaryPoseSpaceが設定されています");
             }
             return this;
         }
@@ -116,7 +117,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             else
             {
-                LowLevelExeption($@"{_currentState.name}には既にLocomotionControlが設定されています");
+                Log.I.Error($@"{_currentState.name}には既にLocomotionControlが設定されています");
             }
             return this;
         }
@@ -140,7 +141,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             else
             {
-                LowLevelExeption($@"{_currentState.name}には既にPlayableLayerControlが設定されています");
+                Log.I.Error($@"{_currentState.name}には既にPlayableLayerControlが設定されています");
             }
             return this;
         }
@@ -275,7 +276,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 if (parameter.type != type)
                 {
-                    LowLevelDebugPrint($@"{param}は{parameter.type}ですが{type}としてAddConditionしようとしました。({mode})", level: LogType.Exception);
+                    Log.I.Error($@"{param}は{parameter.type}ですが{type}としてAddConditionしようとしました。({mode})");
                 }
             }
             _currentTransition.AddCondition(mode, threshold, param);
@@ -318,7 +319,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (mode == AnimatorConditionMode.If || mode == AnimatorConditionMode.IfNot) return AnimatorControllerParameterType.Bool;
             if (mode == AnimatorConditionMode.Greater || mode == AnimatorConditionMode.Less) return AnimatorControllerParameterType.Float;
             if (mode == AnimatorConditionMode.Equals || mode == AnimatorConditionMode.NotEqual) return AnimatorControllerParameterType.Int;
-            LowLevelDebugPrint("型推定において不明なエラーが発生しました");
+            Log.I.Error("型推定において不明なエラーが発生しました");
             return AnimatorControllerParameterType.Float;
         }
 
@@ -364,7 +365,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (_currentStateMachine == null)
             {
-                LowLevelExeption("Current state machineが設定されていません。レイヤを作成したか確認してください");
+                Log.I.Error("Current state machineが設定されていません。レイヤを作成したか確認してください");
                 return this;
             }
             _currentState = _currentStateMachine.AddState(name, position ?? NextStatePos());
@@ -399,10 +400,10 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (_ac.parameters.Any(p => p.name == name))
             {
-                LowLevelDebugPrint($@"アニメータパラメータ{name}は既に存在します", level: LogType.Log);
+                Log.I.Info($@"アニメータパラメータ{name}は既に存在します");
                 return this;
             }
-            LowLevelDebugPrint($@"アニメータパラメータ{name}({type}, {defaultFloat})を追加します");
+            Log.I.Info($@"アニメータパラメータ{name}({type}, {defaultFloat})を追加します");
             _ac.parameters = _ac.parameters.Concat(
                 new[] { new AnimatorControllerParameter {
                     name = name,
@@ -468,19 +469,19 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (_currentLayer == null)
             {
-                LowLevelExeption("Current layer is null.");
+                Log.I.Error("Current layer is null.");
                 return this;
             }
 
             if (_currentLayer.stateMachine == null)
             {
-                LowLevelExeption("Current layer's state machine is null.");
+                Log.I.Error("Current layer's state machine is null.");
                 return this;
             }
 
             if (_currentLayer.stateMachine.stateMachines == null || _currentLayer.stateMachine.stateMachines.Length == 0)
             {
-                LowLevelExeption("Current layer's state machine has no sub-state machines.");
+                Log.I.Error("Current layer's state machine has no sub-state machines.");
                 return this;
             }
 
@@ -489,7 +490,7 @@ namespace com.github.pandrabox.pandravase.editor
 
             if (stateMachine == null)
             {
-                LowLevelExeption($"State machine '{name}' not found.");
+                Log.I.Error($"State machine '{name}' not found.");
                 return this;
             }
 
@@ -508,7 +509,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (c == null)
             {
-                LowLevelExeption($@"ステートマシン{c}を取得しようとし、失敗しました");
+                Log.I.Error($@"ステートマシン{c}を取得しようとし、失敗しました");
                 _currentStateMachine = null;
                 return this;
             }
@@ -527,7 +528,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (stateMachine == null)
             {
-                LowLevelExeption($@"カレントサブステートマシンの設定に、失敗しました");
+                Log.I.Error($@"カレントサブステートマシンの設定に、失敗しました");
                 _currentStateMachine = null;
                 return this;
             }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace com.github.pandrabox.pandravase.runtime
 {
@@ -22,6 +23,7 @@ namespace com.github.pandrabox.pandravase.runtime
         private object _lockObject = new object();
         private Timer _disconnectTimer;
         private bool _appearPopupOnError = false;
+        private int _yetSelectLogFile = 5;
 
         enum LogType
         {
@@ -30,7 +32,8 @@ namespace com.github.pandrabox.pandravase.runtime
             Error,
             Exception,
             StartMethod,
-            EndMethod
+            EndMethod,
+            Old
         }
 
         /// <summary>
@@ -41,6 +44,7 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <param name="withClear">初期化時に既存のログを削除するかどうか</param>
         public void Initialize(string logfile, bool appearPopupOnError = false, bool withClear = false)
         {
+            _yetSelectLogFile = 5;
             _appearPopupOnError = appearPopupOnError;
             string directory = Path.GetDirectoryName(logfile);
             if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
@@ -86,6 +90,15 @@ namespace com.github.pandrabox.pandravase.runtime
 
         private void Connect()
         {
+            if (_yetSelectLogFile-- > 0 && (logFile == null || logFile == ""))
+            {
+                Debug.Log("ログファイルが設定されていません。");
+                return;
+            }
+            else
+            {
+                Debug.Log($@"ログファイルを設定します{logFile}");
+            }
             lock (_lockObject)
             {
                 // すでに接続済みで書き込み可能な状態であれば何もしない
@@ -160,14 +173,13 @@ namespace com.github.pandrabox.pandravase.runtime
             _disconnectTimer.Change((int)_logTimeoutMS, Timeout.Infinite);
         }
 
-
         public void Info(string message) => Write(LogType.Info, message);
         public void Warning(string message) => Write(LogType.Warning, message);
         public void Error(string message) => Write(LogType.Error, message);
-        public void Exception(Exception ex, string message=null) => Write(LogType.Exception, message, ex);
+        public void Exception(Exception ex, string message = null) => Write(LogType.Exception, message, ex);
         public void StartMethod(string message = null) => Write(LogType.StartMethod, message);
         public void EndMethod(string message = null) => Write(LogType.EndMethod, message);
-
+        public void Old(string message = null) => Write(LogType.Old, message);
 
         private void Write(LogType lType, string message, Exception ex = null)
         {
@@ -200,37 +212,51 @@ namespace com.github.pandrabox.pandravase.runtime
             sb.Append($"{methodName},");
 
             // メッセージ
-            sb.Append(message);
-
-            // 例外情報があれば追加
-            if (ex != null)
+            if (lType == LogType.Old)
             {
-                sb.AppendLine();
-                sb.AppendLine("Exception Details:");
-                sb.AppendLine($"Type: {ex.GetType().FullName}");
-                sb.AppendLine($"Message: {ex.Message}");
-                sb.AppendLine($"Source: {ex.Source}");
-                sb.AppendLine($"StackTrace: {ex.StackTrace}");
-
-                // InnerExceptionがあれば追加
-                Exception innerEx = ex.InnerException;
-                while (innerEx != null)
+                sb.Append("旧型式です。");
+                if (!string.IsNullOrEmpty(message))
                 {
-                    sb.AppendLine();
-                    sb.AppendLine($"Inner Exception Type: {innerEx.GetType().FullName}");
-                    sb.AppendLine($"Inner Exception Message: {innerEx.Message}");
-                    sb.AppendLine($"Inner Exception StackTrace: {innerEx.StackTrace}");
-                    innerEx = innerEx.InnerException;
+                    sb.Append(message);
                 }
+                sb.AppendLine();
+                sb.AppendLine("StackTrace:");
+                sb.AppendLine(new StackTrace(true).ToString());
+            }
+            else
+            {
+                sb.Append(message);
 
-                // 追加のデータがあれば表示
-                if (ex.Data.Count > 0)
+                // 例外情報があれば追加
+                if (ex != null)
                 {
                     sb.AppendLine();
-                    sb.AppendLine("Additional Data:");
-                    foreach (var key in ex.Data.Keys)
+                    sb.AppendLine("Exception Details:");
+                    sb.AppendLine($"Type: {ex.GetType().FullName}");
+                    sb.AppendLine($"Message: {ex.Message}");
+                    sb.AppendLine($"Source: {ex.Source}");
+                    sb.AppendLine($"StackTrace: {ex.StackTrace}");
+
+                    // InnerExceptionがあれば追加
+                    Exception innerEx = ex.InnerException;
+                    while (innerEx != null)
                     {
-                        sb.AppendLine($"{key}: {ex.Data[key]}");
+                        sb.AppendLine();
+                        sb.AppendLine($"Inner Exception Type: {innerEx.GetType().FullName}");
+                        sb.AppendLine($"Inner Exception Message: {innerEx.Message}");
+                        sb.AppendLine($"Inner Exception StackTrace: {innerEx.StackTrace}");
+                        innerEx = innerEx.InnerException;
+                    }
+
+                    // 追加のデータがあれば表示
+                    if (ex.Data.Count > 0)
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine("Additional Data:");
+                        foreach (var key in ex.Data.Keys)
+                        {
+                            sb.AppendLine($"{key}: {ex.Data[key]}");
+                        }
                     }
                 }
             }
@@ -264,23 +290,19 @@ namespace com.github.pandrabox.pandravase.runtime
                     UnityEngine.Debug.Log(logMessage);
                     break;
                 case LogType.Warning:
+                case LogType.Old:
                     UnityEngine.Debug.LogWarning(logMessage);
                     break;
                 case LogType.Error:
                 case LogType.Exception:
                     UnityEngine.Debug.LogError(logMessage);
-
-                    // エラーやException発生時にポップアップ表示
-                    if (_appearPopupOnError)
-                    {
-                        ShowErrorPopup(lType.ToString(), logMessage, ex);
-                    }
+                    if (_appearPopupOnError) ShowErrorPopup(lType.ToString(), logMessage);
                     break;
             }
         }
 
         // エラーポップアップを表示する
-        private void ShowErrorPopup(string title, string message, Exception ex)
+        private void ShowErrorPopup(string title, string message)
         {
             // ポップアップ用のメッセージを作成
             string popupMessage = message;
@@ -292,19 +314,8 @@ namespace com.github.pandrabox.pandravase.runtime
                 popupMessage = popupMessage.Substring(0, maxLength) + "...(続きはログファイルを確認してください)";
             }
 
-            // 例外情報を追加
-            if (ex != null)
-            {
-                popupMessage += $"\n\nException: {ex.GetType().Name}\nMessage: {ex.Message}";
-            }
-
-            // エディタ上では、EditorUtilityを使用してポップアップを表示
-            EditorApplication.delayCall += () =>
-            {
-                EditorUtility.DisplayDialog($"エラーが発生しました: {title}", popupMessage, "OK");
-            };
+            EditorUtility.DisplayDialog($"エラーが発生しました: {title}", popupMessage, "OK");
         }
-
 
         private static string ConvertToUnityPath(string s)
         {
@@ -312,7 +323,6 @@ namespace com.github.pandrabox.pandravase.runtime
             s = s.Replace(Path.Combine(new DirectoryInfo(Application.dataPath).Parent.FullName, "Packages"), "Packages");
             return s;
         }
-
 
         // デストラクタ - タイマーを確実に解放
         ~Log()

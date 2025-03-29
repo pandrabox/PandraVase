@@ -1,4 +1,5 @@
-﻿using System;
+﻿using com.github.pandrabox.pandravase.runtime;
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -108,7 +109,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns></returns>
         public GameObject DrawText(string text, Color? fontColor = null)
         {
-            LowLevelDebugPrint($"DrawText:{text}");
+            Log.I.Info($"DrawText:{text}");
             GameObject textGO = new GameObject("Text");
             textGO.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
             textGO.transform.position = new Vector3(0, 0, 10);

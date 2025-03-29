@@ -8,6 +8,7 @@ using VRC.SDK3A.Editor;
 using VRC.SDKBase.Editor;
 using VRC.SDKBase.Editor.Api;
 using static com.github.pandrabox.pandravase.editor.Util;
+using com.github.pandrabox.pandravase.runtime;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -45,7 +46,7 @@ namespace com.github.pandrabox.pandravase.editor
             _tgt = new BuildAvatarTarget(tgtDesc.gameObject);
             _buildMode = buildMode;
             ClearConsole();
-            Debug.LogWarning($@"AvatarBuilder Build {tgt.name} On Mode {buildMode.ToString()} Start");
+            Log.I.Warning($@"AvatarBuilder Build {tgt.name} On Mode {buildMode.ToString()} Start");
             ActivateSDKPanel();
             _ = UploadAvatarAsync(); // 'await' 演算子を適用するため、非同期メソッドの呼び出しを待機します
         }
@@ -63,7 +64,7 @@ namespace com.github.pandrabox.pandravase.editor
                 if (BlueprintId == null || BlueprintId.Length == 0)
                 {
                     BlueprintId = GetPanBPID();
-                    if (BlueprintId == null || BlueprintId.Length == 0) LowLevelExeption("BlueprintIdの取得に失敗しました Assets/Pan/bpid.txtにBPIDを入れてください");
+                    if (BlueprintId == null || BlueprintId.Length == 0) Log.I.Error("BlueprintIdの取得に失敗しました Assets/Pan/bpid.txtにBPIDを入れてください");
                     pipeline.blueprintId = BlueprintId;
                 }
                 if (BlueprintId == null || BlueprintId.Length == 0) { EditorUtility.DisplayDialog("エラー", $@"BlueprintIdの取得に失敗しました", "OK"); return; }
@@ -90,17 +91,17 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (!VRCSdkControlPanel.TryGetBuilder<IVRCSdkAvatarBuilderApi>(out var builder))
             {
-                Debug.LogError("IVRCSdkAvatarBuilderApiを取得できません。");
+                Log.I.Error("IVRCSdkAvatarBuilderApiを取得できません。");
                 return;
             }
             AddEvents(builder);
 
             try
             {
-                Debug.Log("VRCAvatarを取得します");
+                Log.I.Info("VRCAvatarを取得します");
                 VRCAvatar vrcAvatar = default;
                 vrcAvatar = await VRCApi.GetAvatar(_tgt.BlueprintId, true);
-                Debug.Log("アバターをビルドします");
+                Log.I.Info("アバターをビルドします");
                 if (_buildMode == BuildMode.Test)
                 {
                     await builder.BuildAndTest(_tgt.Avatar);
@@ -110,12 +111,12 @@ namespace com.github.pandrabox.pandravase.editor
                     await builder.BuildAndUpload(_tgt.Avatar, vrcAvatar, vrcAvatar.ThumbnailImageUrl);
                 }
                 PlayClip("Packages/com.github.pandrabox.pandravase/Assets/AvatarBuild/lvup2.mp3");
-                Debug.Log("アバターのビルドとアップロードが完了しました。");
+                Log.I.Info("アバターのビルドとアップロードが完了しました。");
             }
             catch (Exception e)
             {
                 PlayClip("Packages/com.github.pandrabox.pandravase/Assets/AvatarBuild/chin.mp3");
-                Debug.Log("アバターのビルドとテスト中にエラーが発生しました: " + e.Message);
+                Log.I.Exception(e, "アバターのビルドとテスト中にエラーが発生しました: ");
             }
         }
 

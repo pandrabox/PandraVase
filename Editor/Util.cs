@@ -15,6 +15,7 @@ using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using Debug = UnityEngine.Debug;
 using com.github.pandrabox.pandravase.runtime;
+using System.Text;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -853,9 +854,14 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>見つかったTransform</returns>
         public static Transform FindEx(this Component parent, string name, bool includeInactive = true)
         {
-            if (parent == null || string.IsNullOrEmpty(name))
+            if(parent == null)
             {
-                Log.I.Error("FindEx: parent or name is null or empty.");
+                Log.I.Error("FindEx:親コンポーネントが指定されていないため、検索できません");
+                return null;
+            }
+            if (string.IsNullOrEmpty(name))
+            {
+                Log.I.Error("FindEx:検索する名前が指定されていないため、検索できません");
                 return null;
             }
             Transform t = null;
@@ -869,9 +875,33 @@ namespace com.github.pandrabox.pandravase.editor
             }
             if (t == null)
             {
-                Log.I.Error($"FindEx: {name} not found in {parent.name}.");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($@"対象「{name}」は「{parent.gameObject.HierarchyPath()}」以下に見つかりませんでした。");
+                sb.AppendLine("存在する子の名前一覧は次の通りです"); 
+                foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
+                {
+                    // 直接の子オブジェクトのみを表示
+                    if (child.parent == parent.transform)
+                    {
+                        string activeState = child.gameObject.activeSelf ? "[A]" : "[I]";
+                        sb.AppendLine($"{activeState} {child.name}");
+                    }
+                }
+                if (!includeInactive)
+                {
+                    sb.AppendLine("includeInactiveがfalseです。非アクティブな子も含める場合は、includeInactiveをtrueにしてください。");
+                }
+
+                Log.I.Error(sb.ToString());
             }
             return t;
+        }
+
+        public static string HierarchyPath(this GameObject go) => go.transform.HierarchyPath();
+        public static string HierarchyPath(this Transform t)
+        {
+            if (t == null) return "";
+            return t.parent == null ? t.name : t.parent.HierarchyPath() + "/" + t.name;
         }
 
         public static string LastName(this string paramPath)
@@ -884,35 +914,34 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
 
-        [Obsolete("旧型式です。Log.I.Exceptionを使用してください")]
-        public static void LowLevelExeption(string message, bool debugOnly = true, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0) => LowLevelDebugPrint(message, debugOnly, LogType.Exception, projectName, callerMethodName, callerLineNumber);
         [Obsolete("旧型式です。Log.I.Info等を使用してください")]
         public static void LowLevelDebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
         {
-            try
-            {
-                message = ConvertToUnityPath(message);
+            Log.I.Old(message);
+            //try
+            //{
+            //    message = ConvertToUnityPath(message);
 
-                if (!debugOnly || PDEBUGMODE)
-                {
-                    var msg = $@"[PandraBox.{projectName}.{callerMethodName}:{callerLineNumber}]:{message}";
+            //    if (!debugOnly || PDEBUGMODE)
+            //    {
+            //        var msg = $@"[PandraBox.{projectName}.{callerMethodName}:{callerLineNumber}]:{message}";
 
-                    if (level == LogType.Log) Debug.Log(msg);
-                    else if (level == LogType.Error) Debug.LogError(msg);
-                    else if (level == LogType.Exception)
-                    {
-                        Debug.LogException(new Exception(msg));
-                        EditorUtility.DisplayDialog("Error", msg, "OK");
-                    }
-                    else Debug.LogWarning(msg);
-                }
+            //        if (level == LogType.Log) Debug.Log(msg);
+            //        else if (level == LogType.Error) Debug.LogError(msg);
+            //        else if (level == LogType.Exception)
+            //        {
+            //            Debug.LogException(new Exception(msg));
+            //            EditorUtility.DisplayDialog("Error", msg, "OK");
+            //        }
+            //        else Debug.LogWarning(msg);
+            //    }
 
-                PanLog.Write($@"{DateTime.Now.ToString("HH:mm:ss")},{PanLog.CurrentClassName},{message}", detail: true);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to log message: {message}. Error: {ex.Message}");
-            }
+            //    PanLog.Write($@"{DateTime.Now.ToString("HH:mm:ss")},{PanLog.CurrentClassName},{message}", detail: true);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Debug.LogError($"Failed to log message: {message}. Error: {ex.Message}");
+            //}
         }
 
         [Obsolete]

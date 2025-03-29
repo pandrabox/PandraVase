@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using com.github.pandrabox.pandravase.runtime;
 using UnityEditor;
 using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
@@ -99,7 +100,7 @@ namespace com.github.pandrabox.pandravase.editor
                 _inspectorLogo = AssetDatabase.LoadAssetAtPath<Texture2D>(_logoPath);
                 if (_inspectorLogo == null)
                 {
-                    LowLevelDebugPrint($@"ロゴ{_logoPath}の取得に失敗しました", false);
+                    Log.I.Warning($@"ロゴ{_logoPath}の取得に失敗しました");
                 }
                 _logoPath = null;
             }

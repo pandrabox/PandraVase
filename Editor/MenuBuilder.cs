@@ -80,11 +80,13 @@ namespace com.github.pandrabox.pandravase.editor
                 p2.name = _currentParameterName;
                 x.Control.parameter = p2;
                 x.Control.value = _currentValue;
-                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, localOnly);
+                _prj.AddParameter(_currentParameterName, ParameterSyncType.Bool,localOnly, 0);
+                //AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, localOnly);
             });
 
 
-            AddParameter(parameterName, ParameterSyncType.Float, defaultVal, localOnly);
+            _prj.AddParameter(parameterName, ParameterSyncType.Float, localOnly, defaultVal);
+            //AddParameter(parameterName, ParameterSyncType.Float, defaultVal, localOnly);
             return this;
         }
 
@@ -106,10 +108,13 @@ namespace com.github.pandrabox.pandravase.editor
                 p3.name = _currentParameterName;
                 x.Control.parameter = p3;
                 x.Control.value = _currentValue;
-                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, localOnly);
+                _prj.AddParameter(_currentParameterName, ParameterSyncType.Bool, localOnly, 0);
+                //AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, localOnly);
             });
-            AddParameter(parameter1, ParameterSyncType.Float, defaultVal1, localOnly);
-            AddParameter(parameter2, ParameterSyncType.Float, defaultVal2, localOnly);
+            _prj.AddParameter(parameter1, ParameterSyncType.Float, localOnly, defaultVal1);
+            //AddParameter(parameter1, ParameterSyncType.Float, defaultVal1, localOnly);
+            _prj.AddParameter(parameter2, ParameterSyncType.Float, localOnly, defaultVal2);
+            //AddParameter(parameter2, ParameterSyncType.Float, defaultVal2, localOnly);
             return this;
         }
 
@@ -140,7 +145,7 @@ namespace com.github.pandrabox.pandravase.editor
                 p.name = _currentParameterName;
                 x.Control.parameter = p;
                 x.Control.value = _currentValue;
-                AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, true);
+                _prj.AddParameter(_currentParameterName, ParameterSyncType.Bool, true, 0);
 
                 folderTree.Add(x.transform);
             }, true);
@@ -203,7 +208,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             _currentValue = val ?? 1;
             _currentParameterName = parameterName;
-            LowLevelDebugPrint($@"AddToggleOrButton({(isButton ? "Button": "Toggle")},Param:{_currentParameterName},Val:{_currentValue},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
+            Log.I.Info($@"AddToggleOrButton({(isButton ? "Button": "Toggle")},Param:{_currentParameterName},Val:{_currentValue},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
             {
@@ -244,7 +249,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (!allowRoot && IsRoot)
             {
-                LowLevelDebugPrint("Root状態でMenu作成が呼ばれました。これは許可されていません。最低１回のAddFolderを実行してください。", level: LogType.Exception);
+                Log.I.Error("Root状態でMenu作成が呼ばれました。これは許可されていません。最低１回のAddFolderを実行してください。");
                 return this;
             }
             menuName = menuName.LastName();
@@ -252,7 +257,7 @@ namespace com.github.pandrabox.pandravase.editor
             _currentMenu = CreateComponentObject<ModularAvatarMenuItem>(parent, menuName, (z) => x(z));
             _currentMenu.name = menuName;
 
-            _prj.DebugPrint($@"MenuBuilderはメニュー{menuName}を生成しました");
+            Log.I.Info($@"MenuBuilderはメニュー{menuName}を生成しました");
             return this;
         }
     }

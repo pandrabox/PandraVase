@@ -35,6 +35,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             var _tgt = desc.GetComponentInChildren<PVWriteDefaultOn>();
             if (_tgt == null) return;
+            Log.I.StartMethod();
 
             //FXのWDをON
             _prj = VaseProject(desc);
@@ -59,8 +60,8 @@ namespace com.github.pandrabox.pandravase.editor
                 m.matchAvatarWriteDefaults = true;
             }
 
-            LowLevelDebugPrint("WD On");
             //FX以外のPlayable,Animatorはとりあえず放置
+            Log.I.EndMethod();
         }
     }
 }

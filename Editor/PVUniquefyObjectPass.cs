@@ -44,7 +44,7 @@ namespace com.github.pandrabox.pandravase.editor
                 {
                     GameObject.DestroyImmediate(target.gameObject);
                     targets.RemoveAt(i);
-                    LowLevelDebugPrint($@"Remove {target.name} ({i})");
+                    Log.I.Info($@"Remove {target.name} ({i})");
                 }
             }
         }

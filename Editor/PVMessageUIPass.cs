@@ -251,7 +251,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             PVMessageUIParentDefinition pVMessageUIParentDefinition = _prj.Descriptor.GetComponentInChildren<PVMessageUIParentDefinition>();
             string parentFolder = pVMessageUIParentDefinition?.ParentFolder;
-            LowLevelDebugPrint($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
+            Log.I.Info($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
             var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("Menu/MessageUI".LL());
             mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "Menu/MessageUI/SW".LL(), 1).SetMessage(L("Menu/MessageUI/SW/Detail"));
             mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f).SetMessage(L("Menu/MessageUI/Size/Detail"), duration: 15);
@@ -269,7 +269,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 foreach (PVMessageUI tgt in targets)
                 {
-                    LowLevelDebugPrint($"MessageUI メッセージを画像化しています: {tgt.Message}");
+                    Log.I.Info($"MessageUI メッセージを画像化しています: {tgt.Message}");
                     msgTexs.Add(c.TextToImage(tgt.Message.PadString(100), Color.white).Trim(0, y));
                 }
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
+using com.github.pandrabox.pandravase.runtime;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -48,7 +49,7 @@ namespace com.github.pandrabox.pandravase.editor
             => PackTexture(textures.ToArray(), columns, tileWidth, tileHeight, baseColor, blend, margin);
         public static Texture2D PackTexture(Texture2D[] textures, int columns, int tileWidth, int tileHeight = -1, Color? baseColor = null, bool blend = false, int margin = 0)
         {
-            //LowLevelDebugPrint($"Packing textures: {textures.Length} textures, {columns} columns, {tileWidth}x{tileHeight}");
+            Log.I.Info($"Packing textures: {textures.Length} textures, {columns} columns, {tileWidth}x{tileHeight}");
             Color backColor = baseColor ?? new Color(1, 1, 1, 0);
             int unitSize = tileWidth / columns;
             SetReadable(textures);
@@ -97,7 +98,7 @@ namespace com.github.pandrabox.pandravase.editor
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(path, bytes);
             AssetDatabase.Refresh();
-            LowLevelDebugPrint("Texture saved at: " + path);
+            Log.I.Info("Texture saved at: " + path);
         }
 
         /// <summary>
@@ -235,7 +236,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (width == -1) width = texture.width - x * 2;
             if (height == -1) height = texture.height - y * 2;
-            LowLevelDebugPrint($"Trimming texture: {texture.width}x{texture.height} -> {width}x{height}");
+            Log.I.Info($"Trimming texture: {texture.width}x{texture.height} -> {width}x{height}");
             Texture2D trimmedTexture = new Texture2D(width, height);
             Color[] pixels = texture.GetPixels(x, y, width, height);
             trimmedTexture.SetPixels(pixels);

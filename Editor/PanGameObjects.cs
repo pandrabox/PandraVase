@@ -56,7 +56,14 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (obj != null)
             {
-                LowLevelDebugPrint($"{obj}を取得しました {additionalMsg}");
+                if( obj is Component)
+                {
+                    Log.I.Info($"{(obj as Component).gameObject.HierarchyPath()}を取得しました {additionalMsg}");
+                }
+                else
+                {
+                    Log.I.Info($"{obj}を取得しました {additionalMsg}");
+                }
                 return obj;
             }
 

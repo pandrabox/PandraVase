@@ -48,7 +48,7 @@ namespace com.github.pandrabox.pandravase.editor
                 var fx = prj?.BaseAnimationLayers[fxn].animatorController;
                 if (fx == null)
                 {
-                    LowLevelExeption("FxSortでFxが見つかりませんでした");
+                    Log.I.Error("FxSortでFxが見つかりませんでした");
                     return;
                 }
                 var fxc = (AnimatorController)fx;
@@ -93,8 +93,8 @@ namespace com.github.pandrabox.pandravase.editor
             ((AnimatorController)prj.BaseAnimationLayers[fxn].animatorController).layers = LayersCopy;
 
             // 最終的なsortOrderとレイヤ順番を表示
-            LowLevelDebugPrint("Final Sort Order: " + string.Join(", ", sortOrder));
-            LowLevelDebugPrint("Final Layer Order: " + string.Join(", ", LayersCopy.Select(layer => layer.name)));
+            Log.I.Info("Final Sort Order: " + string.Join(", ", sortOrder));
+            Log.I.Info("Final Layer Order: " + string.Join(", ", LayersCopy.Select(layer => layer.name)));
         }
     }
 }

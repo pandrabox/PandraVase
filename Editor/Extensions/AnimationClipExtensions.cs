@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using static com.github.pandrabox.pandravase.editor.Util;
+using com.github.pandrabox.pandravase.runtime;
 
 
 namespace com.github.pandrabox.pandravase.editor
@@ -11,7 +12,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (clip == null)
             {
-                LowLevelExeption("clip is null");
+                Log.I.Error("clip is null");
             }
             AnimationClip newClip = new AnimationClip();
             EditorCurveBinding[] curveBindings = AnimationUtility.GetCurveBindings(clip);

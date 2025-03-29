@@ -72,18 +72,18 @@ namespace com.github.pandrabox.pandravase.editor
             _dispRenderer = _ui.GetComponentsInChildren<MeshRenderer>(true)?.FirstOrDefault(x => x.name == DISPLAYNAME);
             if (_dispRenderer == null)
             {
-                LowLevelExeption("Displayが見つかりませんでした。");
+                Log.I.Error("Displayが見つかりませんでした。");
                 return;
             }
             _dispMat = _dispRenderer.material;
             if (_dispMat == null)
             {
-                LowLevelExeption("Materialが見つかりませんでした。");
+                Log.I.Error("Materialが見つかりませんでした。");
                 return;
             }
             if (_ui.MainTex == null)
             {
-                LowLevelExeption("MainTexが見つかりませんでした。");
+                Log.I.Error("MainTexが見つかりませんでした。");
                 return;
             }
         }

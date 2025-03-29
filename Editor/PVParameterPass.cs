@@ -70,7 +70,7 @@ namespace com.github.pandrabox.pandravase.editor
                         else if (currentParam.syncType != tgt.syncType)
                         {
                             var msg = $"@@WARNING@@,PVParameter,{tgt.name}で型の競合があったので、floatにしました,{currentParam.syncType},{tgt.syncType}";
-                            LowLevelDebugPrint(msg);
+                            Log.I.Warning(msg);
                             currentParam.syncType = ParameterSyncType.Float;
                         }
                     }
@@ -83,7 +83,7 @@ namespace com.github.pandrabox.pandravase.editor
                         else if (currentParam.defaultValue != tgt.defaultValue)
                         {
                             var msg = $"@@WARNING@@,PVParameter,{tgt.name}でデフォルト値の競合があったので、先に定義した{currentParam.defaultValue}にしました。";
-                            LowLevelDebugPrint(msg);
+                            Log.I.Warning(msg);
                         }
                     }
                     if (tgt.localOnly != null)
@@ -128,7 +128,7 @@ namespace com.github.pandrabox.pandravase.editor
                     saved = param.saved ?? false
                 };
                 map.parameters.Add(pcon);
-                LowLevelDebugPrint($"PVParameter,Define Parameter:{pcon.nameOrPrefix},{pcon.syncType}({pcon.defaultValue}),{(pcon.localOnly ? "Local" : "Global")},{(pcon.saved ? "saved" : "temp")}");
+                Log.I.Info($"PVParameter,Define Parameter:{pcon.nameOrPrefix},{pcon.syncType}({pcon.defaultValue}),{(pcon.localOnly ? "Local" : "Global")},{(pcon.saved ? "saved" : "temp")}");
             }
         }
     }

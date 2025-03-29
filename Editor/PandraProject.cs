@@ -21,7 +21,7 @@ namespace com.github.pandrabox.pandravase.editor
         public string ProjectName;
         public ProjectTypes ProjectType;
         public string ProjectFolder;
-        public VRCAvatarDescriptor Descriptor { get { if (_descriptor == null) DebugPrint("未定義のDescriptorが呼び出されました", false, LogType.Error); return _descriptor; } }
+        public VRCAvatarDescriptor Descriptor { get { if (_descriptor == null) Log.I.Error("未定義のDescriptorが呼び出されました"); return _descriptor; } }
         public GameObject RootObject => Descriptor.gameObject;
         public Transform RootTransform => Descriptor.transform;
         public string ResFolder => $@"{ProjectFolder}Res/";
@@ -131,7 +131,7 @@ namespace com.github.pandrabox.pandravase.editor
         public void SetDebugMode(bool mode)
         {
             Util.SetDebugMode(mode);
-            DebugPrint("DebugModeが開始されました。PrjRootObjの削除・Debugフォルダ・Tmpフォルダの削除を行います。");
+            Log.I.Info("DebugModeが開始されました。PrjRootObjの削除・Debugフォルダ・Tmpフォルダの削除を行います。");
             GameObject.DestroyImmediate(PrjRootObj);
             DeleteFolder(DebugFolder);
             DeleteFolder(TmpFolder);
@@ -161,7 +161,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (File.Exists(motionPath)) return motionPath;
             if (!motionPath.Contains(".")) motionPath = $@"{motionPath}.anim";
             if (File.Exists(motionPath)) return motionPath;
-            DebugPrint($@"Motion「{motionPath}」が見つかりませんでした");
+            Log.I.Error($@"Motion「{motionPath}」が見つかりませんでした");
             return null;
         }
 
@@ -180,13 +180,13 @@ namespace com.github.pandrabox.pandravase.editor
             string packageJsonPath = Path.Combine(ProjectFolder, "package.json");
             if (!File.Exists(packageJsonPath))
             {
-                DebugPrint($@"{packageJsonPath}が見つかりませんでした");
+                Log.I.Error($@"{packageJsonPath}が見つかりませんでした");
                 return null;
             }
             string jsonContent = File.ReadAllText(packageJsonPath);
             if (jsonContent == null)
             {
-                DebugPrint("package.jsonの読み込みに失敗しました");
+                Log.I.Error("package.jsonの読み込みに失敗しました");
                 return null;
             }
             string versionPattern = @"""version"":\s*""([0-9]+\.[0-9]+\.[0-9]+)""";
@@ -196,7 +196,7 @@ namespace com.github.pandrabox.pandravase.editor
                 string version = match.Groups[1].Value;
                 return version;
             }
-            DebugPrint("バージョンの正規表現がマッチしませんでした");
+            Log.I.Error("バージョンの正規表現がマッチしませんでした");
             return null;
         }
 
@@ -295,9 +295,11 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="debugOnly">DebugModeでのみ表示</param>
         /// <param name="level">ログレベル</param>
         /// <param name="callerMethodName">システムが使用</param>
+        [Obsolete]
         public void DebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
         {
-            LowLevelDebugPrint(message, debugOnly, level, ProjectName, callerMethodName);
+            //LowLevelDebugPrint(message, debugOnly, level, ProjectName, callerMethodName);
+            Log.I.Info(message);
         }
 
         /// <summary>

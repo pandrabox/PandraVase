@@ -1,4 +1,5 @@
-﻿using System;
+﻿using com.github.pandrabox.pandravase.runtime;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -106,7 +107,7 @@ namespace com.github.pandrabox.pandravase.editor
         public AnimationClipBuilder Liner(float time1, Quaternion val1, float time2, Quaternion val2) => Liner(time1, val1.GetAxis(_axis), time2, val2.GetAxis(_axis));
         public AnimationClipBuilder Liner(float time1, float val1, float time2, float val2)
         {
-            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
+            if (_curveBinding == null) Log.I.Error("呼び出し順序が不正です。　事前に「Bind」してください。");
             AnimationCurve curve = AnimationCurve.Linear(time1, val1, time2, val2);
             AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
             return this;
@@ -119,7 +120,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>this</returns>
         public AnimationClipBuilder Smooth(params System.Object[] keyPairs)
         {
-            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
+            if (_curveBinding == null) Log.I.Info("呼び出し順序が不正です。　事前に「Bind」してください。");
             var keys = new List<Keyframe>();
             for (int i = 0; i < keyPairs.Length - 1; i += 2)
             {
@@ -130,7 +131,7 @@ namespace com.github.pandrabox.pandravase.editor
                 }
                 else
                 {
-                    LowLevelDebugPrint($@"Smoothキーペアの時間の指定が不正です({keyPairs[i].GetType()})。floatにキャスト可能な型で指定してください。", true, LogType.Exception);
+                    Log.I.Error($@"Smoothキーペアの時間の指定が不正です({keyPairs[i].GetType()})。floatにキャスト可能な型で指定してください。");
                 }
                 if (keyPairs[i + 1] is IConvertible)
                 {
@@ -164,7 +165,7 @@ namespace com.github.pandrabox.pandravase.editor
         public AnimationClipBuilder Const2F(Quaternion vals) => Const2F(vals.GetAxis(_axis));
         public AnimationClipBuilder Const2F(float val)
         {
-            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。　事前に「Bind」してください。");
+            if (_curveBinding == null) Log.I.Error("呼び出し順序が不正です。　事前に「Bind」してください。");
             AnimationCurve curve = AnimationCurve.Constant(0, 1 / FPS, val);
             AnimationUtility.SetEditorCurve(_clip, _curveBinding, curve);
             return this;
@@ -197,7 +198,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public AnimationClipBuilder SetFlat(int keyIndex)
         {
-            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。 事前に「Bind」してください。");
+            if (_curveBinding == null) Log.I.Error("呼び出し順序が不正です。 事前に「Bind」してください。");
             AnimationCurve curve = AnimationUtility.GetEditorCurve(_clip, _curveBinding);
             if (curve == null || keyIndex < 0 || keyIndex >= curve.length) return this;
 
@@ -228,7 +229,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public AnimationClipBuilder SetAuto(int keyIndex)
         {
-            if (_curveBinding == null) LowLevelDebugPrint("呼び出し順序が不正です。 事前に「Bind」してください。");
+            if (_curveBinding == null) Log.I.Error("呼び出し順序が不正です。 事前に「Bind」してください。");
             AnimationCurve curve = AnimationUtility.GetEditorCurve(_clip, _curveBinding);
             if (curve == null || keyIndex < 0 || keyIndex >= curve.length) return this;
 

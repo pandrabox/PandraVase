@@ -91,12 +91,12 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
-                LowLevelDebugPrint($@"ファイルを更新しました{_buildedPath}");
+                Log.I.Info($@"ファイルを更新しました{_buildedPath}");
             }
             else
             {
                 _buildedPath = OutpAsset(RootTree, buildPath);
-                LowLevelDebugPrint($@"ビルドしました{_buildedPath}");
+                Log.I.Info($@"ビルドしました{_buildedPath}");
             }
             return RootTree;
         }
@@ -196,7 +196,7 @@ namespace com.github.pandrabox.pandravase.editor
                 {
                     Param("Env/DBTEnable").AddD(() => act());
                     IsMMDSafe = false;
-                    LowLevelDebugPrint("MMDSafeが指定されています。これはEnvの実装を前提としていますが、自動的には作成しません");
+                    Log.I.Info("MMDSafeが指定されています。これはEnvの実装を前提としていますが、自動的には作成しません");
                 }
                 else
                 {
@@ -239,7 +239,7 @@ namespace com.github.pandrabox.pandravase.editor
         public BlendTreeBuilder Param(float Threshold, float ThresholdY) => ParentTreeParameterSet(BlendTreeType.SimpleDirectional2D, null, Threshold, ThresholdY);
         public BlendTreeBuilder ParentTreeParameterSet(BlendTreeType treeType, string directParameterName, float threshold, float thresholdY)
         {
-            if (ChildWait) LowLevelDebugPrint("ChildWaitが設定されています。P命令を使ったらすぐにC命令をつかうべきです。", false);
+            if (ChildWait) Log.I.Error("ChildWaitが設定されています。P命令を使ったらすぐにC命令をつかうべきです。");
             ParentTreeType = treeType;
             ParentDirectParameterName = GetParameterName(directParameterName);
             ParentThreshold = threshold;
@@ -264,8 +264,8 @@ namespace com.github.pandrabox.pandravase.editor
         public void AddMotion(Motion motionClip) => ChildSet(null, null, null, motionClip, null);
         public void ChildSet(BlendTreeType? treeType, string thresholdName, string thresholdNameY, Motion motionClip, Action act)
         {
-            if (CurrentTree.blendType != ParentTreeType) LowLevelDebugPrint($@"【{_thisTreeName}】Type Mismatch Error :親タイプは{ParentTreeType}であるべきところ、カレントタイプは{CurrentType}です。", false, LogType.Exception);
-            if (!ChildWait) LowLevelDebugPrint($"【{_thisTreeName}】:ChildWaitが設定されていません。これが明確な意図に基づかない場合、P命令抜けの可能性が高いです。 \n {treeType},{thresholdName},{thresholdNameY},{motionClip}", false);
+            if (CurrentTree.blendType != ParentTreeType) Log.I.Error($@"【{_thisTreeName}】Type Mismatch Error :親タイプは{ParentTreeType}であるべきところ、カレントタイプは{CurrentType}です。");
+            if (!ChildWait) Log.I.Error($"【{_thisTreeName}】:ChildWaitが設定されていません。これが明確な意図に基づかない場合、P命令抜けの可能性が高いです。 \n {treeType},{thresholdName},{thresholdNameY},{motionClip}");
             ChildWait = false;
             ChildTreeType = treeType;
             ChildThresholdName = GetParameterName(thresholdName);
@@ -286,7 +286,7 @@ namespace com.github.pandrabox.pandravase.editor
             var OnStartCurrentTree = CurrentTree;
             if (CurrentType == BlendTreeType.Simple1D && CurrentTree.children.Any(c => c.threshold > ParentThreshold))
             {
-                LowLevelDebugPrint($"【{_thisTreeName}】[BlendTreeBuilder.1DThresholdError] 登録済のThresholdより小さいThresholdを登録しようとしました。これは複雑な問題を起こすため、禁止されています。", false, LogType.Error);
+                Log.I.Error($"【{_thisTreeName}】[BlendTreeBuilder.1DThresholdError] 登録済のThresholdより小さいThresholdを登録しようとしました。これは複雑な問題を起こすため、禁止されています。");
                 return;
             }
 
