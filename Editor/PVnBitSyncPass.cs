@@ -27,7 +27,7 @@ namespace com.github.pandrabox.pandravase.editor
             var prj = VaseProject(TopAvatar);
             prj.SetDebugMode(true);
             var s = prj.VirtualSync("test", 3, PVnBitSync.nBitSyncMode.FloatMode, toggleSync: true, hostDecode: true);
-            new MenuBuilder(prj).AddFolder("test").AddRadial("test").AddToggle(s.SyncParameter, 1, ParameterSyncType.Bool);
+            new MenuBuilder(prj).AddFolder("test").AddRadial("test").AddToggle(s.SyncParameter);
             if (Msgbox("実体化しますか？", true) == true)
             {
                 new PVnBitSyncMain(TopAvatar);

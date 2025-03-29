@@ -21,8 +21,8 @@ namespace com.github.pandrabox.pandravase.editor
 
             var mb = new MenuBuilder(prj);
             mb.AddFolder("FlatsPlus", true).AddFolder("test");
-            mb.AddToggle("test1", 1, ParameterSyncType.Bool);
-            mb.AddButton("test2", 2, ParameterSyncType.Int);
+            mb.AddToggle("test1");
+            mb.AddButton("test2", 2f, ParameterSyncType.Int);
             mb.AddRadial("test3");
         }
     }
@@ -193,8 +193,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// Toggleの定義
         /// </summary>
-        public MenuBuilder AddToggle(string parameterName, string menuName = null, float? val = null) => AddToggle(parameterName, val, null, menuName, null, null);
-        public MenuBuilder AddToggle(string parameterName, float? val = null, ParameterSyncType? parameterSyncType = null, string menuName = null, float? defaultVal = null, bool? localOnly = null)
+        public MenuBuilder AddToggle(string parameterName, string menuName = null, float? val = null, ParameterSyncType? parameterSyncType = null,  float? defaultVal = null, bool? localOnly = null)
             => AddToggleOrButton(false, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
 
         /// <summary>

@@ -69,9 +69,9 @@ namespace com.github.pandrabox.pandravase.editor
         {
             string ToName = $"{fromName}Quantized";
             string MemoryName = $"{fromName}QuantMemory";
-            bb.NName("Quantization").Param("1").AddD(() =>
+            bb.NName("Quantization").AddD(() =>
             {
-                bb.NName("Minimization").Add1D(fromName, () =>
+                bb.NName("Minimization").Param("1").Add1D(fromName, () =>
                 {
                     bb.Param(0.5f / step).AddAAP(MemoryName, 0);
                     bb.Param(0.5f / step + 1.000001f).AddAAP(MemoryName, epsilon * step);

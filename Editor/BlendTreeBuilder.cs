@@ -108,7 +108,6 @@ namespace com.github.pandrabox.pandravase.editor
         /// <param name="isAbsolute"></param>
         /// <param name="relativeRoot"></param>
         /// <returns></returns>
-        public PVPanMergeBlendTree Attach(bool isAbsolute = false, GameObject relativeRoot = null) => Attach(_prj, isAbsolute, relativeRoot);
         public PVPanMergeBlendTree Attach(PandraProject prj, bool isAbsolute = false, GameObject relativeRoot = null)
         {
             GameObject tgt = prj.CreateObject($@"DBT{_thisTreeName}");

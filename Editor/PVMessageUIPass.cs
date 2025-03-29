@@ -54,6 +54,8 @@ namespace com.github.pandrabox.pandravase.editor
 
         private void CreateAnimator()
         {
+            Log.I.StartMethod("MessageUIのAnimatorを作成します。");
+            Log.I.Info($"MessageUIの数: {targets.Length}");
             var ac = new AnimationClipsBuilder();
             ac.Clip("off").Bind("Display", typeof(GameObject), "m_IsActive").Const2F(0)
                     .IsVector3((x) => { x.Bind("Display", typeof(Transform), "m_LocalScale.@a").Const2F(0); });
@@ -71,6 +73,8 @@ namespace com.github.pandrabox.pandravase.editor
             ab.AddState("Remote").SetMotion(ac.Outp("off")).TransToCurrent(ab.InitialState).AddCondition(AnimatorConditionMode.Less, .5f, "IsLocal");
             var remoteState = ab.CurrentState;
 
+            HashSet<string> IsUsedLog = new HashSet<string>();
+
             //Reset (これを先にやりたいのでループを分けている）
             for (int i = 0; i < targets.Length; i++)
             {
@@ -79,6 +83,15 @@ namespace com.github.pandrabox.pandravase.editor
 
                 var rootState = tgt.IsRemote ? remoteState : localState;
                 string usedParamName = $"{tgt.ParameterName}{tgt.ConditionMode.ToString()}{tgt.ParameterValue.ToString()}IsUsed";
+                if(IsUsedLog.Contains(usedParamName))
+                {
+                    Log.I.Info($"同じパラメータ名が登録済みのため処理をスキップします");
+                    continue;
+                }
+                else
+                {
+                    IsUsedLog.Add(usedParamName);
+                }
                 ab.SetCurrentStateMachine(tgt.IsRemote ? "Remote" : "Local");
 
                 //アバター変更時・スイッチ切り替え時に大量に表示されるのを防ぐため、初期状態でIsUsed=true
@@ -253,7 +266,7 @@ namespace com.github.pandrabox.pandravase.editor
             string parentFolder = pVMessageUIParentDefinition?.ParentFolder;
             Log.I.Info($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
             var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("Menu/MessageUI".LL());
-            mb.AddToggle("Vase/MessageUI/SW", 1, ParameterSyncType.Bool, "Menu/MessageUI/SW".LL(), 1).SetMessage(L("Menu/MessageUI/SW/Detail"));
+            mb.AddToggle("Vase/MessageUI/SW", "Menu/MessageUI/SW".LL(), 1, ParameterSyncType.Bool, 1).SetMessage(L("Menu/MessageUI/SW/Detail"));
             mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f).SetMessage(L("Menu/MessageUI/Size/Detail"), duration: 15);
         }
 
