@@ -14,6 +14,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using Debug = UnityEngine.Debug;
+using com.github.pandrabox.pandravase.runtime;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -86,7 +87,7 @@ namespace com.github.pandrabox.pandravase.editor
                 if (component != null) return component;
                 parent = parent.parent;
             }
-            LowLevelDebugPrint($@"Componentの探索に失敗しました");
+            Log.I.Error($@"Componentの探索に失敗しました");
             return null;
         }
         public static GameObject GetAvatarRootGameObject(Component tgt) => GetAvatarDescriptor(tgt).gameObject;
@@ -121,12 +122,12 @@ namespace com.github.pandrabox.pandravase.editor
             var UnityDirPath = CreateDir(path);
             if (UnityDirPath == null)
             {
-                LowLevelDebugPrint("ディレクトリ[{path}]の生成に失敗したためアセットの生成に失敗しました。");
+                Log.I.Error("ディレクトリ[{path}]の生成に失敗したためアセットの生成に失敗しました。");
                 return null;
             }
 
             var assetPath = AssetSavePath(asset, path);
-            LowLevelDebugPrint($"保存パス: {assetPath}", debugOnly: false, level: LogType.Log);
+            Log.I.Info($"保存パス: {assetPath}");
 
             if (asset is Texture2D texture)
             {
@@ -144,7 +145,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             catch (Exception ex)
             {
-                LowLevelDebugPrint($"アセットの作成に失敗しました: {ex.Message}", debugOnly: false, level: LogType.Error);
+                Log.I.Exception(ex, "アセットの作成に失敗しました");
                 return null;
             }
 
@@ -162,7 +163,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (path.HasExtension()) return path;
             if (asset == null)
             {
-                LowLevelDebugPrint("アセットがnullのため保存パスの取得に失敗しました。");
+                Log.I.Error("アセットがnullのため保存パスの取得に失敗しました。");
                 return null;
             }
             string fileName = SanitizeStr(asset.name ?? "Untitled");
@@ -186,7 +187,7 @@ namespace com.github.pandrabox.pandravase.editor
             var absPath = Path.GetDirectoryName(GetAbsolutePath(path));
             Directory.CreateDirectory(absPath);
             if (Directory.Exists(absPath)) return GetUnityPath(absPath);
-            LowLevelDebugPrint($@"ディレクトリ[{absPath}]の作成に失敗しました。");
+            Log.I.Error($@"ディレクトリ[{absPath}]の作成に失敗しました。");
             return null;
         }
 
@@ -198,7 +199,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (path.IsUnityPath()) return path.HasExtension() ? PathTypes.UnityAsset : PathTypes.UnityDir;
             if (path.IsAbsolutePath()) return path.HasExtension() ? PathTypes.AbsoluteAsset : PathTypes.AbsoluteDir;
-            LowLevelDebugPrint($@"無効なパス[{path}]を判定しました。");
+            Log.I.Error($@"無効なパス[{path}]を判定しました。");
             return PathTypes.Error;
         }
 
@@ -255,7 +256,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (IsAbsolutePath(tmp)) return tmp;
             if (ReplaceSubstring(ref tmp, "Assets", AbsoluteAssetsPath)) return tmp;
             if (ReplaceSubstring(ref tmp, "Packages", AbsolutePackagesPath)) return tmp;
-            LowLevelDebugPrint($@"無効なパス[{path}]の変換を試みました");
+            Log.I.Error($@"無効なパス[{path}]の変換を試みました");
             return null;
         }
         public static string GetUnityPath(string path)
@@ -264,7 +265,7 @@ namespace com.github.pandrabox.pandravase.editor
             if (IsUnityPath(tmp)) return DirSeparatorNormalize(tmp);
             if (ReplaceSubstring(ref tmp, AbsoluteAssetsPath, "Assets")) return DirSeparatorNormalize(tmp);
             if (ReplaceSubstring(ref tmp, AbsolutePackagesPath, "Packages")) return DirSeparatorNormalize(tmp);
-            LowLevelDebugPrint($@"無効なパス[{path}]の変換を試みました");
+            Log.I.Error($@"無効なパス[{path}]の変換を試みました");
             return null;
         }
 
@@ -701,9 +702,10 @@ namespace com.github.pandrabox.pandravase.editor
             method.Invoke(null, null);
         }
 
+
         public static bool Msgbox(string msg, bool yesno = false)
         {
-            LowLevelDebugPrint(msg);
+            Log.I.Info(msg);
             if (yesno)
             {
                 return EditorUtility.DisplayDialog("PandraVase", msg, "Yes", "No");
@@ -853,7 +855,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (parent == null || string.IsNullOrEmpty(name))
             {
-                LowLevelExeption("FindEx: parent or name is null or empty.");
+                Log.I.Error("FindEx: parent or name is null or empty.");
                 return null;
             }
             Transform t = null;
@@ -867,7 +869,7 @@ namespace com.github.pandrabox.pandravase.editor
             }
             if (t == null)
             {
-                LowLevelExeption($"FindEx: {name} not found in {parent.name}.");
+                Log.I.Error($"FindEx: {name} not found in {parent.name}.");
             }
             return t;
         }
@@ -882,7 +884,9 @@ namespace com.github.pandrabox.pandravase.editor
         }
 
 
+        [Obsolete("旧型式です。Log.I.Exceptionを使用してください")]
         public static void LowLevelExeption(string message, bool debugOnly = true, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0) => LowLevelDebugPrint(message, debugOnly, LogType.Exception, projectName, callerMethodName, callerLineNumber);
+        [Obsolete("旧型式です。Log.I.Info等を使用してください")]
         public static void LowLevelDebugPrint(string message, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
         {
             try
@@ -911,18 +915,10 @@ namespace com.github.pandrabox.pandravase.editor
             }
         }
 
+        [Obsolete]
         public static void AppearError(Exception ex, bool debugOnly = true, LogType level = LogType.Warning, string projectName = "Vase", [CallerMemberName] string callerMethodName = "", [CallerLineNumber] int callerLineNumber = 0)
         {
-            try
-            {
-                string stackTrace = ex.StackTrace;
-                stackTrace = ConvertToUnityPath(stackTrace);
-                LowLevelDebugPrint($"@@ERROR@@Failed work due to an error: {ex.Message}\n{stackTrace}\nException Details: {ex.ToString()}", true, LogType.Error);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Failed to log error: {ex.Message}. Error: {e.Message}");
-            }
+            Log.I.Exception(ex);
         }
 
         private static string ConvertToUnityPath(string s)
@@ -934,7 +930,6 @@ namespace com.github.pandrabox.pandravase.editor
 
         public static void AppearPackageInfo()
         {
-            //プロジェクトに存在する全package.jsonに対して実行
             string[] paths = Directory.GetFiles(new DirectoryInfo(Application.dataPath).Parent.FullName, "package.json", SearchOption.AllDirectories);
             foreach (string path in paths)
             {
@@ -942,7 +937,7 @@ namespace com.github.pandrabox.pandravase.editor
                 PackageInfo packageInfo = JsonConvert.DeserializeObject<PackageInfo>(jsonContent);
                 if (packageInfo != null)
                 {
-                    LowLevelDebugPrint($@"@@PackageInfo@@,{packageInfo.displayName},{packageInfo.version}");
+                    Log.I.Info($@"@@PackageInfo@@,{packageInfo.displayName},{packageInfo.version}");
                 }
             }
         }
@@ -950,6 +945,11 @@ namespace com.github.pandrabox.pandravase.editor
         {
             public string version { get; set; }
             public string displayName { get; set; }
+        }
+
+        public static void DebugAppear(this Vector3 v, string msg = "")
+        {
+            Log.I.Info($"DebugAppear,{nameof(v)},(msg:{msg}),({v.x:F5}, {v.y:F5}, {v.z:F5})");
         }
     }
 }

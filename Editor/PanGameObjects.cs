@@ -1,6 +1,7 @@
 ﻿using com.github.pandrabox.pandravase.runtime;
 /// GameObjectを管理する基底クラス ※このクラスは親のクラスがPandraProjectを持っていて初期化済みであることを前提としています
 using System;
+using UnityEditor;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using static com.github.pandrabox.pandravase.editor.Util;
@@ -69,6 +70,9 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 Debug.LogError(msg, unityObj);
             }
+
+            EditorUtility.DisplayDialog("NullCheckExtensions", msg, "OK");
+
             throw new ArgumentNullException(nameof(obj), msg);
         }
     }

@@ -8,6 +8,7 @@ using Debug = UnityEngine.Debug;
 
 namespace com.github.pandrabox.pandravase.editor
 {
+    [Obsolete("旧型式です。Logクラスを使用してください。")]
     public static class PanLog
     {
         private static string _logTextPath = "Packages/com.github.pandrabox.pandravase/Log/Log.txt";
