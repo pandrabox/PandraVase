@@ -1,7 +1,6 @@
-﻿using UnityEditor;
+﻿using com.github.pandrabox.pandravase.runtime;
+using UnityEditor;
 using UnityEngine;
-using static com.github.pandrabox.pandravase.editor.Util;
-using com.github.pandrabox.pandravase.runtime;
 
 
 namespace com.github.pandrabox.pandravase.editor
@@ -31,6 +30,6 @@ namespace com.github.pandrabox.pandravase.editor
 
             return newClip;
         }
-        public static AnimationClip Zero(this AnimationClip clip)=> Multiplication(clip, 0);
+        public static AnimationClip Zero(this AnimationClip clip) => Multiplication(clip, 0);
     }
 }

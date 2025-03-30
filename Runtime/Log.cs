@@ -50,7 +50,7 @@ namespace com.github.pandrabox.pandravase.runtime
                 _keywords.RemoveAt(_keywords.Count - 1);
             }
         }
-        public string CurrentKeyWord=> _keywords.Count > 0 ? _keywords[_keywords.Count - 1] : "";
+        public string CurrentKeyWord => _keywords.Count > 0 ? _keywords[_keywords.Count - 1] : "";
 
         /// <summary>
         /// ログの初期化

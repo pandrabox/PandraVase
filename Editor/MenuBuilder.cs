@@ -80,7 +80,7 @@ namespace com.github.pandrabox.pandravase.editor
                 p2.name = _currentParameterName;
                 x.Control.parameter = p2;
                 x.Control.value = _currentValue;
-                _prj.AddParameter(_currentParameterName, ParameterSyncType.Bool,localOnly, 0);
+                _prj.AddParameter(_currentParameterName, ParameterSyncType.Bool, localOnly, 0);
                 //AddParameter(_currentParameterName, ParameterSyncType.Bool, 0, localOnly);
             });
 
@@ -193,7 +193,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <summary>
         /// Toggleの定義
         /// </summary>
-        public MenuBuilder AddToggle(string parameterName, string menuName = null, float? val = null, ParameterSyncType? parameterSyncType = null,  float? defaultVal = null, bool? localOnly = null)
+        public MenuBuilder AddToggle(string parameterName, string menuName = null, float? val = null, ParameterSyncType? parameterSyncType = null, float? defaultVal = null, bool? localOnly = null)
             => AddToggleOrButton(false, parameterName, val, parameterSyncType, menuName, defaultVal, localOnly);
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             _currentValue = val ?? 1;
             _currentParameterName = parameterName;
-            Log.I.Info($@"AddToggleOrButton({(isButton ? "Button": "Toggle")},Param:{_currentParameterName},Val:{_currentValue},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
+            Log.I.Info($@"AddToggleOrButton({(isButton ? "Button" : "Toggle")},Param:{_currentParameterName},Val:{_currentValue},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
             {

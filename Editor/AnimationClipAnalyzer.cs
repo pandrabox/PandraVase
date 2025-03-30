@@ -2,7 +2,6 @@
 using System.Text;
 using UnityEditor;
 using UnityEngine;
-using static com.github.pandrabox.pandravase.editor.Util;
 
 
 namespace com.github.pandrabox.pandravase.editor

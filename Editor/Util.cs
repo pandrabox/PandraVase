@@ -1,4 +1,5 @@
 ﻿//#if UNITY_EDITOR
+using com.github.pandrabox.pandravase.runtime;
 using nadena.dev.modular_avatar.core;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.util;
@@ -9,13 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using Debug = UnityEngine.Debug;
-using com.github.pandrabox.pandravase.runtime;
-using System.Text;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -854,7 +854,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// <returns>見つかったTransform</returns>
         public static Transform FindEx(this Component parent, string name, bool includeInactive = true)
         {
-            if(parent == null)
+            if (parent == null)
             {
                 Log.I.Error("FindEx:親コンポーネントが指定されていないため、検索できません");
                 return null;
@@ -877,7 +877,7 @@ namespace com.github.pandrabox.pandravase.editor
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine($@"対象「{name}」は「{parent.gameObject.HierarchyPath()}」以下に見つかりませんでした。");
-                sb.AppendLine("存在する子の名前一覧は次の通りです"); 
+                sb.AppendLine("存在する子の名前一覧は次の通りです");
                 foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
                 {
                     // 直接の子オブジェクトのみを表示

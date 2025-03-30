@@ -4,7 +4,6 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
-using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -56,7 +55,7 @@ namespace com.github.pandrabox.pandravase.editor
         {
             if (obj != null)
             {
-                if( obj is Component)
+                if (obj is Component)
                 {
                     Log.I.Info($"{(obj as Component).gameObject.HierarchyPath()}を取得しました {additionalMsg}");
                 }

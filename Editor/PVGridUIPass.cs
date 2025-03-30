@@ -197,7 +197,7 @@ namespace com.github.pandrabox.pandravase.editor
                 var mb = new MenuBuilder(_prj);
                 mb.AddFolder("GridUI");
                 mb.AddToggle(_ui.IsEnable, "Enable");
-                mb.AddToggle(_ui.IsMode0, "Mode1",0);
+                mb.AddToggle(_ui.IsMode0, "Mode1", 0);
                 mb.Add2Axis(_ui.Inputx, _ui.Inputy, $@"{_ui.ParameterName}Selecting", "Grid", 0, 0, true);
             }
         }

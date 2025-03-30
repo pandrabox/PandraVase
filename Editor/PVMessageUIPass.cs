@@ -83,7 +83,7 @@ namespace com.github.pandrabox.pandravase.editor
 
                 var rootState = tgt.IsRemote ? remoteState : localState;
                 string usedParamName = $"{tgt.ParameterName}{tgt.ConditionMode.ToString()}{tgt.ParameterValue.ToString()}IsUsed";
-                if(IsUsedLog.Contains(usedParamName))
+                if (IsUsedLog.Contains(usedParamName))
                 {
                     Log.I.Info($"同じパラメータ名が登録済みのため処理をスキップします");
                     continue;
