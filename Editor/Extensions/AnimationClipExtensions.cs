@@ -31,5 +31,6 @@ namespace com.github.pandrabox.pandravase.editor
 
             return newClip;
         }
+        public static AnimationClip Zero(this AnimationClip clip)=> Multiplication(clip, 0);
     }
 }
