@@ -227,10 +227,11 @@ namespace com.github.pandrabox.pandravase.editor
         {
             var mb = new MenuBuilder(_prj, parentFolder: _tgt.ParrentFolder);
             mb.AddFolder("Menu/Dance".LL());
-            mb.AddToggle(_prj.DanceDetectMode, "Menu/Dance/MODE/Off".LL(), 0, ParameterSyncType.Int, 1).SetMessage(L("Menu/Dance/Message/Off"), duration: 1);
-            mb.AddToggle(_prj.DanceDetectMode, "Menu/Dance/MODE/Normal".LL(), 1, ParameterSyncType.Int, 1).SetMessage(L("Menu/Dance/Message/Normal"));
-            mb.AddToggle(_prj.DanceDetectMode, "Menu/Dance/MODE/Enhance".LL(), 2, ParameterSyncType.Int, 1).SetMessage(L("Menu/Dance/Message/Enhance"));
-            mb.AddToggle(_prj.OnDanceFxEnable, "Menu/Dance/FxEnable".LL(), 1, ParameterSyncType.Int, 1, false).SetMessage(L("Menu/Dance/Message/FxEnableOn"), L("Menu/Dance/Message/FxEnableOff"));
+            int initState = (int)_tgt.ControlType;
+            mb.AddToggle(_prj.DanceDetectMode, "Menu/Dance/MODE/Off".LL(), 0, ParameterSyncType.Int, initState).SetMessage(L("Menu/Dance/Message/Off"), duration: 1);
+            mb.AddToggle(_prj.DanceDetectMode, "Menu/Dance/MODE/Normal".LL(), 1, ParameterSyncType.Int, initState).SetMessage(L("Menu/Dance/Message/Normal"));
+            mb.AddToggle(_prj.DanceDetectMode, "Menu/Dance/MODE/Enhance".LL(), 2, ParameterSyncType.Int, initState).SetMessage(L("Menu/Dance/Message/Enhance"));
+            mb.AddToggle(_prj.OnDanceFxEnable, "Menu/Dance/FxEnable".LL(), 1, ParameterSyncType.Int, (_tgt.FxEnable ? 1:0), false).SetMessage(L("Menu/Dance/Message/FxEnableOn"), L("Menu/Dance/Message/FxEnableOff"));
         }
     }
 }
