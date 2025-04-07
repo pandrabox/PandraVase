@@ -42,6 +42,12 @@ namespace com.github.pandrabox.pandravase.editor
 
         public PVMessageUIPassMain(VRCAvatarDescriptor desc)
         {
+            var parentSetting = desc.GetComponentInChildren<PVMessageUIParentDefinition>();
+            if(parentSetting == null)
+            {
+                Log.I.Info("PVMessageUIParentDefinitionが見つからないため処理を終了します"); //これを使って全体ONOFFを制御
+                return;
+            }
             targets = desc.transform.GetComponentsInChildren<PVMessageUI>();
             if (targets.Length == 0) return;
             _prj = VaseProject(desc);
@@ -266,8 +272,8 @@ namespace com.github.pandrabox.pandravase.editor
             string parentFolder = pVMessageUIParentDefinition?.ParentFolder;
             Log.I.Info($"MessageUIのMenuを作成します。親フォルダ「 {parentFolder}」");
             var mb = new MenuBuilder(_prj, parentFolder: parentFolder).AddFolder("Menu/MessageUI".LL());
-            mb.AddToggle("Vase/MessageUI/SW", "Menu/MessageUI/SW".LL(), 1, ParameterSyncType.Bool, 1).SetMessage(L("Menu/MessageUI/SW/Detail"));
-            mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), .4f).SetMessage(L("Menu/MessageUI/Size/Detail"), duration: 15);
+            mb.AddToggle("Vase/MessageUI/SW", "Menu/MessageUI/SW".LL(), 1, ParameterSyncType.Bool, (pVMessageUIParentDefinition.DefaultActive ? 1 : 0)).SetMessage(L("Menu/MessageUI/SW/Detail"));
+            mb.AddRadial("Vase/MessageUI/Size", "Menu/MessageUI/Size".LL(), pVMessageUIParentDefinition.DefaultSize).SetMessage(L("Menu/MessageUI/Size/Detail"), duration: 15);
         }
 
         private void CreateImage()
