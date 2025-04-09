@@ -43,7 +43,7 @@ namespace com.github.pandrabox.pandravase.editor
         public PVMessageUIPassMain(VRCAvatarDescriptor desc)
         {
             var parentSetting = desc.GetComponentInChildren<PVMessageUIParentDefinition>();
-            if(parentSetting == null)
+            if (parentSetting == null)
             {
                 Log.I.Info("PVMessageUIParentDefinitionが見つからないため処理を終了します"); //これを使って全体ONOFFを制御
                 return;

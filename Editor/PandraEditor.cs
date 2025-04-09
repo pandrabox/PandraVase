@@ -2,7 +2,7 @@
 using com.github.pandrabox.pandravase.runtime;
 using UnityEditor;
 using UnityEngine;
-using static com.github.pandrabox.pandravase.editor.Util;
+using VRC.SDK3.Avatars.Components;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -29,7 +29,20 @@ namespace com.github.pandrabox.pandravase.editor
             get
             {
                 if (_customEnableCondition != null) return _customEnableCondition ?? false;
-                return !_inAvatarOnly || IsInAvatar(((Component)target).gameObject);
+                if (!_inAvatarOnly) return true;
+                var me = ((Component)target).gameObject;
+                if (me == null) return false;
+                var desc = me.GetComponent<VRCAvatarDescriptor>();
+                if (desc != null) return true;
+
+                Transform current = me.transform.parent;
+                while (current != null)
+                {
+                    desc = current.GetComponent<VRCAvatarDescriptor>();
+                    if (desc != null) return true;
+                    current = current.parent;
+                }
+                return false;
             }
         }
         private void DrawDisableMsg()
