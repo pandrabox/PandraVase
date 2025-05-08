@@ -2,6 +2,8 @@
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.fluent;
 using System;
+using System.Collections.Generic;
+using static UnityEditor.ShaderData;
 
 [assembly: ExportsPlugin(typeof(PanPluginDefinition))]
 
@@ -32,8 +34,13 @@ namespace com.github.pandrabox.pandravase.editor
             seq = InPhase(BuildPhase.Resolving).BeforePlugin("nadena.dev.modular-avatar");
             seq = InPhase(BuildPhase.Generating).BeforePlugin("nadena.dev.modular-avatar");
             seq = InPhase(BuildPhase.Transforming).BeforePlugin("nadena.dev.modular-avatar");
-            // ここからプログレスバーで管理
-            seq.Run(PVInstantiatePass.Instance); //これは必ず最初にしてください（プログレスバーをここで開始しているので）
+
+            const int PROGRESS_MANAGED_PASSES_COUNT = 16;
+            seq.Run("ProgressBarInit", (ctx) => {
+                PanProgressBar.SetTotalCount(PROGRESS_MANAGED_PASSES_COUNT);
+            });
+
+            seq.Run(PVInstantiatePass.Instance); 
 
             seq.Run(PVWriteDefaultOnPass.Instance);
             seq.Run(PVPlayableRemoverPass.Instance);
@@ -43,7 +50,6 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVParamView2Pass.Instance);
             seq.Run(PVMoveToRootPass.Instance);
             seq.Run(PVDanceControllerPass.Instance);
-
 
             seq.Run(PVGridUIPass.Instance);
             seq.Run(PVnBitSyncPass.Instance);
