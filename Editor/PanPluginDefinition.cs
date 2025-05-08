@@ -1,6 +1,7 @@
 ﻿using com.github.pandrabox.pandravase.editor;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.fluent;
+using System;
 
 [assembly: ExportsPlugin(typeof(PanPluginDefinition))]
 
@@ -12,6 +13,19 @@ namespace com.github.pandrabox.pandravase.editor
 
         public override string DisplayName => "PandraVase";
         public override string QualifiedName => "com.github.pandrabox.pandravase";
+
+        //例外発生時にプログレスバーを閉じる
+        protected override void OnUnhandledException(Exception e)
+        {
+            try
+            {
+                PanProgressBar.Hide();
+            }
+            catch
+            {
+            }
+            base.OnUnhandledException(e);
+        }
 
         protected override void Configure()
         {
