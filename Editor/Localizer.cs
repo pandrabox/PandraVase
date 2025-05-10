@@ -7,6 +7,46 @@ using UnityEngine;
 
 namespace com.github.pandrabox.pandravase.editor
 {
+#if PANDRADBG
+    using System.Linq;
+    using UnityEditor;
+    public static class PanDbgMenu
+    {
+        private const int ExpectedCommaCount = 5; // カンマの期待される数
+
+        [MenuItem("PanDbg/**LocalizerCheck")]
+        public static void LocalizerCheck()
+        {
+            string projectPath = Directory.GetParent(Application.dataPath).FullName;
+            string[] files = Directory.GetFiles(projectPath, "PanLocalize.txt", SearchOption.AllDirectories);
+            bool hasError = false;
+
+            foreach (var file in files)
+            {
+                string[] lines = File.ReadAllLines(file);
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    int actualCommaCount = line.Count(c => c == ','); // 実際のカンマ数をカウント
+
+                    // 空行またはカンマが期待される数と一致するかをチェック
+                    if (!string.IsNullOrWhiteSpace(line) && actualCommaCount != ExpectedCommaCount)
+                    {
+                        Debug.LogError($"エラー: ファイル '{file}'   {i + 1} 行目のカンマ数が不正です (期待値: {ExpectedCommaCount}, 実際: {actualCommaCount})。内容: {line}");
+                        hasError = true;
+                    }
+                }
+            }
+
+            if (!hasError)
+            {
+                Debug.Log("全てのPanLocalize.txtは適切です!!");
+            }
+        }
+    }
+#endif
+
     public static class Localizer
     {
         public static string LocalizerLanguage => language;

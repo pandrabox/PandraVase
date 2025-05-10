@@ -12,6 +12,6 @@ Menu/Dance/MODE/Enhance,モード:パワフル,Mode:Powerful,모드:강력,模�
 Menu/Dance/FxEnable,Fx有効,Fx Enable,Fx 사용,FX启用,FX啟用
 Menu/Dance/Message/Off,ダンスモードをOFF,Turn off dance mode,댄스 모드 끄기,关闭舞蹈模式,關閉舞蹈模式
 Menu/Dance/Message/Normal,ダンスを自動検出(通常),Automatically detect dance (normal),댄스를 자동으로 감지 (일반),自动检测舞蹈（正常）,自動檢測舞蹈（正常）
-Menu/Dance/Message/Enhance,ダンスを自動検出(より多く検出できるが、誤検出あり),Automatically detect dance (more detection but with false positives),댄스를 자동으로 감지 (더 많은 감지, 오탐지 있음),自动检测舞蹈（更多检测但有误报）,自動檢測舞蹈（更多檢測但有誤報）
+Menu/Dance/Message/Enhance,ダンスを自動検出(より多く検出できるが、誤検出あり),Automatically detect dance (more detection but with false positives),댄스를 자동으로 감지 (더 많은 감지 오탐지 있음),自动检测舞蹈（更多检测但有误报）,自動檢測舞蹈（更多檢測但有誤報）
 Menu/Dance/Message/FxEnableOn,ダンス中FXをON(通常),Turn on FX during dance (normal),댄스 중 FX 켜기 (일반),跳舞时打开FX（正常）,跳舞時打開FX（正常）
 Menu/Dance/Message/FxEnableOff,ダンス中FXをOFF(より多くのアバターでダンスできるが、同期問題あり),Turn off FX during dance (can dance with more avatars but with sync issues),댄스 중 FX 끄기 (더 많은 아바타와 춤을 출 수 있지만 동기화 문제 있음),跳舞时关闭FX（可以与更多的头像跳舞，但有同步问题）,跳舞時關閉FX（可以與更多的頭像跳舞，但有同步問題）
