@@ -134,82 +134,54 @@ namespace com.github.pandrabox.pandravase.editor
             // 状態制御(表情のクリアはFPで管掌)
             ab.AddLayer("Vase/DanceControl");
 
-
-            ab.AddSubStateMachine("Host");
             ab.AddState("Host")
                 .TransToCurrent(ab.InitialState)
                     .AddCondition(AnimatorConditionMode.Greater, 0.5f, "IsLocal")
                     ;
-            {
-                var rootState = ab.CurrentState;
-                ab.AddState("Off")
-                    .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, true)
-                    .TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.IsDanceHost, true)
-                    ;
+            ControlDanceMode_Inner(ab, _prj.IsDanceHost);
 
-                ab.AddState("On_FxOff")
-                    .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, false)
-                    .TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.IsDanceHost)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.OnDanceFxEnable)
-
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.IsDanceHost)
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.OnDanceFxEnable)
-                    ;
-
-                ab.AddState("On_FxOn")
-                    .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, true)
-                    .TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.IsDanceHost)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.OnDanceFxEnable)
-
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.IsDanceHost)
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.OnDanceFxEnable)
-                    ;
-            }
-
-
-            ab.AddSubStateMachine("Remote");
             ab.AddState("Remote")
                 .TransToCurrent(ab.InitialState)
                     .AddCondition(AnimatorConditionMode.Less, 0.5f, "IsLocal")
                     ;
-            {
-                var rootState = ab.CurrentState;
-                ab.AddState("Off")
-                    .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, true)
-                    .TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.IsDance, true)
-                    ;
-                ab.AddState("On_FxOff")
-                    .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, false)
-                    .TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.IsDance)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.OnDanceFxEnable)
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.IsDance)
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.OnDanceFxEnable)
-                    ;
 
-                ab.AddState("On_FxOn")
-                    .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, true)
-                    .TransToCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.IsDance)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.OnDanceFxEnable)
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.IsDance)
-                    .TransFromCurrent(rootState)
-                        .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.OnDanceFxEnable)
-                    ;
-
-            }
+            ControlDanceMode_Inner(ab, _prj.IsDance);
+            
             ab.Attach(_prj.RootObject);
+        }
+
+        private void ControlDanceMode_Inner(AnimatorBuilder ab, string isDanceStr)
+        {
+            var rootState = ab.CurrentState;
+            ab.AddState("Off")
+                .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, true)
+                .TransToCurrent(rootState)
+                    .AddCondition(AnimatorConditionMode.Less, 0.5f, isDanceStr, true)
+                ;
+
+            ab.AddState("On_FxOff")
+                .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, false)
+                .TransToCurrent(rootState)
+                    .AddCondition(AnimatorConditionMode.Greater, 0.5f, isDanceStr)
+                    .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.OnDanceFxEnable)
+
+                .TransFromCurrent(rootState)
+                    .AddCondition(AnimatorConditionMode.Less, 0.5f, isDanceStr)
+                .TransFromCurrent(rootState)
+                    .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.OnDanceFxEnable)
+                ;
+
+            ab.AddState("On_FxOn")
+                .SetPlayableLayerControl(VRC.SDKBase.VRC_PlayableLayerControl.BlendableLayer.FX, true)
+                .TransToCurrent(rootState)
+                    .AddCondition(AnimatorConditionMode.Greater, 0.5f, isDanceStr)
+                    .AddCondition(AnimatorConditionMode.Greater, 0.5f, _prj.OnDanceFxEnable)
+
+                .TransFromCurrent(rootState)
+                    .AddCondition(AnimatorConditionMode.Less, 0.5f, isDanceStr)
+                .TransFromCurrent(rootState)
+                    .AddCondition(AnimatorConditionMode.Less, 0.5f, _prj.OnDanceFxEnable)
+                ;
         }
 
         private void DebugControl()
