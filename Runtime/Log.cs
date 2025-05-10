@@ -107,15 +107,18 @@ namespace com.github.pandrabox.pandravase.runtime
 
         private void Connect()
         {
-            if (_yetSelectLogFile-- > 0 && (logFile == null || logFile == ""))
+            logFile = logFile == null ? "" : logFile.Trim(trimChars: new char[] { ' ', '\r', '\n' });
+            if (logFile == null || logFile == "")
             {
-                Debug.Log("ログファイルが設定されていません。");
+                if(_yetSelectLogFile-- > 0)
+                {
+#if PANDRADBG
+                    Debug.Log("ログファイルが設定されていません。");
+#endif
+                }
                 return;
             }
-            else
-            {
-                Debug.Log($@"ログファイルを設定します{logFile}");
-            }
+            Debug.Log($@"ログファイルを設定します: {logFile}");
             lock (_lockObject)
             {
                 // すでに接続済みで書き込み可能な状態であれば何もしない
