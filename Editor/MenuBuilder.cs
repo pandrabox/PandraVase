@@ -67,7 +67,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         private MenuBuilder CreateParent()
         {
-            if (!_isPC || _prj == null || folderTree == null)  return this;
+            if (!_isPC || _prj == null || folderTree == null) return this;
             if (_parentFolder == null || _parentFolder == "") return this;
             var pf = _parentFolder.Split('/');
             foreach (var p in pf)

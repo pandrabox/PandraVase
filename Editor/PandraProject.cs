@@ -350,6 +350,27 @@ namespace com.github.pandrabox.pandravase.editor
             p.saved = saved;
             return p;
         }
+
+        public PVMenuIcoOverride OverrideMenuIco(string paramName1, string paramName2, float paramVal1, string icoPath)
+        {
+            var parent = GetOrCreateObject("PVMenuIcoOverride");
+            var p = CreateComponentObject<PVMenuIcoOverride>($@"{paramName1}_{paramName2}");
+            p.transform.SetParent(parent.transform);
+            p.ParameterName1 = paramName1;
+            p.ParameterName2 = paramName2;
+            p.ParamValue1 = paramVal1;
+            p.Ico = AssetDatabase.LoadAssetAtPath<Texture2D>(icoPath);
+            return p;
+        }
+        public PVMenuIcoOverride OverrideFolderIco(string folderName, string icoPath)
+        {
+            var parent = GetOrCreateObject("PVMenuIcoOverride");
+            var p = CreateComponentObject<PVMenuIcoOverride>($@"{folderName}");
+            p.transform.SetParent(parent.transform);
+            p.FolderName = folderName;
+            p.Ico = AssetDatabase.LoadAssetAtPath<Texture2D>(icoPath);
+            return p;
+        }
     }
 }
 #endif

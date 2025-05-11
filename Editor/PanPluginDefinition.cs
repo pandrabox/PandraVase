@@ -49,6 +49,7 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVParamView2Pass.Instance);
             seq.Run(PVMoveToRootPass.Instance);
             seq.Run(PVDanceControllerPass.Instance);
+            seq.Run(PVMenuIcoOverridePass.Instance);
 
             seq.Run(PVGridUIPass.Instance);
             seq.Run(PVnBitSyncPass.Instance);
