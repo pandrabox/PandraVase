@@ -351,7 +351,7 @@ namespace com.github.pandrabox.pandravase.editor
             return p;
         }
 
-        public PVMenuIcoOverride OverrideMenuIco(string paramName1, string paramName2, float paramVal1, string icoPath)
+        public PVMenuIcoOverride OverrideMenuIco(string paramName1, string paramName2, float? paramVal1, string icoPath)
         {
             var parent = GetOrCreateObject("PVMenuIcoOverride");
             var p = CreateComponentObject<PVMenuIcoOverride>($@"{paramName1}_{paramName2}");
@@ -369,6 +369,19 @@ namespace com.github.pandrabox.pandravase.editor
             p.transform.SetParent(parent.transform);
             p.FolderName = folderName;
             p.Ico = AssetDatabase.LoadAssetAtPath<Texture2D>(icoPath);
+            return p;
+        }
+        public PVMenuIcoOverride OverrideRadialIco(string radialParamName, string icoPath)
+        {
+            var parent = GetOrCreateObject("PVMenuIcoOverride");
+            var p = CreateComponentObject<PVMenuIcoOverride>($@"{radialParamName}");
+            p.transform.SetParent(parent.transform);
+            p.RadialParameterName = radialParamName;
+            p.Ico = AssetDatabase.LoadAssetAtPath<Texture2D>(icoPath);
+            if (p.Ico == null)
+            {
+                Log.I.Error($@"{icoPath}が見つかりませんでした");
+            }
             return p;
         }
     }

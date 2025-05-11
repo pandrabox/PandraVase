@@ -49,11 +49,11 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVParamView2Pass.Instance);
             seq.Run(PVMoveToRootPass.Instance);
             seq.Run(PVDanceControllerPass.Instance);
-            seq.Run(PVMenuIcoOverridePass.Instance);
 
             seq.Run(PVGridUIPass.Instance);
             seq.Run(PVnBitSyncPass.Instance);
             seq.Run(PVMessageUIPass.Instance); // MenuBuilderで作成されるComponentの解決
+            seq.Run(PVMenuIcoOverridePass.Instance); //MessageUI, DanceControllerのアイコン書き換え
             seq.Run(PVMergeMASubMenuPass.Instance); //PVDanceControllerPass, PVMessageUIPassの解決
             seq.Run(PVFrameCounterPass.Instance); // FrameCounterの解決
             seq.Run(PVParameterPass.Instance); // 追々これを最後にすべき気がする

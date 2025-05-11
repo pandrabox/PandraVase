@@ -30,7 +30,20 @@ namespace com.github.pandrabox.pandravase.editor
                 //icoOverrideにはParameterName1, ParameterName2, Icoが入っている
                 foreach (var maMenu in maMenus)
                 {
-                    if (icoOverride.ParameterName1 != null) //アイテムモード
+                    if (icoOverride.FolderName != null) //フォルダモード
+                    {
+                        var folderName = maMenu.gameObject.name;
+                        if (folderName != icoOverride.FolderName) continue;
+                    }
+                    else if (icoOverride.RadialParameterName != null) //ラジアルモード
+                    {
+                        var subParams = maMenu.Control.subParameters;
+                        var subParam = subParams != null && subParams.Length > 0 ? subParams[0] : null;
+                        if (subParam == null) continue;
+                        var radialParamName = subParam.name;
+                        if (radialParamName != icoOverride.RadialParameterName) continue;
+                    }
+                    else
                     {
                         var menuParam = maMenu.Control.parameter;
                         if (menuParam.name != icoOverride.ParameterName1) continue;
@@ -41,13 +54,10 @@ namespace com.github.pandrabox.pandravase.editor
                         var safeParam2Name = (icoOverride.ParameterName2 == null) ? "" : icoOverride.ParameterName2;
                         if (safeSubParamName != safeParam2Name) continue;
 
-                        if (maMenu.Control.value != icoOverride.ParamValue1) continue;
-                    }
-                    else // フォルダモード
-                    {
-                        var folderName = maMenu.gameObject.name;
-                        Log.I.Info($@"FolderName: {folderName}");
-                        if (folderName != icoOverride.FolderName) continue;
+                        if (icoOverride.ParamValue1 != null)
+                        {
+                            if (maMenu.Control.value != icoOverride.ParamValue1) continue;
+                        }
                     }
                     maMenu.Control.icon = icoOverride.Ico;
                     overrideCount++;
