@@ -40,18 +40,34 @@ namespace com.github.pandrabox.pandravase.editor
         private string _currentParameterName;
         private float _currentValue;
         private string _parentFolder;
+        private bool _isPC;
 
         public MenuBuilder(PandraProject prj, bool parameterDef = true, string parentFolder = null)
         {
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            _isPC = (target == BuildTarget.StandaloneWindows ||
+                   target == BuildTarget.StandaloneWindows64 ||
+                   target == BuildTarget.StandaloneOSX ||
+                   target == BuildTarget.StandaloneLinux64);
+            if (!_isPC)
+            {
+                Log.I.Info("Questビルド時MenuBuilderはスキップされます。");
+                _prj = null;
+                folderTree = null;
+                return;
+            }
             _prj = prj;
             _parameterDef = parameterDef;
             _parentFolder = parentFolder;
             folderTree = new List<Transform>();
+
+
             CreateParent();
         }
 
         private MenuBuilder CreateParent()
         {
+            if (!_isPC || _prj == null || folderTree == null)  return this;
             if (_parentFolder == null || _parentFolder == "") return this;
             var pf = _parentFolder.Split('/');
             foreach (var p in pf)
@@ -66,6 +82,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public MenuBuilder AddRadial(string parameterName, string menuName = null, float defaultVal = 0, bool localOnly = true, string mainParameterName = null)
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             menuName = menuName ?? parameterName;
             AddGenericMenu(menuName, (x) =>
             {
@@ -92,6 +109,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         public MenuBuilder Add2Axis(string parameter1, string parameter2, string mainParameter, string menuName = null, float defaultVal1 = 0, float defaultVal2 = 0, bool localOnly = true)
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             menuName = menuName ?? parameter1;
             AddGenericMenu(menuName, (x) =>
             {
@@ -123,6 +141,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public MenuBuilder AddFolder(string folderName, bool merge = false)
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             AddGenericMenu(folderName, (x) =>
             {
                 if (IsRoot)
@@ -163,6 +182,7 @@ namespace com.github.pandrabox.pandravase.editor
             , Color? textColor = null
             , Color? outlineColor = null)
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             _prj.SetMessage(message, _currentParameterName, AnimatorConditionMode.Equals, _currentValue, duration, inactiveByParameter, isRemote, textColor, outlineColor);
             if (inverseMessage != null) _prj.SetMessage(inverseMessage, _currentParameterName, AnimatorConditionMode.NotEqual, _currentValue, duration, inactiveByParameter, isRemote, textColor, outlineColor);
             return this;
@@ -173,6 +193,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public MenuBuilder SetIco(Texture2D ico)
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             ico.wrapMode = TextureWrapMode.Clamp;
             _currentMenu.Control.icon = ico;
             return this;
@@ -183,6 +204,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         public MenuBuilder ExitFolder()
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             folderTree.RemoveAt(folderTree.Count - 1);
             return this;
         }
@@ -205,6 +227,7 @@ namespace com.github.pandrabox.pandravase.editor
 
         private MenuBuilder AddToggleOrButton(bool isButton, string parameterName, float? val = null, ParameterSyncType? parameterSyncType = null, string menuName = null, float? defaultVal = null, bool? localOnly = null)
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             _currentValue = val ?? 1;
             _currentParameterName = parameterName;
             Log.I.Info($@"AddToggleOrButton({(isButton ? "Button" : "Toggle")},Param:{_currentParameterName},Val:{_currentValue},SyncType:{parameterSyncType},MenuName:{menuName},Default:{defaultVal},Local:{localOnly})");
@@ -246,6 +269,7 @@ namespace com.github.pandrabox.pandravase.editor
         /// </summary>
         private MenuBuilder AddGenericMenu(string menuName, Action<ModularAvatarMenuItem> x, bool allowRoot = false)
         {
+            if (!_isPC || _prj == null || folderTree == null) return this;
             if (!allowRoot && IsRoot)
             {
                 Log.I.Error("Root状態でMenu作成が呼ばれました。これは許可されていません。最低１回のAddFolderを実行してください。");
