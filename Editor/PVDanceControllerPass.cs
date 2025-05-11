@@ -146,7 +146,7 @@ namespace com.github.pandrabox.pandravase.editor
                     ;
 
             ControlDanceMode_Inner(ab, _prj.IsDance);
-            
+
             ab.Attach(_prj.RootObject);
         }
 

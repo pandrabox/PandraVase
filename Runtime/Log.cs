@@ -110,7 +110,7 @@ namespace com.github.pandrabox.pandravase.runtime
             logFile = logFile == null ? "" : logFile.Trim(trimChars: new char[] { ' ', '\r', '\n' });
             if (logFile == null || logFile == "")
             {
-                if(_yetSelectLogFile-- > 0)
+                if (_yetSelectLogFile-- > 0)
                 {
 #if PANDRADBG
                     Debug.Log("ログファイルが設定されていません。");
