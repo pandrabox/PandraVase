@@ -77,7 +77,7 @@ namespace com.github.pandrabox.pandravase.editor
                 Debug.LogError(msg, unityObj);
             }
 
-            EditorUtility.DisplayDialog("NullCheckExtensions", msg, "OK");
+            Log.I.Exception(null, msg);
 
             throw new ArgumentNullException(nameof(obj), msg);
         }

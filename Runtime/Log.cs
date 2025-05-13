@@ -24,12 +24,8 @@ namespace com.github.pandrabox.pandravase.runtime
         private bool _isConnected = false;
         private object _lockObject = new object();
         private Timer _disconnectTimer;
-        private bool _appearPopupOnError = false;
         private int _yetSelectLogFile = 5;
         private List<string> _keywords = new List<string>();
-
-        private int _errorPopupCount = 0;
-        private const int MaxErrorPopupsPerBuild = 3;
 
         enum LogType
         {
@@ -65,8 +61,6 @@ namespace com.github.pandrabox.pandravase.runtime
         {
             SetKeyWord("Root");
             _yetSelectLogFile = 5;
-            _appearPopupOnError = appearPopupOnError;
-            _errorPopupCount = 0; // ポップアップカウントをリセット
             string directory = Path.GetDirectoryName(logfile);
             if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
             if (!File.Exists(logfile)) File.Create(logfile).Dispose();
@@ -377,11 +371,7 @@ namespace com.github.pandrabox.pandravase.runtime
                 case LogType.Error:
                 case LogType.Exception:
                     UnityEngine.Debug.LogError(logMessage);
-                    if (_appearPopupOnError && _errorPopupCount < MaxErrorPopupsPerBuild)
-                    {
-                        ShowErrorPopup(lType.ToString(), logMessage);
-                        _errorPopupCount++;
-                    }
+                    ShowErrorPopup(lType.ToString(), logMessage);
                     break;
             }
         }
@@ -389,6 +379,7 @@ namespace com.github.pandrabox.pandravase.runtime
         // エラーポップアップを表示する
         private void ShowErrorPopup(string title, string message)
         {
+#if PANDRADBG
             // ポップアップ用のメッセージを作成
             string popupMessage = message;
 
@@ -400,6 +391,7 @@ namespace com.github.pandrabox.pandravase.runtime
             }
 
             EditorUtility.DisplayDialog($"エラーが発生しました: {title}", popupMessage, "OK");
+#endif
         }
 
         private static string ConvertToUnityPath(string s)
