@@ -28,6 +28,9 @@ namespace com.github.pandrabox.pandravase.runtime
         private int _yetSelectLogFile = 5;
         private List<string> _keywords = new List<string>();
 
+        private int _errorPopupCount = 0;
+        private const int MaxErrorPopupsPerBuild = 3;
+
         enum LogType
         {
             Info,
@@ -63,6 +66,7 @@ namespace com.github.pandrabox.pandravase.runtime
             SetKeyWord("Root");
             _yetSelectLogFile = 5;
             _appearPopupOnError = appearPopupOnError;
+            _errorPopupCount = 0; // ポップアップカウントをリセット
             string directory = Path.GetDirectoryName(logfile);
             if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
             if (!File.Exists(logfile)) File.Create(logfile).Dispose();
@@ -373,7 +377,11 @@ namespace com.github.pandrabox.pandravase.runtime
                 case LogType.Error:
                 case LogType.Exception:
                     UnityEngine.Debug.LogError(logMessage);
-                    if (_appearPopupOnError) ShowErrorPopup(lType.ToString(), logMessage);
+                    if (_appearPopupOnError && _errorPopupCount < MaxErrorPopupsPerBuild)
+                    {
+                        ShowErrorPopup(lType.ToString(), logMessage);
+                        _errorPopupCount++;
+                    }
                     break;
             }
         }
