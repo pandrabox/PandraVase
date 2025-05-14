@@ -1,7 +1,6 @@
 ﻿using com.github.pandrabox.pandravase.runtime;
 /// GameObjectを管理する基底クラス ※このクラスは親のクラスがPandraProjectを持っていて初期化済みであることを前提としています
 using System;
-using UnityEditor;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 

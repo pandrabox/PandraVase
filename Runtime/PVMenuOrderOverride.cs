@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using nadena.dev.modular_avatar.core;
 using System.Collections.Generic;
 
 namespace com.github.pandrabox.pandravase.runtime

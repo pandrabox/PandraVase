@@ -3,11 +3,9 @@ using nadena.dev.modular_avatar.core;
 using nadena.dev.ndmf;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
-using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
 {
@@ -44,7 +42,8 @@ namespace com.github.pandrabox.pandravase.editor
                 if (string.IsNullOrEmpty(orderOverride.FolderName)) continue;
                 // FolderName‚Éˆê’v‚·‚éGameObject‚ð’T‚·
                 var folderObj = maMenus.FirstOrDefault(m => m.gameObject.name == orderOverride.FolderName && m.Control != null && m.Control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && m.MenuSource == SubmenuSource.Children)?.gameObject;
-                if (folderObj == null) {
+                if (folderObj == null)
+                {
                     Log.I.Info($"Folder not found: {orderOverride.FolderName}");
                     folderFail++;
                     continue;
@@ -58,7 +57,8 @@ namespace com.github.pandrabox.pandravase.editor
                 }
                 Log.I.Info($"Children found in folder '{orderOverride.FolderName}': {children.Count}");
                 // MenuOrder‚É]‚Á‚Ä•À‚×‘Ö‚¦
-                var ordered = children.OrderBy(go => {
+                var ordered = children.OrderBy(go =>
+                {
                     int idx = orderOverride.MenuOrder.IndexOf(go.name);
                     return idx >= 0 ? idx : int.MaxValue;
                 }).ToList();
