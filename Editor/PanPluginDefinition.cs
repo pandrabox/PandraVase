@@ -55,6 +55,7 @@ namespace com.github.pandrabox.pandravase.editor
             seq.Run(PVMessageUIPass.Instance); // MenuBuilderで作成されるComponentの解決
             seq.Run(PVMenuIcoOverridePass.Instance); //MessageUI, DanceControllerのアイコン書き換え
             seq.Run(PVMergeMASubMenuPass.Instance); //PVDanceControllerPass, PVMessageUIPassの解決
+            seq.Run(PVMenuOrderOverridePass.Instance); 
             seq.Run(PVFrameCounterPass.Instance); // FrameCounterの解決
             seq.Run(PVParameterPass.Instance); // 追々これを最後にすべき気がする
             seq.Run(PVPanMergeBlendTreePass.Instance); // PanMergeBlendTreeの解決　これは必ず最後にして下さい（プログレスバーをここで終了しているので）
