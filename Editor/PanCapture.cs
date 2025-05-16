@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using VRC.SDK3.Avatars.Components;
 using static com.github.pandrabox.pandravase.editor.Util;
 
 namespace com.github.pandrabox.pandravase.editor
@@ -155,7 +156,12 @@ namespace com.github.pandrabox.pandravase.editor
 
         public GameObject CreateClone(GameObject target)
         {
+            target.SetActive(false);
             CaptureClone = GameObject.Instantiate(target);
+            var desc = CaptureClone.GetComponent<VRCAvatarDescriptor>();
+            if (desc != null) GameObject.DestroyImmediate(desc);
+            target.SetActive(true);
+            CaptureClone.SetActive(true);
             CaptureClone.transform.position = target.transform.position;
             Renderer[] renderers = CaptureClone.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers)
