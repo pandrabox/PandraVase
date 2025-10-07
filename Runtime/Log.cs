@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -18,13 +16,6 @@ namespace com.github.pandrabox.pandravase.runtime
         public static Log I => instance;
         private static Log instance = new Log();
         private Log() { }
-        private string logFile;
-        private StreamWriter _sw;
-        private float _logTimeoutMS = 500;
-        private bool _isConnected = false;
-        private object _lockObject = new object();
-        private Timer _disconnectTimer;
-        private int _yetSelectLogFile = 5;
         private List<string> _keywords = new List<string>();
 
         enum LogType
@@ -54,141 +45,15 @@ namespace com.github.pandrabox.pandravase.runtime
         /// <summary>
         /// ログの初期化
         /// </summary>
-        /// <param name="logfile">ログパス</param>
-        /// <param name="appearPopupOnError">エラーのときポップアップ表示するかどうか</param>
-        /// <param name="withClear">初期化時に既存のログを削除するかどうか</param>
-        public void Initialize(string logfile, bool appearPopupOnError = false, bool withClear = false)
+        public void Initialize()
         {
             SetKeyWord("Root");
-            _yetSelectLogFile = 5;
-            string directory = Path.GetDirectoryName(logfile);
-            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-            if (!File.Exists(logfile)) File.Create(logfile).Dispose();
-            logFile = logfile;
-
-            // タイマーの初期化
-            _disconnectTimer = new Timer(DisconnectTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
-            if (withClear) Clear();
-            Write(LogType.Info, $@"ログを初期化しました{logFile}");
+            Write(LogType.Info, "ログを初期化しました");
         }
 
-        /// <summary>
-        /// ログファイルの内容をクリアする
-        /// </summary>
-        private void Clear()
+        public void Initialize(string a, bool b = true, bool c = true)
         {
-            lock (_lockObject)
-            {
-                // 既存の接続を閉じる
-                Disconnect();
-
-                try
-                {
-                    // ファイルを空にする（上書きモードでStreamWriterを作成して即座に閉じる）
-                    using (var sw = new StreamWriter(logFile, false))
-                    {
-                        sw.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff},Info,Log,Log,Clear,ログファイルをクリアしました");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    UnityEngine.Debug.LogError($"ログファイルのクリアに失敗しました: {ex.Message}");
-                }
-            }
-        }
-
-        // タイマーコールバック
-        private void DisconnectTimerCallback(object state)
-        {
-            Disconnect();
-        }
-
-        private void Connect()
-        {
-            logFile = logFile == null ? "" : logFile.Trim(trimChars: new char[] { ' ', '\r', '\n' });
-            if (logFile == null || logFile == "")
-            {
-                if (_yetSelectLogFile-- > 0)
-                {
-#if PANDRADBG
-                    Debug.Log("ログファイルが設定されていません。");
-#endif
-                }
-                return;
-            }
-            Debug.Log($@"ログファイルを設定します: {logFile}");
-            lock (_lockObject)
-            {
-                // すでに接続済みで書き込み可能な状態であれば何もしない
-                if (_isConnected && _sw != null && _sw.BaseStream.CanWrite)
-                    return;
-
-                try
-                {
-                    // 前回のStreamWriterが残っていればクローズ
-                    if (_sw != null)
-                    {
-                        try
-                        {
-                            _sw.Close();
-                            _sw.Dispose();
-                        }
-                        catch (Exception)
-                        {
-                            // クローズ時のエラーは無視
-                        }
-                        _sw = null;
-                    }
-
-                    // 新規にStreamWriterを作成（追記モード）
-                    _sw = new StreamWriter(logFile, true);
-                    _sw.AutoFlush = true;
-                    _isConnected = true;
-
-                    // 既存のタイマーをキャンセルして新たにタイマーをセット
-                    ResetDisconnectTimer();
-                }
-                catch (Exception ex)
-                {
-                    UnityEngine.Debug.LogError($"ログファイル接続エラー: {ex.Message}");
-                    _isConnected = false;
-                    _sw = null;
-                }
-            }
-        }
-
-        private void Disconnect()
-        {
-            lock (_lockObject)
-            {
-                if (_sw == null)
-                    return;
-                try
-                {
-                    _sw.Flush();
-                    _sw.Close();
-                    _sw.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    UnityEngine.Debug.LogError($"ログファイル切断エラー: {ex.Message}");
-                }
-                finally
-                {
-                    _sw = null;
-                    _isConnected = false;
-                }
-            }
-        }
-
-        // タイマーをリセットする
-        private void ResetDisconnectTimer()
-        {
-            // 既存のタイマーをキャンセル
-            _disconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
-            // 新たにタイマーをセット
-            _disconnectTimer.Change((int)_logTimeoutMS, Timeout.Infinite);
+            Initialize(); //互換性維持
         }
 
         public void Info(string message) => Write(LogType.Info, message);
@@ -201,8 +66,6 @@ namespace com.github.pandrabox.pandravase.runtime
 
         private void Write(LogType lType, string message, Exception ex = null)
         {
-            Connect();
-
             // 呼び出し元の情報を取得
             StackFrame frame = new StackFrame(2, true);
             MethodBase method = frame.GetMethod();
@@ -338,24 +201,6 @@ namespace com.github.pandrabox.pandravase.runtime
 
             string logMessage = ConvertToUnityPath(sb.ToString());
 
-            // ファイルに書き込み
-            try
-            {
-                if (_sw != null)
-                {
-                    _sw.WriteLine(logMessage);
-
-                    // 書き込みがあるたびにタイマーをリセット
-                    ResetDisconnectTimer();
-                }
-            }
-            catch (Exception fileEx)
-            {
-                UnityEngine.Debug.LogError($"ログファイル書き込みエラー: {fileEx.Message}");
-                _isConnected = false;
-                _sw = null;
-            }
-
             // LogTypeに応じてUnityのログ機能を使い分ける
             switch (lType)
             {
@@ -399,84 +244,6 @@ namespace com.github.pandrabox.pandravase.runtime
             s = s.Replace(Application.dataPath, "Assets");
             s = s.Replace(Path.Combine(new DirectoryInfo(Application.dataPath).Parent.FullName, "Packages"), "Packages");
             return s;
-        }
-
-        // デストラクタ - タイマーを確実に解放
-        ~Log()
-        {
-            _disconnectTimer?.Dispose();
-        }
-
-        /// <summary>
-        /// ログファイルを解析し、キーワードごとのWarning、Error、Exceptionの数を集計します
-        /// </summary>
-        /// <param name="logFilePath">解析するログファイルのパス（指定しない場合は現在のログファイル）</param>
-        /// <returns>キーワードごとのエラー集計情報を含む辞書</returns>
-        public static Dictionary<string, (int Warnings, int Errors, int Exceptions)> AnalyzeLog(string logFilePath = null)
-        {
-            if (string.IsNullOrEmpty(logFilePath) || !File.Exists(logFilePath))
-            {
-                Debug.LogError("ログファイルが存在しないため、解析できません");
-                return new Dictionary<string, (int, int, int)>();
-            }
-
-            var result = new Dictionary<string, (int Warnings, int Errors, int Exceptions)>();
-
-            try
-            {
-                string[] lines = File.ReadAllLines(logFilePath);
-
-                foreach (string line in lines)
-                {
-                    // カンマ区切りのログ形式を解析
-                    string[] parts = line.Split(',');
-                    if (parts.Length < 4)
-                        continue;
-
-                    // フォーマット: 日時,LogType(4文字),キーワード,プロジェクト名,クラス名,メソッド名,メッセージ
-                    string logTypeStr = parts[1].Trim();
-                    string keyword = parts[2].Trim();
-
-                    // LogTypeを判断
-                    bool isWarning = logTypeStr.StartsWith("Warn");
-                    bool isError = logTypeStr.StartsWith("Erro");
-                    bool isException = logTypeStr.StartsWith("Exce");
-
-                    if (!isWarning && !isError && !isException)
-                        continue;
-
-                    if (!result.ContainsKey(keyword))
-                    {
-                        result[keyword] = (0, 0, 0);
-                    }
-
-                    var currentCounts = result[keyword];
-
-                    if (isWarning)
-                    {
-                        result[keyword] = (currentCounts.Warnings + 1, currentCounts.Errors, currentCounts.Exceptions);
-                    }
-                    else if (isError)
-                    {
-                        result[keyword] = (currentCounts.Warnings, currentCounts.Errors + 1, currentCounts.Exceptions);
-                    }
-                    else if (isException)
-                    {
-                        result[keyword] = (currentCounts.Warnings, currentCounts.Errors, currentCounts.Exceptions + 1);
-                    }
-                }
-
-                // エラーがないキーワードを除外
-                result = result.Where(kv => kv.Value.Warnings > 0 || kv.Value.Errors > 0 || kv.Value.Exceptions > 0)
-                               .ToDictionary(kv => kv.Key, kv => kv.Value);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"ログの解析中にエラーが発生しました: {ex.Message}");
-                return new Dictionary<string, (int, int, int)>();
-            }
         }
 
     }
