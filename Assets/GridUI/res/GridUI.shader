@@ -146,11 +146,11 @@
 
             fixed4 frag(v2f i) : SV_Target
             {
-                // Discard fragments if not in player or VR view
-                if (!(isPlayerView() || isVRView()))
-                {
-                    discard;
-                }
+                // DEBUG: discard判定を一時無効化
+                // if (!(isPlayerView() || isVRView()))
+                // {
+                //     discard;
+                // }
 
                 half mainAspectRatio = _MainTex_TexelSize.z / _MainTex_TexelSize.w;
                 Cell cell = GetCell(_xMax, _yMax, _x, _y);

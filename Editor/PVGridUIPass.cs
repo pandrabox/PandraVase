@@ -75,7 +75,7 @@ namespace com.github.pandrabox.pandravase.editor
                 Log.I.Error("Displayが見つかりませんでした。");
                 return;
             }
-            _dispMat = _dispRenderer.material;
+            _dispMat = _dispRenderer.sharedMaterial;
             if (_dispMat == null)
             {
                 Log.I.Error("Materialが見つかりませんでした。");

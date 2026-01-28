@@ -85,7 +85,23 @@ namespace com.github.pandrabox.pandravase.editor
             tileTexture.wrapMode = TextureWrapMode.Clamp;
             tileTexture.Apply();
             tileTexture = AddMargin(tileTexture, margin / 2, backColor);
-            return tileTexture;
+            
+            // Save to file and enable mip streaming for VRC SDK compatibility
+            string tempPath = "Assets/_PandraVase_Temp_PackedTexture.png";
+            byte[] bytes = tileTexture.EncodeToPNG();
+            System.IO.File.WriteAllBytes(tempPath, bytes);
+            UnityEditor.AssetDatabase.ImportAsset(tempPath, UnityEditor.ImportAssetOptions.ForceUpdate);
+            
+            UnityEditor.TextureImporter importer = UnityEditor.AssetImporter.GetAtPath(tempPath) as UnityEditor.TextureImporter;
+            if (importer != null)
+            {
+                importer.streamingMipmaps = true;
+                importer.mipmapEnabled = true;
+                importer.SaveAndReimport();
+            }
+            
+            Texture2D result = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(tempPath);
+            return result;
         }
 
         /// <summary>
