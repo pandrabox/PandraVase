@@ -147,10 +147,11 @@
             fixed4 frag(v2f i) : SV_Target
             {
                 // DEBUG: discard判定を一時無効化
-                // if (!(isPlayerView() || isVRView()))
-                // {
-                //     discard;
-                // }
+                // 有効だとDesktopでパネルが見えないことがある　無効だとVR等で写真に写りこむ　後者の方が有害で判断し復活
+                if (!(isPlayerView() || isVRView()))
+                {
+                    discard;
+                }
 
                 half mainAspectRatio = _MainTex_TexelSize.z / _MainTex_TexelSize.w;
                 Cell cell = GetCell(_xMax, _yMax, _x, _y);
